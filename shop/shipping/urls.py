@@ -10,10 +10,7 @@ from django.conf.urls import include
 from shop.backends_pool import backends_pool
 
 
-urlpatterns = []
-
-
-for backend in backends_pool.get_shipping_backends_list():
-    regexp = "^%s/" % backend.url_namespace
-    urls = backend.get_urls()
-    urlpatterns.append((regexp, include(backend.get_urls())))
+urlpatterns = [
+    url("^%s/" % backend.url_namespace,include(backend.get_urls()))
+    for backend in backends_pool.get_shipping_backends_list()
+]
