@@ -1,7 +1,7 @@
-from django.conf.urls import url, patterns, include
+from django.conf.urls import url, include
 from shop.views import ajax as ajax_views
 
-urlpatterns = patterns(
+urlpatterns = [
   url(r'^$',ajax_views.index,name='product_list'),
   url(r'^start_checkout/$',ajax_views.start_checkout,name='start_checkout'),
   url(r'^edit/$',ajax_views.cart_edit,name='cart_edit'),
@@ -10,4 +10,4 @@ urlpatterns = patterns(
   url(r'^admin/$',ajax_views.admin_page,name='admin_page'),
   url(r'^admin/add/$',ajax_views.admin_add,name='admin_add'),
   url(r'^admin/products.json',ajax_views.admin_products_json,name='admin_products_json'),
-)
+]
