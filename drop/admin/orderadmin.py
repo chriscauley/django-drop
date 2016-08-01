@@ -3,9 +3,9 @@ from django.contrib import admin
 from django.contrib.admin.options import ModelAdmin
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-from shop.order_signals import completed
-from shop.admin.mixins import LocalizeDecimalFieldsMixin
-from shop.models.ordermodel import (Order, OrderItem,
+from drop.order_signals import completed
+from drop.admin.mixins import LocalizeDecimalFieldsMixin
+from drop.models.ordermodel import (Order, OrderItem,
         OrderExtraInfo, ExtraOrderPriceField, OrderPayment)
 
 
@@ -52,6 +52,6 @@ class OrderAdmin(LocalizeDecimalFieldsMixin, ModelAdmin):
                 }),
             )
 
-ORDER_MODEL = getattr(settings, 'SHOP_ORDER_MODEL', None)
+ORDER_MODEL = getattr(settings, 'DROP_ORDER_MODEL', None)
 if not ORDER_MODEL:
     admin.site.register(Order, OrderAdmin)

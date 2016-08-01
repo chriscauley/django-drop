@@ -7,9 +7,9 @@ from django.db import models
 from django.db.models.aggregates import Sum
 from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
-from shop.cart.modifiers_pool import cart_modifiers_pool
-from shop.util.fields import CurrencyField
-from shop.util.loader import get_model_string
+from drop.cart.modifiers_pool import cart_modifiers_pool
+from drop.util.fields import CurrencyField
+from drop.util.loader import get_model_string
 import django
 
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
@@ -19,7 +19,7 @@ USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 #==============================================================================
 class BaseProduct(PolymorphicModel):
     """
-    A basic product for the shop.
+    A basic product for the drop.
     
     Most of the already existing fields here should be generic enough to reside
     on the "base model" and not on an added property.
@@ -36,7 +36,7 @@ class BaseProduct(PolymorphicModel):
 
     class Meta(object):
         abstract = True
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
 
@@ -77,7 +77,7 @@ class BaseCart(models.Model):
     This should be a rather simple list of items. 
     
     Ideally it should be bound to a session and not to a User is we want to let 
-    people buy from our shop without having to register with us.
+    people buy from our drop without having to register with us.
     """
     # If the user is null, that means this is used for a session
     user = models.OneToOneField(USER_MODEL, null=True, blank=True)
@@ -86,7 +86,7 @@ class BaseCart(models.Model):
 
     class Meta(object):
         abstract = True
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Cart')
         verbose_name_plural = _('Carts')
 
@@ -135,7 +135,7 @@ class BaseCart(models.Model):
         >>> self.items[1].quantity
         1
         """
-        from shop.models import CartItem
+        from drop.models import CartItem
 
         # check if product can be added at all
         if not getattr(product, 'can_be_added_to_cart', True):
@@ -210,7 +210,7 @@ class BaseCart(models.Model):
         that for the order items (since they are legally binding after the
         "purchase" button was pressed)
         """
-        from shop.models import CartItem, Product
+        from drop.models import CartItem, Product
 
         # This is a ghetto "select_related" for polymorphic models.
         items = CartItem.objects.filter(cart=self).order_by('pk')
@@ -287,7 +287,7 @@ class BaseCartItem(models.Model):
 
     class Meta(object):
         abstract = True
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Cart item')
         verbose_name_plural = _('Cart items')
 
@@ -323,7 +323,7 @@ class BaseOrder(models.Model):
     """
     A model representing an Order.
 
-    An order is the "in process" counterpart of the shopping cart, which holds
+    An order is the "in process" counterpart of the dropping cart, which holds
     stuff like the shipping and billing addresses (copied from the User
     profile) when the Order is first created), list of items, and holds stuff
     like the status, shipping costs, taxes, etc.
@@ -367,7 +367,7 @@ class BaseOrder(models.Model):
 
     class Meta(object):
         abstract = True
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Order')
         verbose_name_plural = _('Orders')
 
@@ -393,7 +393,7 @@ class BaseOrder(models.Model):
         """
         The amount paid is the sum of related orderpayments
         """
-        from shop.models import OrderPayment
+        from drop.models import OrderPayment
         sum_ = OrderPayment.objects.filter(order=self).aggregate(
                 sum=Sum('amount'))
         result = sum_.get('sum')
@@ -404,7 +404,7 @@ class BaseOrder(models.Model):
 
     @property
     def shipping_costs(self):
-        from shop.models import ExtraOrderPriceField
+        from drop.models import ExtraOrderPriceField
         sum_ = Decimal('0.0')
         cost_list = ExtraOrderPriceField.objects.filter(order=self).filter(
                 is_shipping=True)
@@ -472,7 +472,7 @@ class BaseOrderItem(models.Model):
 
     class Meta(object):
         abstract = True
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Order item')
         verbose_name_plural = _('Order items')
 

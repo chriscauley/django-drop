@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-from shop.shop_api import ShopAPI
-from shop.order_signals import payment_selection
-from shop.models.ordermodel import ExtraOrderPriceField
-from shop.models.ordermodel import Order
+from drop.drop_api import DropAPI
+from drop.order_signals import payment_selection
+from drop.models.ordermodel import ExtraOrderPriceField
+from drop.models.ordermodel import Order
 from django.shortcuts import redirect
 
 
-class ShippingAPI(ShopAPI):
+class ShippingAPI(DropAPI):
     """
-    This object's purpose is to expose an API to the shop system.
-    Ideally, shops (django SHOP or others) should implement this API, so that
+    This object's purpose is to expose an API to the drop system.
+    Ideally, drops (django DROP or others) should implement this API, so that
     shipping plugins are interchangeable between systems.
 
-    This implementation is the interface reference for django SHOP
+    This implementation is the interface reference for django DROP
 
     Methods defined in BaseBackendAPI:
-    getOrder(request): Return the Order object for the current shopper
+    getOrder(request): Return the Order object for the current dropper
     """
     def add_shipping_costs(self, order, label, value):
         """

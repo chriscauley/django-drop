@@ -1,1 +1,1 @@
-from shop.models_bases.managers import *
+from drop.models_bases.managers import *

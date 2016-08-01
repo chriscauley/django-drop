@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 import os
-import shop
+import drop
 
 CLASSIFIERS = [
     'Environment :: Web Environment',
@@ -16,11 +16,11 @@ CLASSIFIERS = [
 setup(
     author="Christopher Glass",
     author_email="tribaal@gmail.com",
-    name='django-shop',
-    version=shop.__version__,
-    description='An Advanced Django Shop',
+    name='django-drop',
+    version=drop.__version__,
+    description='An Advanced Django Drop',
     long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
-    url='http://www.django-shop.org/',
+    url='http://www.django-drop.org/',
     license='BSD License',
     platforms=['OS Independent'],
     classifiers=CLASSIFIERS,

@@ -6,14 +6,14 @@ from django.db.models.loading import cache
 from django.contrib.auth.models import User, AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
 from django.test.testcases import TestCase
-from shop.addressmodel.models import Address, Country
-from shop.models.cartmodel import Cart, CartItem
-from shop.models.productmodel import Product
-from shop.util.address import get_shipping_address_from_request, \
+from drop.addressmodel.models import Address, Country
+from drop.models.cartmodel import Cart, CartItem
+from drop.models.productmodel import Product
+from drop.util.address import get_shipping_address_from_request, \
     assign_address_to_request, get_billing_address_from_request
-from shop.util.cart import get_or_create_cart
-from shop.util.fields import CurrencyField
-from shop.util.loader import load_class
+from drop.util.cart import get_or_create_cart
+from drop.util.fields import CurrencyField
+from drop.util.loader import load_class
 
 
 class Mock(object):
@@ -150,21 +150,21 @@ class CartUtilsTestCase(TestCase):
 
 class LoaderTestCase(TestCase):
     def test_loader_without_a_name_works(self):
-        class_to_load = 'shop.tests.util.Mock'
+        class_to_load = 'drop.tests.util.Mock'
         res = load_class(class_to_load)
         self.assertEqual(res, Mock)
 
     def test_loader_without_a_name_works_tuple(self):
-        class_to_load = tuple(['shop.tests.util.Mock', 'tests'])
+        class_to_load = tuple(['drop.tests.util.Mock', 'tests'])
         res = load_class(class_to_load)
         self.assertEqual(res, Mock)
 
     def test_loader_without_a_name_fails(self):
-        class_to_load = 'shop.tests.IdontExist.IdontExistEither'
+        class_to_load = 'drop.tests.IdontExist.IdontExistEither'
         self.assertRaises(ImproperlyConfigured, load_class, class_to_load)
 
     def test_loader_without_a_name_fails_for_wrong_classname(self):
-        class_to_load = 'shop.tests.util.IdontExist'
+        class_to_load = 'drop.tests.util.IdontExist'
         self.assertRaises(ImproperlyConfigured, load_class, class_to_load)
 
     def test_loader_without_a_name_fails_when_too_short(self):
@@ -175,7 +175,7 @@ class LoaderTestCase(TestCase):
 class ModelImportTestCase(TestCase):
     def test_bases_old_import_path(self):
         try:
-            module = __import__('shop.models.defaults.bases', globals(),
+            module = __import__('drop.models.defaults.bases', globals(),
                 locals(), ['BaseProduct',])
         except ImportError:
             module = False
@@ -185,7 +185,7 @@ class ModelImportTestCase(TestCase):
 
     def test_managers_old_import_path(self):
         try:
-            module = __import__('shop.models.defaults.managers', globals(),
+            module = __import__('drop.models.defaults.managers', globals(),
                 locals(), ['ProductManager',])
         except ImportError:
             module = False
@@ -208,16 +208,16 @@ class CircularImportTestCase(TestCase):
 
         cache.loaded = False
         try:
-            del sys.modules['shop.models.productmodel']
-            del sys.modules['shop.models']
+            del sys.modules['drop.models.productmodel']
+            del sys.modules['drop.models']
         except KeyError:
             pass
 
         try:
-            self.product_model = settings.SHOP_PRODUCT_MODEL
+            self.product_model = settings.DROP_PRODUCT_MODEL
         except AttributeError:
             self.product_model = '!'
-        settings.SHOP_PRODUCT_MODEL = product_model
+        settings.DROP_PRODUCT_MODEL = product_model
 
     def tearDown(self):
         cache.loaded = False
@@ -225,9 +225,9 @@ class CircularImportTestCase(TestCase):
         apps.remove(self.app_name)
         settings.INSTALLED_APPS = tuple(apps)
         if self.product_model == '!':
-            del settings.SHOP_PRODUCT_MODEL
+            del settings.DROP_PRODUCT_MODEL
         else:
-            settings.SHOP_PRODUCT_MODEL = self.product_model
+            settings.DROP_PRODUCT_MODEL = self.product_model
 
     def test_old_import_raises_exception(self):
         self.setup_app('circular_import_old',

@@ -1,13 +1,13 @@
 #-*- coding: utf-8 -*-
 """
-Loop over payment backends defined in settings.SHOP_PAYMENT_BACKENDS and add
+Loop over payment backends defined in settings.DROP_PAYMENT_BACKENDS and add
 their URLs to the payment namespace. eg:
-http://www.example.com/shop/pay/paypal
-http://www.example.com/shop/pay/pay-on-delivery
+http://www.example.com/drop/pay/paypal
+http://www.example.com/drop/pay/pay-on-delivery
 ...
 """
 from django.conf.urls import include
-from shop.backends_pool import backends_pool
+from drop.backends_pool import backends_pool
 
 
 urlpatterns = [

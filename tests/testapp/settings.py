@@ -98,17 +98,17 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-    'polymorphic', # We need polymorphic installed for the shop
-    'shop', # The django SHOP application
-    'shop.addressmodel',
+    'polymorphic', # We need polymorphic installed for the drop
+    'drop', # The django DROP application
+    'drop.addressmodel',
     'project', # the test project application
 )
 
-# The shop settings:
-SHOP_CART_MODIFIERS= ['shop.cart.modifiers.rebate_modifiers.BulkRebateModifier']
-SHOP_SHIPPING_BACKENDS=['shop.shipping.backends.flat_rate.FlatRateShipping']
-SHOP_PAYMENT_BACKENDS=[
-    'shop.payment.backends.pay_on_delivery.PayOnDeliveryBackend']
+# The drop settings:
+DROP_CART_MODIFIERS= ['drop.cart.modifiers.rebate_modifiers.BulkRebateModifier']
+DROP_SHIPPING_BACKENDS=['drop.shipping.backends.flat_rate.FlatRateShipping']
+DROP_PAYMENT_BACKENDS=[
+    'drop.payment.backends.pay_on_delivery.PayOnDeliveryBackend']
 
-# Shop module settings
-SHOP_SHIPPING_FLAT_RATE = '10' # That's just for the flat rate shipping backend
+# Drop module settings
+DROP_SHIPPING_FLAT_RATE = '10' # That's just for the flat rate shipping backend

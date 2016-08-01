@@ -106,21 +106,21 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-# shop config
-SHOP_SHIPPING_BACKENDS = (
-    'shop.shipping.backends.flat_rate.FlatRateShipping',
+# drop config
+DROP_SHIPPING_BACKENDS = (
+    'drop.shipping.backends.flat_rate.FlatRateShipping',
 )
 
-SHOP_PAYMENT_BACKENDS = (
-    #'shop.payment.backends.pay_on_delivery.PayOnDeliveryBackend',
-    'myshop.payment.ExamplePayment',
+DROP_PAYMENT_BACKENDS = (
+    #'drop.payment.backends.pay_on_delivery.PayOnDeliveryBackend',
+    'mydrop.payment.ExamplePayment',
 )
 
-SHOP_SHIPPING_FLAT_RATE = "10.00"
+DROP_SHIPPING_FLAT_RATE = "10.00"
 
-SHOP_CART_MODIFIERS = [
-        'shop.cart.modifiers.tax_modifiers.TenPercentGlobalTaxModifier',
-        'shop.cart.modifiers.rebate_modifiers.BulkRebateModifier',
+DROP_CART_MODIFIERS = [
+        'drop.cart.modifiers.tax_modifiers.TenPercentGlobalTaxModifier',
+        'drop.cart.modifiers.rebate_modifiers.BulkRebateModifier',
         ]
 
 INSTALLED_APPS = (
@@ -135,10 +135,10 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'south',
-    'polymorphic', # We need polymorphic installed for the shop
-    'shop', # The django SHOP application
-    'shop.addressmodel',
-    'myshop', # the project we just created
+    'polymorphic', # We need polymorphic installed for the drop
+    'drop', # The django DROP application
+    'drop.addressmodel',
+    'mydrop', # the project we just created
 )
 
 # A sample logging configuration. The only tangible logging

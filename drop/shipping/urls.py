@@ -1,13 +1,13 @@
 #-*- coding: utf-8 -*-
 """
-Loop over shipping backends defined in settings.SHOP_SHIPPING_BACKENDS and add
+Loop over shipping backends defined in settings.DROP_SHIPPING_BACKENDS and add
 their URLs to the shipping namespace. eg:
-http://www.example.com/shop/ship/dhl
-http://www.example.com/shop/ship/fedex
+http://www.example.com/drop/ship/dhl
+http://www.example.com/drop/ship/fedex
 ...
 """
 from django.conf.urls import include
-from shop.backends_pool import backends_pool
+from drop.backends_pool import backends_pool
 
 
 urlpatterns = [

@@ -6,8 +6,8 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from shop.models import CartItem, Order
-from shop.util.cart import get_or_create_cart
+from drop.models import CartItem, Order
+from drop.util.cart import get_or_create_cart
 
 import json, datetime
 

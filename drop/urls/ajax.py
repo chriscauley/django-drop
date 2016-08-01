@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from shop.views import ajax as ajax_views
+from drop.views import ajax as ajax_views
 
 urlpatterns = [
   url(r'^$',ajax_views.index,name='product_list'),

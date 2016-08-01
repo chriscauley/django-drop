@@ -18,5 +18,5 @@ completed = django.dispatch.Signal(providing_args=['order'])
 """Emitted if the payment was refused or other fatal problem"""
 cancelled = django.dispatch.Signal(providing_args=['order'])
 
-"""Emitted (manually) when the shop clerk or robot shipped the order"""
+"""Emitted (manually) when the drop clerk or robot shipped the order"""
 shipped = django.dispatch.Signal(providing_args=['order'])

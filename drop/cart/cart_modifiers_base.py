@@ -9,7 +9,7 @@ class BaseCartModifier(object):
 
     Every time the cart is refreshed (via it's update() method), the cart will
     call all subclasses of this class registered with their full path in the
-    settings.SHOP_CART_MODIFIERS setting, calling methods defined here are
+    settings.DROP_CART_MODIFIERS setting, calling methods defined here are
     in the following sequence:
 
     1. pre_process_cart: Totals are not computed, the cart is "rough": only
@@ -132,7 +132,7 @@ class BaseCartModifier(object):
         >>> return ('rebate', Decimal(-9), {'rate': Decimal(3), 'identifier': 'Discount'})
         Note that the third element in this tuple is optional.
 
-        More examples can be found in shop.cart.modifiers.*
+        More examples can be found in drop.cart.modifiers.*
         """
         return None  # Does nothing by default
 

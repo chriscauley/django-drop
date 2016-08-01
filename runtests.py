@@ -13,7 +13,7 @@ opts, args = parser.parse_args()
 
 if not settings.configured:
     directory = os.path.abspath('%s' % os.path.dirname(__file__))
-    db_name = 'test_django_shop'
+    db_name = 'test_django_drop'
 
     settings.configure(
 
@@ -37,9 +37,9 @@ if not settings.configured:
             'django.contrib.admin',
             # Uncomment the next line to enable admin documentation:
             'django.contrib.admindocs',
-            'polymorphic', # We need polymorphic installed for the shop
-            'shop', # The django SHOP application
-            'shop.addressmodel',
+            'polymorphic', # We need polymorphic installed for the drop
+            'drop', # The django DROP application
+            'drop.addressmodel',
             'project', # the test project application
         ),
         MIDDLEWARE_CLASSES=(
@@ -71,22 +71,22 @@ if not settings.configured:
         PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
         TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner',
 
-        # The shop settings:
-        SHOP_CART_MODIFIERS= ['shop.cart.modifiers.rebate_modifiers.BulkRebateModifier'],
-        SHOP_SHIPPING_BACKENDS=['shop.shipping.backends.flat_rate.FlatRateShipping'],
-        SHOP_PAYMENT_BACKENDS=[
-            'shop.payment.backends.pay_on_delivery.PayOnDeliveryBackend'
+        # The drop settings:
+        DROP_CART_MODIFIERS= ['drop.cart.modifiers.rebate_modifiers.BulkRebateModifier'],
+        DROP_SHIPPING_BACKENDS=['drop.shipping.backends.flat_rate.FlatRateShipping'],
+        DROP_PAYMENT_BACKENDS=[
+            'drop.payment.backends.pay_on_delivery.PayOnDeliveryBackend'
         ],
 
-        # Shop module settings
-        SHOP_SHIPPING_FLAT_RATE = '10' # That's just for the flat rate shipping backend
+        # Drop module settings
+        DROP_SHIPPING_FLAT_RATE = '10' # That's just for the flat rate shipping backend
     )
 
 
 def run_django_tests():
-    apps = ['shop', 'addressmodel', ]
+    apps = ['drop', 'addressmodel', ]
     if DJANGO_VERSION >= (1, 6):
-        apps = ['shop', 'shop.addressmodel', ]
+        apps = ['drop', 'drop.addressmodel', ]
         settings.TEST_RUNNER = 'django.test.runner.DiscoverRunner'
     if DJANGO_VERSION >= (1, 7):
         django.setup()

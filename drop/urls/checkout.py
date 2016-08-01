@@ -1,7 +1,7 @@
 from django.conf.urls import url
-from shop.util.decorators import cart_required
+from drop.util.decorators import cart_required
 
-from shop.views.checkout import (
+from drop.views.checkout import (
     CheckoutSelectionView,
     PaymentBackendRedirectView,
     ShippingBackendRedirectView,

@@ -5,19 +5,19 @@ from django.conf.urls import patterns, url
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render_to_response
-from shop.models.ordermodel import Order, OrderPayment
-from shop.models.cartmodel import Cart
-from shop.util.decorators import on_method, order_required
-from shop.order_signals import confirmed
+from drop.models.ordermodel import Order, OrderPayment
+from drop.models.cartmodel import Cart
+from drop.util.decorators import on_method, order_required
+from drop.order_signals import confirmed
 
 
 class ForwardFundBackend(object):
     url_namespace = 'advance-payment'
     backend_name = _('Advance payment')
-    template = 'shop/advance-payment-notify.html'
+    template = 'drop/advance-payment-notify.html'
 
-    def __init__(self, shop):
-        self.shop = shop
+    def __init__(self, drop):
+        self.drop = drop
 
     def get_urls(self):
         urlpatterns = patterns('',
@@ -32,12 +32,12 @@ class ForwardFundBackend(object):
         wire the requested amount. It then confirms the order by by adding
         zero money as the received payment for that order.
         """
-        order = self.shop.get_order(request)
-        amount = self.shop.get_order_total(order)
+        order = self.drop.get_order(request)
+        amount = self.drop.get_order_total(order)
         transaction_id = date.today().strftime('%Y') + '%06d' % order.id
         self._create_confirmed_order(order, transaction_id)
         context = RequestContext(request, {'order': order, 'amount': amount,
-            'transaction_id': transaction_id, 'next_url': self.shop.get_finished_url()})
+            'transaction_id': transaction_id, 'next_url': self.drop.get_finished_url()})
         return render_to_response(self.template, context)
 
     def _create_confirmed_order(self, order, transaction_id):

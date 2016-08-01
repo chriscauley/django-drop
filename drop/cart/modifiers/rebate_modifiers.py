@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 from decimal import Decimal
-from shop.cart.cart_modifiers_base import BaseCartModifier
+from drop.cart.cart_modifiers_base import BaseCartModifier
 
 
 class BulkRebateModifier(BaseCartModifier):

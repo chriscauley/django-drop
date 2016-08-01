@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext_lazy as _
-from shop.models_bases import BaseCart
+from drop.models_bases import BaseCart
 
 
 class Cart(BaseCart):
     class Meta(object):
         abstract = False
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Cart')
         verbose_name_plural = _('Carts')

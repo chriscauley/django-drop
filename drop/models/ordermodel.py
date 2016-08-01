@@ -5,9 +5,9 @@ from django.db import models
 from django.db.models.signals import pre_delete
 from django.utils.translation import ugettext_lazy as _
 from jsonfield.fields import JSONField
-from shop.models.productmodel import Product
-from shop.util.fields import CurrencyField
-from shop.util.loader import load_class
+from drop.models.productmodel import Product
+from drop.util.fields import CurrencyField
+from drop.util.loader import load_class
 import django
 
 
@@ -18,14 +18,14 @@ import django
 # setting if it exists.
 
 # Order model
-ORDER_MODEL = getattr(settings, 'SHOP_ORDER_MODEL',
-    'shop.models.defaults.order.Order')
-Order = load_class(ORDER_MODEL, 'SHOP_ORDER_MODEL')
+ORDER_MODEL = getattr(settings, 'DROP_ORDER_MODEL',
+    'drop.models.defaults.order.Order')
+Order = load_class(ORDER_MODEL, 'DROP_ORDER_MODEL')
 
 # Order item model
-ORDERITEM_MODEL = getattr(settings, 'SHOP_ORDERITEM_MODEL',
-    'shop.models.defaults.orderitem.OrderItem')
-OrderItem = load_class(ORDERITEM_MODEL, 'SHOP_ORDERITEM_MODEL')
+ORDERITEM_MODEL = getattr(settings, 'DROP_ORDERITEM_MODEL',
+    'drop.models.defaults.orderitem.OrderItem')
+OrderItem = load_class(ORDERITEM_MODEL, 'DROP_ORDERITEM_MODEL')
 
 
 # Now we clear refrence to product from every OrderItem
@@ -47,7 +47,7 @@ class OrderExtraInfo(models.Model):
     text = models.TextField(verbose_name=_('Extra info'), blank=True)
 
     class Meta(object):
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Order extra info')
         verbose_name_plural = _('Order extra info')
 
@@ -66,7 +66,7 @@ class ExtraOrderPriceField(models.Model):
             verbose_name=_('Is shipping'))
 
     class Meta(object):
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Extra order price field')
         verbose_name_plural = _('Extra order price fields')
 
@@ -82,7 +82,7 @@ class ExtraOrderItemPriceField(models.Model):
     data = JSONField(null=True, blank=True, verbose_name=_('Serialized extra data'))
 
     class Meta(object):
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Extra order item price field')
         verbose_name_plural = _('Extra order item price fields')
 
@@ -103,6 +103,6 @@ class OrderPayment(models.Model):
             help_text=_("The payment backend used to process the purchase"))
 
     class Meta(object):
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Order payment')
         verbose_name_plural = _('Order payments')

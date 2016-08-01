@@ -5,7 +5,7 @@ from django.core import exceptions
 from importlib import import_module
 
 
-CLASS_PATH_ERROR = 'django-shop is unable to interpret settings value for %s. '\
+CLASS_PATH_ERROR = 'django-drop is unable to interpret settings value for %s. '\
                    '%s should be in the form of a tupple: '\
                    '(\'path.to.models.Class\', \'app_label\').'
 
@@ -70,11 +70,11 @@ def get_model_string(model_name):
 
     This is needed to allow our crazy custom model usage.
     """
-    setting_name = 'SHOP_%s_MODEL' % model_name.upper().replace('_', '')
+    setting_name = 'DROP_%s_MODEL' % model_name.upper().replace('_', '')
     class_path = getattr(settings, setting_name, None)
 
     if not class_path:
-        return 'shop.%s' % model_name
+        return 'drop.%s' % model_name
     elif isinstance(class_path, basestring):
         parts = class_path.split('.')
         try:

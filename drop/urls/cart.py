@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from shop.views.cart import CartDetails, CartItemDetail
+from drop.views.cart import CartDetails, CartItemDetail
 
 
 urlpatterns = [

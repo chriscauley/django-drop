@@ -3,14 +3,14 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from django.test.testcases import TestCase
-from shop.cart import modifiers_pool
-from shop.cart.cart_modifiers_base import BaseCartModifier
-from shop.cart.modifiers.tax_modifiers import TenPercentPerItemTaxModifier
-from shop.cart.modifiers_pool import cart_modifiers_pool
-from shop.models.cartmodel import Cart
-from shop.models.productmodel import Product
-from shop.tests.util import Mock
-from shop.tests.utils.context_managers import SettingsOverride
+from drop.cart import modifiers_pool
+from drop.cart.cart_modifiers_base import BaseCartModifier
+from drop.cart.modifiers.tax_modifiers import TenPercentPerItemTaxModifier
+from drop.cart.modifiers_pool import cart_modifiers_pool
+from drop.models.cartmodel import Cart
+from drop.models.productmodel import Product
+from drop.tests.util import Mock
+from drop.tests.utils.context_managers import SettingsOverride
 
 
 class CarModifierUsingStatePassing(BaseCartModifier):
@@ -55,16 +55,16 @@ class CartModifiersTestCase(TestCase):
         then call a method on it to make sure it works.
         """
         MODIFIERS = [
-            'shop.cart.modifiers.tax_modifiers.TenPercentGlobalTaxModifier']
-        with SettingsOverride(SHOP_CART_MODIFIERS=MODIFIERS):
+            'drop.cart.modifiers.tax_modifiers.TenPercentGlobalTaxModifier']
+        with SettingsOverride(DROP_CART_MODIFIERS=MODIFIERS):
             thelist = modifiers_pool.cart_modifiers_pool.get_modifiers_list()
             self.assertEqual(len(thelist), 1)
             instance = thelist[0]
             self.assertTrue(hasattr(instance, 'TAX_PERCENTAGE'))
 
     def test_02_cart_modifiers_pool_handles_wrong_path(self):
-        MODIFIERS = ['shop2.cart.modifiers.tax_modifiers']  # wrong path
-        with SettingsOverride(SHOP_CART_MODIFIERS=MODIFIERS):
+        MODIFIERS = ['drop2.cart.modifiers.tax_modifiers']  # wrong path
+        with SettingsOverride(DROP_CART_MODIFIERS=MODIFIERS):
             raised = False
             try:
                 modifiers_pool.cart_modifiers_pool.get_modifiers_list()
@@ -73,8 +73,8 @@ class CartModifiersTestCase(TestCase):
             self.assertTrue(raised)
 
     def test_03_cart_modifiers_pool_handles_wrong_module(self):
-        MODIFIERS = ['shop.cart.modifiers.tax_modifiers.IdontExist']
-        with SettingsOverride(SHOP_CART_MODIFIERS=MODIFIERS):
+        MODIFIERS = ['drop.cart.modifiers.tax_modifiers.IdontExist']
+        with SettingsOverride(DROP_CART_MODIFIERS=MODIFIERS):
             raised = False
             try:
                 modifiers_pool.cart_modifiers_pool.get_modifiers_list()
@@ -83,8 +83,8 @@ class CartModifiersTestCase(TestCase):
             self.assertTrue(raised)
 
     def test_03_cart_modifiers_pool_handles_not_a_path(self):
-        MODIFIERS = ['shop']
-        with SettingsOverride(SHOP_CART_MODIFIERS=MODIFIERS):
+        MODIFIERS = ['drop']
+        with SettingsOverride(DROP_CART_MODIFIERS=MODIFIERS):
             raised = False
             try:
                 modifiers_pool.cart_modifiers_pool.get_modifiers_list()
@@ -93,8 +93,8 @@ class CartModifiersTestCase(TestCase):
             self.assertTrue(raised)
 
     def test_state_is_passed_around_properly(self):
-        MODIFIERS = ['shop.tests.cart_modifiers.CarModifierUsingStatePassing']
-        with SettingsOverride(SHOP_CART_MODIFIERS=MODIFIERS):
+        MODIFIERS = ['drop.tests.cart_modifiers.CarModifierUsingStatePassing']
+        with SettingsOverride(DROP_CART_MODIFIERS=MODIFIERS):
             self.cart.add_product(self.product)
             self.cart.save()
             self.cart.update(self.request)

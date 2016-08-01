@@ -3,7 +3,7 @@ from django.test.testcases import TestCase
 from classytags.tests import DummyParser, DummyTokens
 
 from ..models.productmodel import Product
-from ..templatetags.shop_tags import Products
+from ..templatetags.drop_tags import Products
 
 
 class ProductsTestCase(TestCase):

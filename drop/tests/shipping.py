@@ -6,20 +6,20 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.test.testcases import TestCase
 
-from shop.backends_pool import backends_pool
-from shop.models.ordermodel import Order
-from shop.shipping.backends.flat_rate import FlatRateShipping
-from shop.shipping.api import ShippingAPI
-from shop.tests.util import Mock
-from shop.tests.utils.context_managers import SettingsOverride
+from drop.backends_pool import backends_pool
+from drop.models.ordermodel import Order
+from drop.shipping.backends.flat_rate import FlatRateShipping
+from drop.shipping.api import ShippingAPI
+from drop.tests.util import Mock
+from drop.tests.utils.context_managers import SettingsOverride
 
 
 class MockShippingBackend(object):
     """
     A simple, useless backend
     """
-    def __init__(self, shop):
-        self.shop = shop
+    def __init__(self, drop):
+        self.drop = drop
 
 
 class NamedMockShippingBackend(MockShippingBackend):
@@ -50,14 +50,14 @@ class GeneralShippingBackendTestCase(TestCase):
         self.order.save()
 
     def test_enforcing_of_name_works(self):
-        MODIFIERS = ['shop.tests.shipping.MockShippingBackend']
-        with SettingsOverride(SHOP_SHIPPING_BACKENDS=MODIFIERS):
+        MODIFIERS = ['drop.tests.shipping.MockShippingBackend']
+        with SettingsOverride(DROP_SHIPPING_BACKENDS=MODIFIERS):
             self.assertRaises(NotImplementedError,
                 backends_pool.get_shipping_backends_list)
 
     def test_enforcing_of_namespace_works(self):
-        MODIFIERS = ['shop.tests.shipping.NamedMockShippingBackend']
-        with SettingsOverride(SHOP_SHIPPING_BACKENDS=MODIFIERS):
+        MODIFIERS = ['drop.tests.shipping.NamedMockShippingBackend']
+        with SettingsOverride(DROP_SHIPPING_BACKENDS=MODIFIERS):
             self.assertRaises(NotImplementedError,
                 backends_pool.get_shipping_backends_list)
 
@@ -65,44 +65,44 @@ class GeneralShippingBackendTestCase(TestCase):
         class MockRequest():
             user = self.user
 
-        be = ValidMockShippingBackend(shop=ShippingAPI())
-        order = be.shop.get_order(MockRequest())
+        be = ValidMockShippingBackend(drop=ShippingAPI())
+        order = be.drop.get_order(MockRequest())
         self.assertEqual(order, None)
 
     def test_get_backends_from_pool(self):
-        MODIFIERS = ['shop.tests.shipping.ValidMockShippingBackend']
-        with SettingsOverride(SHOP_SHIPPING_BACKENDS=MODIFIERS):
+        MODIFIERS = ['drop.tests.shipping.ValidMockShippingBackend']
+        with SettingsOverride(DROP_SHIPPING_BACKENDS=MODIFIERS):
             list_ = backends_pool.get_shipping_backends_list()
             self.assertEqual(len(list_), 1)
 
     def test_get_backends_from_empty_pool(self):
         MODIFIERS = []
-        with SettingsOverride(SHOP_SHIPPING_BACKENDS=MODIFIERS):
+        with SettingsOverride(DROP_SHIPPING_BACKENDS=MODIFIERS):
             list_ = backends_pool.get_shipping_backends_list()
             self.assertEqual(len(list_), 0)
 
     def test_get_backends_from_non_path(self):
         MODIFIERS = ['blob']
-        with SettingsOverride(SHOP_SHIPPING_BACKENDS=MODIFIERS):
+        with SettingsOverride(DROP_SHIPPING_BACKENDS=MODIFIERS):
             self.assertRaises(ImproperlyConfigured,
                 backends_pool.get_shipping_backends_list)
 
     def test_get_backends_from_non_module(self):
-        MODIFIERS = ['shop.tests.IdontExist.IdontExistEither']
-        with SettingsOverride(SHOP_SHIPPING_BACKENDS=MODIFIERS):
+        MODIFIERS = ['drop.tests.IdontExist.IdontExistEither']
+        with SettingsOverride(DROP_SHIPPING_BACKENDS=MODIFIERS):
             self.assertRaises(ImproperlyConfigured,
                 backends_pool.get_shipping_backends_list)
 
     def test_get_backends_from_non_class(self):
-        MODIFIERS = ['shop.tests.shipping.IdontExistEither']
-        with SettingsOverride(SHOP_SHIPPING_BACKENDS=MODIFIERS):
+        MODIFIERS = ['drop.tests.shipping.IdontExistEither']
+        with SettingsOverride(DROP_SHIPPING_BACKENDS=MODIFIERS):
             self.assertRaises(ImproperlyConfigured,
                 backends_pool.get_shipping_backends_list)
 
     def test_get_backends_cache_works(self):
-        MODIFIERS = ['shop.tests.shipping.ValidMockShippingBackend']
+        MODIFIERS = ['drop.tests.shipping.ValidMockShippingBackend']
         backends_pool.use_cache = True
-        with SettingsOverride(SHOP_SHIPPING_BACKENDS=MODIFIERS):
+        with SettingsOverride(DROP_SHIPPING_BACKENDS=MODIFIERS):
             list_ = backends_pool.get_shipping_backends_list()
             self.assertEqual(len(list_), 1)
             list2 = backends_pool.get_shipping_backends_list()
@@ -155,15 +155,15 @@ class ShippingApiTestCase(TestCase):
 
 
 class FlatRateShippingTestCase(TestCase):
-    """Tests for ``shop.shipping.backends.flat_rate.FlatRateShipping``."""
+    """Tests for ``drop.shipping.backends.flat_rate.FlatRateShipping``."""
     def setUp(self):
-        self.backend = FlatRateShipping(shop=ShippingAPI())
+        self.backend = FlatRateShipping(drop=ShippingAPI())
         self.user = User.objects.create(username="test", email="test@example.com")
         self.request = Mock()
         setattr(self.request, 'user', self.user)
 
     def test_must_be_logged_in_if_setting_is_true(self):
-        with SettingsOverride(SHOP_FORCE_LOGIN=True):
+        with SettingsOverride(DROP_FORCE_LOGIN=True):
             resp = self.client.get(reverse('flat'))
             self.assertEqual(resp.status_code, 302)
             self.assertTrue('accounts/login/' in resp._headers['location'][1])
@@ -179,7 +179,7 @@ class FlatRateShippingTestCase(TestCase):
 
         # User logged in (no order)
         view = self.backend.view_process_order(self.request)
-        self.assertEqual(view.get('location', None), '/shop/cart/')
+        self.assertEqual(view.get('location', None), '/drop/cart/')
 
         # User logged in with order
         order = Order()

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-from shop.models.productmodel import Product
-from shop.views import (ShopListView, ShopDetailView)
+from drop.models.productmodel import Product
+from drop.views import (DropListView, DropDetailView)
 
 
-class ProductListView(ShopListView):
+class ProductListView(DropListView):
     """
     This view handles displaying the product catalogue to customers.
     It filters out inactive products and shows only those that are active.
     """
-    generic_template = 'shop/product_list.html'
+    generic_template = 'drop/product_list.html'
 
     def get_queryset(self):
         """
@@ -17,7 +17,7 @@ class ProductListView(ShopListView):
         return Product.objects.filter(active=True)
 
 
-class ProductDetailView(ShopDetailView):
+class ProductDetailView(DropDetailView):
     """
     This view handles displaying the right template for the subclasses of
     Product.
@@ -26,7 +26,7 @@ class ProductDetailView(ShopDetailView):
     found for the subclass.
     """
     model = Product  # It must be the biggest ancestor of the inheritance tree.
-    generic_template = 'shop/product_detail.html'
+    generic_template = 'drop/product_detail.html'
 
     def get_template_names(self):
         ret = super(ProductDetailView, self).get_template_names()

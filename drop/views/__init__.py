@@ -4,9 +4,9 @@ from django.views.generic import (TemplateView, ListView, DetailView, View)
 from django.views.generic.base import TemplateResponseMixin
 
 
-class ShopTemplateView(TemplateView):
+class DropTemplateView(TemplateView):
     """
-    A class-based view for use within the shop (this allows to keep the above
+    A class-based view for use within the drop (this allows to keep the above
     import magic in only one place)
 
     As defined by
@@ -21,27 +21,27 @@ class ShopTemplateView(TemplateView):
     """
 
 
-class ShopListView(ListView):
+class DropListView(ListView):
     """
     This is just to abstract the "Django version switching magic happening up
     there
     """
 
 
-class ShopDetailView(DetailView):
+class DropDetailView(DetailView):
     """
     This is just to abstract the "Django version switching magic happening up
     there
     """
 
 
-class ShopView(View):
+class DropView(View):
     """
     An abstraction of the basic view
     """
 
 
-class ShopTemplateResponseMixin(TemplateResponseMixin):
+class DropTemplateResponseMixin(TemplateResponseMixin):
     """
     An abstraction to solve the import problem for the template response mixin
     """

@@ -5,13 +5,13 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpRespons
 from django.shortcuts import redirect
 from django.core.exceptions import ObjectDoesNotExist
 
-from shop.forms import get_cart_item_formset
-from shop.models.productmodel import Product
-from shop.util.cart import get_or_create_cart
-from shop.views import ShopView, ShopTemplateResponseMixin
+from drop.forms import get_cart_item_formset
+from drop.models.productmodel import Product
+from drop.util.cart import get_or_create_cart
+from drop.views import DropView, DropTemplateResponseMixin
 
 
-class CartItemDetail(ShopView):
+class CartItemDetail(DropView):
     """
     A view to handle CartItem-related operations. This is not a real view in
     the sense that it is not designed to answer to GET or POST request nor to
@@ -42,7 +42,7 @@ class CartItemDetail(ShopView):
         ``item_quantity`` POST parameter, but should be posted to a properly
         RESTful URL (that should contain the item's ID):
 
-        http://example.com/shop/cart/item/12345
+        http://example.com/drop/cart/item/12345
         """
         cart_object = get_or_create_cart(self.request)
         item_id = self.kwargs.get('id')
@@ -62,7 +62,7 @@ class CartItemDetail(ShopView):
         Deletes one of the cartItems. This should be posted to a properly
         RESTful URL (that should contain the item's ID):
 
-        http://example.com/shop/cart/item/12345
+        http://example.com/drop/cart/item/12345
         """
         cart_object = get_or_create_cart(self.request)
         item_id = self.kwargs.get('id')
@@ -103,13 +103,13 @@ class CartItemDetail(ShopView):
     # TODO: add failure hooks
 
 
-class CartDetails(ShopTemplateResponseMixin, CartItemDetail):
+class CartDetails(DropTemplateResponseMixin, CartItemDetail):
     """
     This is the actual "cart" view, that answers to GET and POST requests like
     a normal view (and returns HTML that people can actually see)
     """
 
-    template_name = 'shop/cart.html'
+    template_name = 'drop/cart.html'
     action = None
 
     def get_context_data(self, **kwargs):
@@ -150,7 +150,7 @@ class CartDetails(ShopTemplateResponseMixin, CartItemDetail):
 
     def delete(self, *args, **kwargs):
         """
-        Empty shopping cart.
+        Empty dropping cart.
         """
         cart_object = get_or_create_cart(self.request)
         cart_object.empty()
@@ -158,7 +158,7 @@ class CartDetails(ShopTemplateResponseMixin, CartItemDetail):
 
     def put(self, *args, **kwargs):
         """
-        Update shopping cart items quantities.
+        Update dropping cart items quantities.
 
         Data should be in update_item_ID=QTY form, where ID is id of cart item
         and QTY is quantity to set.

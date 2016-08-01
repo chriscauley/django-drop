@@ -6,15 +6,15 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test.testcases import TestCase
 
-from shop.addressmodel.models import Country, Address
-from shop.models import Product
-from shop.models.cartmodel import Cart
-from shop.models.ordermodel import Order
-from shop.order_signals import processing
-from shop.payment.api import PaymentAPI
-from shop.tests.util import Mock
-from shop.tests.utils.context_managers import SettingsOverride
-from shop.views.checkout import CheckoutSelectionView, ThankYouView
+from drop.addressmodel.models import Country, Address
+from drop.models import Product
+from drop.models.cartmodel import Cart
+from drop.models.ordermodel import Order
+from drop.order_signals import processing
+from drop.payment.api import PaymentAPI
+from drop.tests.util import Mock
+from drop.tests.utils.context_managers import SettingsOverride
+from drop.views.checkout import CheckoutSelectionView, ThankYouView
 
 
 class ShippingBillingViewTestCase(TestCase):
@@ -139,11 +139,11 @@ class ShippingBillingViewTestCase(TestCase):
     # Login Mixin
     #==========================================================================
     def test_must_be_logged_in_if_setting_is_true(self):
-        with SettingsOverride(SHOP_FORCE_LOGIN=True):
+        with SettingsOverride(DROP_FORCE_LOGIN=True):
             # force creating of session
             # https://code.djangoproject.com/ticket/11475
             self.client.cookies[settings.SESSION_COOKIE_NAME] = '1'
-            self.client.get(reverse('shop_welcome'))
+            self.client.get(reverse('drop_welcome'))
 
             # save a non-empty cart in the session
             session = self.client.session
@@ -160,7 +160,7 @@ class ShippingBillingViewTestCase(TestCase):
     def test_cart_required_redirects_on_checkout(self):
         resp = self.client.get(reverse('checkout_selection'))
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual('http://testserver/shop/cart/', resp._headers['location'][1])
+        self.assertEqual('http://testserver/drop/cart/', resp._headers['location'][1])
 
 
 class ShippingBillingViewOrderStuffTestCase(TestCase):

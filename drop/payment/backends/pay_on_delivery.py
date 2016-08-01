@@ -2,7 +2,7 @@
 from django.conf.urls import patterns, url
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from shop.util.decorators import on_method, shop_login_required, order_required
+from drop.util.decorators import on_method, drop_login_required, order_required
 
 
 class PayOnDeliveryBackend(object):
@@ -11,12 +11,12 @@ class PayOnDeliveryBackend(object):
     backend_verbose_name = _("Pay On Delivery")
     url_namespace = "pay-on-delivery"
 
-    def __init__(self, shop):
-        self.shop = shop
-        # This is the shop reference, it allows this backend to interact with
+    def __init__(self, drop):
+        self.drop = drop
+        # This is the drop reference, it allows this backend to interact with
         # it in a tidy way (look ma', no imports!)
 
-    @on_method(shop_login_required)
+    @on_method(drop_login_required)
     @on_method(order_required)
     def simple_view(self, request):
         """
@@ -25,14 +25,14 @@ class PayOnDeliveryBackend(object):
         to the success page. This is the most simple case.
         """
         # Get the order object
-        the_order = self.shop.get_order(request)
+        the_order = self.drop.get_order(request)
         # Let's mark this as being complete for the full sum in our database
         # Set it as paid (it needs to be paid to the delivery guy, we assume
         # he does his job properly)
-        self.shop.confirm_payment(
-            the_order, self.shop.get_order_total(the_order), "None",
+        self.drop.confirm_payment(
+            the_order, self.drop.get_order_total(the_order), "None",
             self.backend_name)
-        return HttpResponseRedirect(self.shop.get_finished_url())
+        return HttpResponseRedirect(self.drop.get_finished_url())
 
     def get_urls(self):
         urlpatterns = patterns('',

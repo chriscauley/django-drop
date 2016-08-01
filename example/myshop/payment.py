@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from shop.util.decorators import on_method, shop_login_required, order_required
+from drop.util.decorators import on_method, drop_login_required, order_required
 
 
 class ExamplePayment(object):
@@ -11,30 +11,30 @@ class ExamplePayment(object):
     backend_verbose_name = _("Example payment")
     url_namespace = "example-payment"
 
-    def __init__(self, shop):
-        self.shop = shop
-        self.template = 'myshop/example_payment.html'
+    def __init__(self, drop):
+        self.drop = drop
+        self.template = 'mydrop/example_payment.html'
 
-    @on_method(shop_login_required)
+    @on_method(drop_login_required)
     @on_method(order_required)
     def show_payment(self, request):
         if request.POST:
             return self.process_payment(request)
 
-        the_order = self.shop.get_order(request)
+        the_order = self.drop.get_order(request)
         ctx = {
             'order': the_order,
         }
         return render_to_response(self.template, ctx, context_instance=RequestContext(request))
 
-    @on_method(shop_login_required)
+    @on_method(drop_login_required)
     @on_method(order_required)
     def process_payment(self, request):
-        the_order = self.shop.get_order(request)
-        self.shop.confirm_payment(
-            the_order, self.shop.get_order_total(the_order), "None",
+        the_order = self.drop.get_order(request)
+        self.drop.confirm_payment(
+            the_order, self.drop.get_order_total(the_order), "None",
             self.backend_name)
-        return HttpResponseRedirect(self.shop.get_finished_url())
+        return HttpResponseRedirect(self.drop.get_finished_url())
 
     def get_urls(self):
         urlpatterns = patterns('',

@@ -2,16 +2,16 @@
 from decimal import Decimal
 from django.contrib.auth.models import User
 from django.test.testcases import TestCase
-from shop.cart.modifiers_pool import cart_modifiers_pool
-from shop.cart.cart_modifiers_base import BaseCartModifier
-from shop.models.cartmodel import Cart, CartItem
-from shop.addressmodel.models import Address, Country
-from shop.models.ordermodel import Order, OrderItem, OrderPayment, \
+from drop.cart.modifiers_pool import cart_modifiers_pool
+from drop.cart.cart_modifiers_base import BaseCartModifier
+from drop.models.cartmodel import Cart, CartItem
+from drop.addressmodel.models import Address, Country
+from drop.models.ordermodel import Order, OrderItem, OrderPayment, \
     ExtraOrderPriceField, ExtraOrderItemPriceField
-from shop.models.productmodel import Product
-from shop.tests.util import Mock
-from shop.tests.utils.context_managers import SettingsOverride
-from shop.util.order import get_order_from_request, add_order_to_request
+from drop.models.productmodel import Product
+from drop.tests.util import Mock
+from drop.tests.utils.context_managers import SettingsOverride
+from drop.util.order import get_order_from_request, add_order_to_request
 
 # This try except is there to let people run the tests from any project
 # Not only from the provided "test" project.
@@ -249,9 +249,9 @@ class OrderConversionTestCase(TestCase):
         This time assert that everything is consistent with a tax cart modifier
         """
         MODIFIERS = [
-            'shop.cart.modifiers.tax_modifiers.TenPercentGlobalTaxModifier']
+            'drop.cart.modifiers.tax_modifiers.TenPercentGlobalTaxModifier']
 
-        with SettingsOverride(SHOP_CART_MODIFIERS=MODIFIERS):
+        with SettingsOverride(DROP_CART_MODIFIERS=MODIFIERS):
 
             self.cart.add_product(self.product)
             self.cart.update(self.request)
@@ -302,12 +302,12 @@ class OrderConversionTestCase(TestCase):
 
     def test_create_order_with_extra_data_in_cart_modifier(self):
         MODIFIERS = [
-            'shop.tests.order.MockCartModifierWithNothing',
-            'shop.tests.order.MockCartModifierWithSimpleString',
-            'shop.tests.order.MockCartModifierWithDictionaries'
+            'drop.tests.order.MockCartModifierWithNothing',
+            'drop.tests.order.MockCartModifierWithSimpleString',
+            'drop.tests.order.MockCartModifierWithDictionaries'
         ]
 
-        with SettingsOverride(SHOP_CART_MODIFIERS=MODIFIERS):
+        with SettingsOverride(DROP_CART_MODIFIERS=MODIFIERS):
             self.cart.add_product(self.product)
             self.cart.update(self.request)
             self.cart.save()

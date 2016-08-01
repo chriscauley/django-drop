@@ -1,11 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from shop.views import ShopListView, ShopDetailView
-from shop.models import Order
+from drop.views import DropListView, DropDetailView
+from drop.models import Order
 
 
-class OrderListView(ShopListView):
+class OrderListView(DropListView):
     """
     Display list or orders for logged in user.
     """
@@ -21,7 +21,7 @@ class OrderListView(ShopListView):
         return super(OrderListView, self).dispatch(*args, **kwargs)
 
 
-class OrderDetailView(ShopDetailView):
+class OrderDetailView(DropDetailView):
     """
     Display order for logged in user.
     """

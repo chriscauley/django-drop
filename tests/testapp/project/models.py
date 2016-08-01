@@ -1,7 +1,7 @@
 from django.db import models
 
-from shop.models.productmodel import Product
-from shop.util.fields import CurrencyField
+from drop.models.productmodel import Product
+from drop.util.fields import CurrencyField
 
 
 class BookProduct(Product):

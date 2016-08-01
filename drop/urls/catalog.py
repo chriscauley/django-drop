@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from shop.views.product import (ProductListView, ProductDetailView)
+from drop.views.product import (ProductListView, ProductDetailView)
 
 
 urlpatterns = [

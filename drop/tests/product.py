@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
-from shop.models.productmodel import Product
-from shop.models.ordermodel import Order, OrderItem
+from drop.models.productmodel import Product
+from drop.models.ordermodel import Order, OrderItem
 from django.test.testcases import TestCase
 
 

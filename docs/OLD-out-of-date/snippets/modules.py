@@ -1,8 +1,8 @@
-# django_shop/checkout/__init__.py
-# django_shop/checkout/__init__.py
+# django_drop/checkout/__init__.py
+# django_drop/checkout/__init__.py
 
 
-from django_shop.checkout.site import CheckoutSite, checkoutsite
+from django_drop.checkout.site import CheckoutSite, checkoutsite
 
 def autodiscover():
     """
@@ -18,7 +18,7 @@ def autodiscover():
 
     for app in settings.INSTALLED_APPS:
         mod = import_module(app)
-        for submod in ('django_shop_payment', 'django_shop_shipment')
+        for submod in ('django_drop_payment', 'django_drop_shipment')
             # Attempt to import the app's admin module.
             try:
                 before_import_registry = copy.copy(checkoutsite._registry)
@@ -36,10 +36,10 @@ def autodiscover():
                 if module_has_submodule(mod, submod):
                     raise
 
-# django_shop/checkout/site.py
+# django_drop/checkout/site.py
 
-from djangoshop.payment_base import PaymentBase
-from djangoshop.shipper_base import ShipperBase
+from djangodrop.payment_base import PaymentBase
+from djangodrop.shipper_base import ShipperBase
 
 from django.views.generic import TemplateView
 
@@ -50,7 +50,7 @@ class CheckoutSite(object):
 
     checkout_view = CheckoutView.as_view()
     
-    def __init__(self, name=None, app_name='django_shop'):
+    def __init__(self, name=None, app_name='django_drop'):
         self._registry = {
             'shipper': {},
             'payment': {}
@@ -129,13 +129,13 @@ class CheckoutSite(object):
 
 checkoutsite = CheckoutSite()
 
-# django_shop/checkout/shipper_base.py
+# django_drop/checkout/shipper_base.py
 
 class ShipperBase(object)
     pass
     
-# django_shop/checkout/payment_base.py
-from djangoshop. import RegisterAbleClass
+# django_drop/checkout/payment_base.py
+from djangodrop. import RegisterAbleClass
 
 class PaymentBase(object)
 
@@ -143,9 +143,9 @@ class PaymentBase(object)
     self.checkout_site = checkout_site
     super(PaymentBase, self).__init__()
     
-# app/django_shop_shipment.py
+# app/django_drop_shipment.py
 
-from djangoshop.shipper_base import ShipperBase
+from djangodrop.shipper_base import ShipperBase
 
 class ShipmentClass(ShipperBase):
 
@@ -155,10 +155,10 @@ class ShipmentClass(ShipperBase):
     
 checkoutsite.register_shipment(ShipmentClass)
 
-# app/django_shop_payment.py
+# app/django_drop_payment.py
 
 from django.views.generic import TemplateView
-from djangoshop.payment_base import PaymentBase
+from djangodrop.payment_base import PaymentBase
 
 class PaymentView(TemplateView):
     template_name = "payment.html"

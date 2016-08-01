@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Tests for the forms of the django-shop app."""
+"""Tests for the forms of the django-drop app."""
 from django.contrib.auth.models import User
 from django import forms
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from shop.forms import (CartItemModelForm, get_cart_item_modelform_class,
+from drop.forms import (CartItemModelForm, get_cart_item_modelform_class,
                         get_cart_item_formset)
-from shop.tests.util import Mock
-from shop.models.cartmodel import Cart, CartItem
-from shop.models.productmodel import Product
+from drop.tests.util import Mock
+from drop.models.cartmodel import Cart, CartItem
+from drop.models.productmodel import Product
 
 
 class CartItemModelForm(CartItemModelForm):
@@ -33,7 +33,7 @@ class BaseCartItemFormsTestCase(TestCase):
 class CartItemModelFormTestCase(BaseCartItemFormsTestCase):
     """Tests for the ``CartItemModelForm`` form class."""
 
-    @override_settings(SHOP_CART_ITEM_FORM="shop.tests.forms.CartItemModelForm")
+    @override_settings(DROP_CART_ITEM_FORM="drop.tests.forms.CartItemModelForm")
     def test_custom_cartitem_modelform(self):
         data = {
             'quantity': '0',

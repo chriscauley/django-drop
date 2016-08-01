@@ -5,8 +5,8 @@ from classytags.helpers import InclusionTag
 from classytags.core import Options
 from classytags.arguments import Argument
 
-from shop.util.cart import get_or_create_cart
-from shop.models.productmodel import Product
+from drop.util.cart import get_or_create_cart
+from drop.models.productmodel import Product
 
 from django.conf import settings
 
@@ -18,7 +18,7 @@ class Cart(InclusionTag):
     """
     Inclusion tag for displaying cart summary.
     """
-    template = 'shop/templatetags/_cart.html'
+    template = 'drop/templatetags/_cart.html'
 
     def get_context(self, context):
         request = context['request']
@@ -34,7 +34,7 @@ class Order(InclusionTag):
     """
     Inclusion tag for displaying order.
     """
-    template = 'shop/templatetags/_order.html'
+    template = 'drop/templatetags/_order.html'
     options = Options(
         Argument('order', resolve=True),
         )
@@ -50,7 +50,7 @@ class Products(InclusionTag):
     """
     Inclusion tag for displaying all products.
     """
-    template = 'shop/templatetags/_products.html'
+    template = 'drop/templatetags/_products.html'
     options = Options(
         Argument('objects', resolve=True, required=False),
     )
@@ -63,7 +63,7 @@ class Products(InclusionTag):
 register.tag(Products)
 
 def priceformat(price):
-    FORMAT = getattr(settings, 'SHOP_PRICE_FORMAT', '%0.2f')
+    FORMAT = getattr(settings, 'DROP_PRICE_FORMAT', '%0.2f')
     if not price and price != 0:
         return ''
     return FORMAT % price

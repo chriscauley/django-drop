@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext_lazy as _
-from shop.models_bases import BaseOrder
-from shop.models_bases.managers import OrderManager
+from drop.models_bases import BaseOrder
+from drop.models_bases.managers import OrderManager
 
 
 class Order(BaseOrder):
@@ -9,6 +9,6 @@ class Order(BaseOrder):
 
     class Meta(object):
         abstract = False
-        app_label = 'shop'
+        app_label = 'drop'
         verbose_name = _('Order')
         verbose_name_plural = _('Orders')

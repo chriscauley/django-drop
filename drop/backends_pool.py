@@ -1,8 +1,8 @@
 #-*- coding: utf-8 -*-
 from django.conf import settings
-from shop.payment.api import PaymentAPI
-from shop.shipping.api import ShippingAPI
-from shop.util.loader import load_class
+from drop.payment.api import PaymentAPI
+from drop.shipping.api import ShippingAPI
+from drop.util.loader import load_class
 
 
 class BackendsPool(object):
@@ -13,11 +13,11 @@ class BackendsPool(object):
     aren't loaded from file every time one requests them)
     """
 
-    SHIPPING = 'SHOP_SHIPPING_BACKENDS'
-    PAYMENT = 'SHOP_PAYMENT_BACKENDS'
+    SHIPPING = 'DROP_SHIPPING_BACKENDS'
+    PAYMENT = 'DROP_PAYMENT_BACKENDS'
 
-    PAYMENT_SHOP_INTERFACE = PaymentAPI()
-    SHIPPING_SHOP_INTERFACE = ShippingAPI()
+    PAYMENT_DROP_INTERFACE = PaymentAPI()
+    SHIPPING_DROP_INTERFACE = ShippingAPI()
 
     def __init__(self, use_cache=True):
         """
@@ -31,25 +31,25 @@ class BackendsPool(object):
     def get_payment_backends_list(self):
         """
         Returns the list of payment backends, as instances, from the list of
-        backends defined in settings.SHOP_PAYMENT_BACKENDS
+        backends defined in settings.DROP_PAYMENT_BACKENDS
         """
         if self._payment_backends_list and self.use_cache:
             return self._payment_backends_list
         else:
             self._payment_backends_list = self._load_backends_list(
-                self.PAYMENT, self.PAYMENT_SHOP_INTERFACE)
+                self.PAYMENT, self.PAYMENT_DROP_INTERFACE)
             return self._payment_backends_list
 
     def get_shipping_backends_list(self):
         """
         Returns the list of shipping backends, as instances, from the list of
-        backends defined in settings.SHOP_SHIPPING_BACKENDS
+        backends defined in settings.DROP_SHIPPING_BACKENDS
         """
         if self._shippment_backends_list and self.use_cache:
             return self._shippment_backends_list
         else:
             self._shippment_backends_list = self._load_backends_list(
-                self.SHIPPING, self.SHIPPING_SHOP_INTERFACE)
+                self.SHIPPING, self.SHIPPING_DROP_INTERFACE)
             return self._shippment_backends_list
 
     def _check_backend_for_validity(self, backend_instance):
@@ -73,7 +73,7 @@ class BackendsPool(object):
                 'Please set a namespace for backend "%s"' %
                     backend_instance.backend_name)
 
-    def _load_backends_list(self, setting_name, shop_object):
+    def _load_backends_list(self, setting_name, drop_object):
         """ This actually loads the backends from disk"""
         result = []
         if not getattr(settings, setting_name, None):
@@ -85,8 +85,8 @@ class BackendsPool(object):
             mod_class = load_class(backend_path, setting_name)
 
             # Seems like it is a real, valid class - let's instanciate it!
-            # This is where the backends receive their self.shop reference!
-            mod_instance = mod_class(shop=shop_object)
+            # This is where the backends receive their self.drop reference!
+            mod_instance = mod_class(drop=drop_object)
 
             self._check_backend_for_validity(mod_instance)
 

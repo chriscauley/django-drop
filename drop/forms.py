@@ -1,13 +1,13 @@
 #-*- coding: utf-8 -*-
-"""Forms for the django-shop app."""
+"""Forms for the django-drop app."""
 from django import forms
 from django.conf import settings
 from django.forms.models import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 
-from shop.backends_pool import backends_pool
-from shop.models.cartmodel import CartItem
-from shop.util.loader import load_class
+from drop.backends_pool import backends_pool
+from drop.models.cartmodel import CartItem
+from drop.util.loader import load_class
 
 
 def get_shipping_backends_choices():
@@ -23,8 +23,8 @@ def get_billing_backends_choices():
 class BillingShippingForm(forms.Form):
     """
     A form displaying all available payment and shipping methods (the ones
-    defined in settings.SHOP_SHIPPING_BACKENDS and
-    settings.SHOP_PAYMENT_BACKENDS)
+    defined in settings.DROP_SHIPPING_BACKENDS and
+    settings.DROP_PAYMENT_BACKENDS)
     """
     shipping_method = forms.ChoiceField(choices=get_shipping_backends_choices(), label=_('Shipping method'))
     payment_method = forms.ChoiceField(choices=get_billing_backends_choices(), label=_('Payment method'))
@@ -55,10 +55,10 @@ def get_cart_item_modelform_class():
     """
     Return the class of the CartItem ModelForm.
 
-    The default `shop.forms.CartItemModelForm` can be overridden settings
-    ``SHOP_CART_ITEM_FORM`` parameter in settings
+    The default `drop.forms.CartItemModelForm` can be overridden settings
+    ``DROP_CART_ITEM_FORM`` parameter in settings
     """
-    cls_name = getattr(settings, 'SHOP_CART_ITEM_FORM', 'shop.forms.CartItemModelForm')
+    cls_name = getattr(settings, 'DROP_CART_ITEM_FORM', 'drop.forms.CartItemModelForm')
     cls = load_class(cls_name)
     return cls
 

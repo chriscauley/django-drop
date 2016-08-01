@@ -4,8 +4,8 @@ from django.db import models
 from django.db.models.aggregates import Count
 from polymorphic.manager import PolymorphicManager
 
-from shop.order_signals import processing
-from shop.util.compat.db import atomic
+from drop.order_signals import processing
+from drop.util.compat.db import atomic
 
 
 #==============================================================================
@@ -25,7 +25,7 @@ class ProductStatisticsManager(PolymorphicManager):
         many times they have been purchased.
         """
         # Importing here is fugly, but it saves us from circular imports...
-        from shop.models.ordermodel import OrderItem
+        from drop.models.ordermodel import OrderItem
         # Get an aggregate of product references and their respective counts
         top_products_data = OrderItem.objects.values(
                 'product').annotate(
@@ -110,12 +110,12 @@ class OrderManager(models.Manager):
         Emits the ``processing`` signal.
         """
         # must be imported here!
-        from shop.models.ordermodel import (
+        from drop.models.ordermodel import (
             ExtraOrderItemPriceField,
             ExtraOrderPriceField,
             OrderItem,
         )
-        from shop.models.cartmodel import CartItem
+        from drop.models.cartmodel import CartItem
 
         # First, let's remove old orders
         self.remove_old_orders(cart)

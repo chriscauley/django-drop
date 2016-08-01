@@ -2,26 +2,26 @@
 
 """
 This file defines the interfaces one should implement when either creating a
-new payment module or willing to use modules with another shop system.
+new payment module or willing to use modules with another drop system.
 """
 from decimal import Decimal
-from shop.models import Cart
-from shop.models.ordermodel import OrderPayment
-from shop.models.ordermodel import Order
-from shop.shop_api import ShopAPI
-from shop.order_signals import completed
+from drop.models import Cart
+from drop.models.ordermodel import OrderPayment
+from drop.models.ordermodel import Order
+from drop.drop_api import DropAPI
+from drop.order_signals import completed
 from django.core.urlresolvers import reverse
 
-class PaymentAPI(ShopAPI):
+class PaymentAPI(DropAPI):
     """
-    This object's purpose is to expose an API to the shop system.
-    Ideally, shops (django SHOP or others) should implement this API, so that
+    This object's purpose is to expose an API to the drop system.
+    Ideally, drops (django DROP or others) should implement this API, so that
     payment plugins are interchangeable between systems.
 
-    This implementation is the interface reference for django SHOP
+    This implementation is the interface reference for django DROP
 
     Don't forget that since plenty of methods are common to both PaymentAPI
-    and ShippingAPI(), they are defined in the ShopAPI base class!
+    and ShippingAPI(), they are defined in the DropAPI base class!
     """
 
     #==========================================================================

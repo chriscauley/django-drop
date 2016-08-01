@@ -1,6 +1,6 @@
 from django.db import models
 from polymorphic.manager import PolymorphicManager
-from shop.models.productmodel import Product
+from drop.models.productmodel import Product
 
 class BookManager(PolymorphicManager):
     """A dumb manager to test the behavior with poylmorphic"""

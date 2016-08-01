@@ -7,22 +7,22 @@ from django.forms import models as model_forms
 from django.http import HttpResponseRedirect
 from django.views.generic import RedirectView
 
-from shop.forms import BillingShippingForm
-from shop.models import AddressModel, OrderExtraInfo
-from shop.models import Order
-from shop.util.address import (
+from drop.forms import BillingShippingForm
+from drop.models import AddressModel, OrderExtraInfo
+from drop.models import Order
+from drop.util.address import (
     assign_address_to_request,
     get_billing_address_from_request,
     get_shipping_address_from_request,
 )
-from shop.util.cart import get_or_create_cart
-from shop.util.order import add_order_to_request, get_order_from_request
-from shop.views import ShopTemplateView, ShopView
-from shop.util.login_mixin import LoginMixin
+from drop.util.cart import get_or_create_cart
+from drop.util.order import add_order_to_request, get_order_from_request
+from drop.views import DropTemplateView, DropView
+from drop.util.login_mixin import LoginMixin
 
 
-class CheckoutSelectionView(LoginMixin, ShopTemplateView):
-    template_name = 'shop/checkout/selection.html'
+class CheckoutSelectionView(LoginMixin, DropTemplateView):
+    template_name = 'drop/checkout/selection.html'
 
     def _get_dynamic_form_class_from_factory(self):
         """
@@ -61,10 +61,10 @@ class CheckoutSelectionView(LoginMixin, ShopTemplateView):
         Initializes and handles the form for the shipping address.
 
         AddressModel is a model of the type defined in
-        ``settings.SHOP_ADDRESS_MODEL``.
+        ``settings.DROP_ADDRESS_MODEL``.
 
         The trick here is that we generate a ModelForm for whatever model was
-        passed to us by the SHOP_ADDRESS_MODEL setting, and us this, prefixed,
+        passed to us by the DROP_ADDRESS_MODEL setting, and us this, prefixed,
         as the shipping address form. So this can be as complex or as simple as
         one wants.
 
@@ -101,7 +101,7 @@ class CheckoutSelectionView(LoginMixin, ShopTemplateView):
         """
         Initializes and handles the form for the shipping address.
         AddressModel is a model of the type defined in
-        ``settings.SHOP_ADDRESS_MODEL``.
+        ``settings.DROP_ADDRESS_MODEL``.
         """
         # Try to get the cached version first.
         form = getattr(self, '_billing_form', None)
@@ -251,11 +251,11 @@ class OrderConfirmView(RedirectView):
         self.url = reverse(self.url_name)
         return super(OrderConfirmView, self).get_redirect_url(**kwargs)
 
-class ThankYouView(LoginMixin, ShopTemplateView):
-    template_name = 'shop/checkout/thank_you.html'
+class ThankYouView(LoginMixin, DropTemplateView):
+    template_name = 'drop/checkout/thank_you.html'
 
     def get_context_data(self, **kwargs):
-        ctx = super(ShopTemplateView, self).get_context_data(**kwargs)
+        ctx = super(DropTemplateView, self).get_context_data(**kwargs)
 
         # put the latest order in the context only if it is completed
         order = get_order_from_request(self.request)
@@ -265,7 +265,7 @@ class ThankYouView(LoginMixin, ShopTemplateView):
         return ctx
 
 
-class ShippingBackendRedirectView(LoginMixin, ShopView):
+class ShippingBackendRedirectView(LoginMixin, DropView):
     def get(self, *args, **kwargs):
         try:
             backend_namespace = self.request.session.pop('shipping_backend')
@@ -274,7 +274,7 @@ class ShippingBackendRedirectView(LoginMixin, ShopView):
             return HttpResponseRedirect(reverse('cart'))
 
 
-class PaymentBackendRedirectView(LoginMixin, ShopView):
+class PaymentBackendRedirectView(LoginMixin, DropView):
     def get(self, *args, **kwargs):
         try:
             backend_namespace = self.request.session.pop('payment_backend')
