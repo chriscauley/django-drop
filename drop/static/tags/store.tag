@@ -27,8 +27,16 @@
   <button class="btn btn-warning btn-block" onclick={ more } if={window.PRODUCTS.visible<this.max_products}>
     Load More</button>
 
+  var self = this;
   window.PRODUCTS.visible = 18;
   this.on("mount",function() {
+    uR.ajax({
+      url: '/drop/products.js',
+      success: function(data) {
+        self.all_products = data.products
+      },
+      that: this
+    });
     window.PRODUCT_LIST = this;
   });
   this.on("update",function() {

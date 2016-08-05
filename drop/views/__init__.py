@@ -1,8 +1,8 @@
+import ajax
 # -*- coding: utf-8 -*-
 from django import VERSION as django_version
 from django.views.generic import (TemplateView, ListView, DetailView, View)
 from django.views.generic.base import TemplateResponseMixin
-
 
 class DropTemplateView(TemplateView):
     """

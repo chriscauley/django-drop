@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import include, url
 
-from drop.views import DropTemplateView
+from drop import views
 
 urlpatterns = [
-  url(r'^$', DropTemplateView.as_view(template_name="drop/welcome.html"),name='drop_welcome'),
-  url(r'^products.js','drop.views.ajax.products_json'),
+  url(r'^$', views.DropTemplateView.as_view(template_name="drop/welcome.html"),name='drop_welcome'),
+  url(r'^products.js',views.ajax.products_json),
   url(r'^ajax/', include('drop.urls.ajax')),
   url(r'^pay/', include('drop.payment.urls')),
   url(r'^ship/', include('drop.shipping.urls')),

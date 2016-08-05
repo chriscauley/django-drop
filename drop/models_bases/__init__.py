@@ -15,10 +15,27 @@ import django
 
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
+class JsonMixin(object):
+    json_fields = []
+    m2m_json_fields = []
+    fk_json_fields = []
+    @property
+    def as_json(self):
+        out = {}
+        for f in self.json_fields:
+            out[f] = getattr(self,f)
+        for f in self.fk_json_fields:
+            if getattr(self,f):
+                out[f] = getattr(self,f).as_json
+        for f in self.m2m_json_fields:
+            out[f] = [i .as_json for i in getattr(self,f)]
+        return out
+
+
 #==============================================================================
 # Product
 #==============================================================================
-class BaseProduct(PolymorphicModel):
+class BaseProduct(PolymorphicModel,JsonMixin):
     """
     A basic product for the drop.
     
@@ -35,16 +52,13 @@ class BaseProduct(PolymorphicModel):
         verbose_name=_('Last modified'))
     unit_price = CurrencyField(verbose_name=_('Unit price'))
     json_fields = ['name','active','date_added','last_modified','unit_price']
-
+    model_slug = property(lambda self: '%s.%s'%(self._meta.app_label,self._meta.model_name))
     class Meta(object):
         abstract = True
         app_label = 'drop'
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
 
-    @property
-    def as_json(self):
-        return {f: getattr(self,f) for f in self.json_fields}
     def __unicode__(self):
         return self.name
 
@@ -77,7 +91,7 @@ class BaseProduct(PolymorphicModel):
 #==============================================================================
 # Carts
 #==============================================================================
-class BaseCart(models.Model):
+class BaseCart(models.Model,JsonMixin):
     """
     This should be a rather simple list of items. 
     
@@ -86,8 +100,12 @@ class BaseCart(models.Model):
     """
     # If the user is null, that means this is used for a session
     user = models.OneToOneField(USER_MODEL, null=True, blank=True)
+    session_id = None
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+    json_fields = ['user_id','session_id']
+    m2m_json_fields = ['all_items']
+    all_items = property(lambda self: self.items.all())
 
     class Meta(object):
         abstract = True
@@ -279,7 +297,7 @@ class BaseCart(models.Model):
         return self.total_quantity == 0
 
 
-class BaseCartItem(models.Model):
+class BaseCartItem(models.Model,JsonMixin):
     """
     This is a holder for the quantity of items in the cart and, obviously, a
     pointer to the actual Product being purchased :)
@@ -289,6 +307,7 @@ class BaseCartItem(models.Model):
     quantity = models.IntegerField()
 
     product = models.ForeignKey(get_model_string('Product'))
+    json_fields = ['quantity','product_id']
 
     class Meta(object):
         abstract = True
