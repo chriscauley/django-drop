@@ -103,7 +103,7 @@ class BaseCart(models.Model,JsonMixin):
     session_id = None
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    json_fields = ['user_id','session_id']
+    json_fields = ['user_id','session_id','total_price']
     m2m_json_fields = ['all_items']
     all_items = property(lambda self: self.items.all())
 

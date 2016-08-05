@@ -4,6 +4,7 @@ from drop.views import ajax as ajax_views
 urlpatterns = [
   url(r'^$',ajax_views.index,name='product_list'),
   url(r'^start_checkout/$',ajax_views.start_checkout,name='start_checkout'),
+  url(r'^cart.js$',ajax_views.cart_json,name='cart_json'),
   url(r'^edit/$',ajax_views.cart_edit,name='cart_edit'),
   
   url(r'^receipts/$',ajax_views.receipts,name='receipts'),

@@ -27,6 +27,11 @@ if DROP.get('login_required',False):
 def products_json(request):
   return JsonResponse({'products': [p.as_json for p in Product.objects.active()]})
 
+def cart_json(request):
+  cart = get_or_create_cart(request,save=False)
+  cart.update(request)
+  return JsonResponse(cart.as_json)
+
 @csrf_exempt
 def cart_edit(request):
   cart = get_or_create_cart(request,save=True)
