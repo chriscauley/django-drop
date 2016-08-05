@@ -5,6 +5,7 @@ from distutils.version import LooseVersion
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.aggregates import Sum
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
 from drop.cart.modifiers_pool import cart_modifiers_pool
@@ -26,13 +27,14 @@ class BaseProduct(PolymorphicModel):
     """
 
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    slug = models.SlugField(verbose_name=_('Slug'), unique=True)
+    slug = property(lambda self: slugify(self.name))
     active = models.BooleanField(default=False, verbose_name=_('Active'))
     date_added = models.DateTimeField(auto_now_add=True,
         verbose_name=_('Date added'))
     last_modified = models.DateTimeField(auto_now=True,
         verbose_name=_('Last modified'))
     unit_price = CurrencyField(verbose_name=_('Unit price'))
+    json_fields = ['name','active','date_added','last_modified','unit_price']
 
     class Meta(object):
         abstract = True
@@ -40,11 +42,14 @@ class BaseProduct(PolymorphicModel):
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
 
+    @property
+    def as_json(self):
+        return {f: getattr(self,f) for f in self.json_fields}
     def __unicode__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('product_detail', args=[self.slug])
+        return reverse('product_detail', args=[self.id,self.slug])
 
     def get_price(self):
         """

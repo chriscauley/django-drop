@@ -5,6 +5,8 @@ from drop.views import DropTemplateView
 
 urlpatterns = [
   url(r'^$', DropTemplateView.as_view(template_name="drop/welcome.html"),name='drop_welcome'),
+  url(r'^products.js','drop.views.ajax.products_json'),
+  url(r'^ajax/', include('drop.urls.ajax')),
   url(r'^pay/', include('drop.payment.urls')),
   url(r'^ship/', include('drop.shipping.urls')),
   url(r'^orders/', include('drop.urls.order')),

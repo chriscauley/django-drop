@@ -28,13 +28,12 @@ class CartTestCase(TestCase):
         setattr(self.request, 'user', user)
         self.product = Product()
         self.product.name = "TestPrduct"
-        self.product.slug = "TestPrduct"
         self.product.short_description = "TestPrduct"
         self.product.long_description = "TestPrduct"
         self.product.active = True
         self.product.unit_price = self.PRODUCT_PRICE
         self.product.save()
-        self.inactive_product = Product(name='InactiveProduct', slug='InactiveProduct', active=False)
+        self.inactive_product = Product(name='InactiveProduct', active=False)
         self.inactive_product.save()
 
         self.cart = Cart()

@@ -1,26 +1,31 @@
 from django.apps import apps
+from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from drop.models import CartItem, Order
+from drop.models import CartItem, Order, Product
 from drop.util.cart import get_or_create_cart
 
 import json, datetime
 
-@login_required
+DROP = getattr(settings,"DROP",{})
+
 def index(request):
   cart = json.dumps({ci.product_id: ci.quantity for ci in get_or_create_cart(request).items.all()})
   values = {
     'cart': cart
   }
-  return TemplateResponse(request,'store/index.html',values)
+  return TemplateResponse(request,'drop/riot/index.html',values)
+
+if DROP.get('login_required',False):
+  index = login_required(index)
 
 def products_json(request):
-  return HttpResponse(reset_products_json())
+  return JsonResponse({'products': [p.as_json for p in Product.objects.active()]})
 
 @csrf_exempt
 def cart_edit(request):

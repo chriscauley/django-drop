@@ -168,7 +168,6 @@ class OrderConversionTestCase(TestCase):
         setattr(self.request, 'user', user)
         self.product = Product()
         self.product.name = "TestPrduct"
-        self.product.slug = "TestPrduct"
         self.product.short_description = "TestPrduct"
         self.product.long_description = "TestPrduct"
         self.product.active = True

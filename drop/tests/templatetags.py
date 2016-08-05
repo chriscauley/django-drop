@@ -11,11 +11,11 @@ class ProductsTestCase(TestCase):
 
     def _create_fixture(self):
         Product.objects.create(
-            name='product 1', slug='product-1', active=True, unit_price=42)
+            name='product 1', active=True, unit_price=42)
         Product.objects.create(
-            name='product 2', slug='product-2', active=True, unit_price=42)
+            name='product 2', active=True, unit_price=42)
         Product.objects.create(
-            name='product 3', slug='product-3', active=False, unit_price=42)
+            name='product 3', active=False, unit_price=42)
 
     def test01_should_return_all_active_products(self):
         self._create_fixture()
@@ -35,6 +35,6 @@ class ProductsTestCase(TestCase):
     def test03_should_return_empty_array_if_no_objects_found(self):
         self._create_fixture()
         tag = Products(DummyParser(), DummyTokens())
-        arg_objects = Product.objects.filter(slug='non-existant-slug')
+        arg_objects = Product.objects.filter(pk=99999)
         result = tag.get_context({}, arg_objects)
         self.assertEqual(len(result['products']), 0)

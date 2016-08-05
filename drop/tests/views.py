@@ -18,7 +18,6 @@ class ProductListViewTestCase(TestCase):
     def setUp(self):
         self.product1 = Product()
         self.product1.name = 'test1'
-        self.product1.slug = 'test1'
         self.product1.short_description = 'test1'
         self.product1.long_description = 'test1'
         self.product1.unit_price = Decimal('1.0')
@@ -27,7 +26,6 @@ class ProductListViewTestCase(TestCase):
 
         self.product2 = Product()
         self.product2.name = 'test2'
-        self.product2.slug = 'test2'
         self.product2.short_description = 'test2'
         self.product2.long_description = 'test2'
         self.product2.unit_price = Decimal('1.0')
