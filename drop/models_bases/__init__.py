@@ -19,9 +19,12 @@ class JsonMixin(object):
     json_fields = []
     m2m_json_fields = []
     fk_json_fields = []
+    _private_id = False
     @property
     def as_json(self):
         out = {}
+        if not self._private_id:
+            out['id'] = self.id
         for f in self.json_fields:
             out[f] = getattr(self,f)
         for f in self.fk_json_fields:
@@ -51,7 +54,7 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     last_modified = models.DateTimeField(auto_now=True,
         verbose_name=_('Last modified'))
     unit_price = CurrencyField(verbose_name=_('Unit price'))
-    json_fields = ['name','active','date_added','last_modified','unit_price']
+    json_fields = ['name','active','date_added','last_modified','unit_price','model_slug']
     model_slug = property(lambda self: '%s.%s'%(self._meta.app_label,self._meta.model_name))
     class Meta(object):
         abstract = True

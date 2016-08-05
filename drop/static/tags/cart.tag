@@ -1,37 +1,39 @@
 <cart-button>
-  <button class="btn blue">
-    <i class="fa fa-cart"></i>
+  <button class="btn blue" onclick={ openCart }>
+    <i class="fa fa-shopping-cart"></i>
     { cart.all_items.length } items ${ cart.total_price }
   </button>
 
   this.on("mount",function() {
     uR.ajax({
       url: '/drop/ajax/cart.js',
-      success: function(data) {
-        this.cart = data;
-      },
+      success: function(data) { uR.drop.cart = data; },
       that: this
     });
   });
+  this.on("update",function() { this.cart = uR.drop.cart; });
+  openCart(e) {
+    uR.mountElement("shopping-cart")
+  }
 </cart-button>
 
-<cart>
+<shopping-cart>
   <div class="mask" onclick={ close }></div>
-  <div class="content">
+  <dialog open style="top: 0; bottom: 0;">
     <div class="header">
       <button class="close" onclick={ close }>&times;</button>
       <h4 class="modal-title">Shopping Cart</h4>
     </div>
     <div class="body">
       <div class="well">
-        <div if={ !CART }>Your cart is empty</div>
+        <div if={ !cart_items.length }>Your cart is empty</div>
         <div class="items">
           <div class="item" each={ cart_items }>
             <div class="name"><b>{ name }</b> { after }</div>
             <div class="quantity">{ quantity }</div>
             <i class="fa fa-plus-circle increment" onclick={ parent.plusOne }></i>
             <i class="fa fa-minus-circle decrement" onclick={ parent.minusOne }></i>
-            <div class="total">${ (quantity*price).toFixed(2) }</div>
+            <div class="total">${ total }</div>
             <i class="fa fa-times remove" onclick={ parent.remove }></i>
           </div>
         </div>
@@ -47,35 +49,32 @@
         &laquo; Keep Shopping</button>
       <button onclick={ startCheckout } alt="Buy it Now">Checkout</button>
     </div>
-  </div>
+  </dialog>
 
-  this.SHOP = window.SHOP;
-  var that = this;
-  document.body.style.overflowY = document.documentElement.style.overflowY = "hidden";
-  document.body.style.paddingRight = "17px";
-  document.body.scrolling = "no";
+  var self = this;
   this.on("update",function() {
-    this.cart_items = PRODUCTS.list.filter(function(l){return l.quantity});
-    this.total = 0;
-    for (var i=0;i<this.cart_items.length;i++) {
-      var c = this.cart_items[i];
-      this.total += c.quantity*c.price;
-    }
-    updateCartButton();
+    this.cart_items = [];
+    uR.forEach(uR.drop.cart.all_items,function(item){
+      var product = uR.drop.products[item.product_id];
+      product.quantity = item.quantity;
+      product.total_price = item.total_price;
+      self.cart_items.push(product);
+    });
+    riot.update("cart-button");
   });
 
   close(e) {
     this.unmount();
     riot.update("*");
-    document.body.style.overflowY = document.documentElement.style.overflowY = "";
-    document.body.scrolling = "yes";
-    document.body.style.paddingRight = "";
   }
   function updateCart(e) {
-    $.post(
-      '/shop/edit/',
-      {pk: e.item.pk,quantity:e.item.quantity}
-    );
+    uR.ajax({
+      url: '/drop/ajax/edit/',
+      data: {id: e.item.id,quantity:e.item.quantity,product_model: e.item.model_slug},
+      success: function(data) { uR.drop.cart = data.cart; },
+      type: "POST",
+      that: self,
+    });
   }
   plusOne(e) {
     e.item.quantity++;
@@ -91,18 +90,18 @@
   }
   startCheckout(e) {
     var form = $(e.target).closest('form');
-    $.get(
-      '/shop/start_checkout/',
-      function(data) {
+    uR.ajax({
+      url: '/drop/start_checkout/',
+      success: function(data) {
         if (data.errors.length) {
-          that.errors = data.errors;
-          that.update();
+          self.errors = data.errors;
+          self.update();
         } else {
           form.find("[name=invoice]").val(data.order_pk);
           form.submit();
         }
       },
-      "json"
-    )
+      that: self,
+    })
   }
-</cart>
+</shopping-cart>
