@@ -13,41 +13,43 @@
   });
   this.on("update",function() { this.cart = uR.drop.cart; });
   openCart(e) {
-    uR.mountElement("shopping-cart")
+    uR.mountElement("shopping-cart",{mount_to:"#alertdiv"})
   }
 </cart-button>
 
 <shopping-cart>
   <div class="mask" onclick={ close }></div>
   <dialog open style="top: 0; bottom: 0;">
-    <div class="header">
-      <button class="close" onclick={ close }>&times;</button>
-      <h4 class="modal-title">Shopping Cart</h4>
-    </div>
-    <div class="body">
-      <div class="well">
+    <a class="close" onclick={ close }>&times;</a>
+    <div class="card">
+      <div class="card-content">
+        <div class="card-title">
+          Shopping Cart
+        </div>
         <div if={ !cart_items.length }>Your cart is empty</div>
         <div class="items">
           <div class="item" each={ cart_items }>
+            <a class="fa fa-times remove" onclick={ parent.remove }></a>
             <div class="name"><b>{ name }</b> { after }</div>
-            <div class="quantity">{ quantity }</div>
-            <i class="fa fa-plus-circle increment" onclick={ parent.plusOne }></i>
-            <i class="fa fa-minus-circle decrement" onclick={ parent.minusOne }></i>
-            <div class="total">${ total }</div>
-            <i class="fa fa-times remove" onclick={ parent.remove }></i>
+            <div class="quantity">
+              { quantity }
+              <i class="fa fa-times"></i> { unit_price } =
+              <span class="total">${ total_price }</span>
+              <a class="fa fa-plus-circle increment" onclick={ parent.plusOne }></a>
+              <a class="fa fa-minus-circle decrement" onclick={ parent.minusOne }></a>
+            </div>
           </div>
         </div>
+        <div class="checkout-box">
+          <div class="subtotals"></div>
+          Order Total: <b>${ uR.drop.cart.total_price }</b>
+        </div>
+        <div class="alert alert-danger" style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
       </div>
-      <div class="checkout-box">
-        <div class="subtotals"></div>
-        Order Total: <b>${ total.toFixed(2) }</b>
+      <div class="card-action valign-wrapper">
+        <a onclick={ close }>&laquo; Keep Shopping</a>
+        <button onclick={ startCheckout } class="right btn blue" alt="Buy it Now">Checkout</button>
       </div>
-      <div class="alert alert-danger" style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
-    </div>
-    <div class="modal-footer">
-      <button class="pull-left btn btn-default" data-dismiss="modal" onclick="toggleCourses();">
-        &laquo; Keep Shopping</button>
-      <button onclick={ startCheckout } alt="Buy it Now">Checkout</button>
     </div>
   </dialog>
 
@@ -57,7 +59,7 @@
     uR.forEach(uR.drop.cart.all_items,function(item){
       var product = uR.drop.products[item.product_id];
       product.quantity = item.quantity;
-      product.total_price = item.total_price;
+      product.total_price = (item.quantity*parseInt(product.unit_price)).toFixed(2);
       self.cart_items.push(product);
     });
     riot.update("cart-button");

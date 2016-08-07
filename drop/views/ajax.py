@@ -30,6 +30,8 @@ def products_json(request):
 def cart_json(request):
   cart = get_or_create_cart(request,save=False)
   cart.update(request)
+  for item in cart.items.all():
+    item.update(request)
   return JsonResponse(cart.as_json)
 
 @csrf_exempt
