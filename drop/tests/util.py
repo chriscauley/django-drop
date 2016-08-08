@@ -175,7 +175,7 @@ class LoaderTestCase(TestCase):
 class ModelImportTestCase(TestCase):
     def test_bases_old_import_path(self):
         try:
-            module = __import__('drop.models.defaults.bases', globals(),
+            module = __import__('drop.models.defaults.abstract', globals(),
                 locals(), ['BaseProduct',])
         except ImportError:
             module = False
