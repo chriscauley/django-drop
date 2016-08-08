@@ -1,7 +1,11 @@
 {% extends "base.html" %}
+{% load thumbnail %}
 
 {% block content %}
 <h1>Product detail:</h1>
+{% thumbnail object.first_photo.file "300x300" as im %}
+<div><img src="{{ im.url }}" /></div>
+{% endthumbnail %}
 {{object.get_name}}<br />
 {{object.short_description}}<br />
 {{object.long_description}}<br />

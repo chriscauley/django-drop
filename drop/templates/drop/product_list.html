@@ -1,9 +1,13 @@
 {% extends "base.html" %}
+{% load thumbnail %}
 
 {% block content %}
   <h1>Product list:</h1>
   <hr />
   {% for object in object_list %}
+  {% thumbnail object.first_photo.file "300x300" as im %}
+  <div><img src="{{ im.url }}" /></div>
+  {% endthumbnail %}
   <a href="{{ object.get_absolute_url }}">{{object.get_name}}</a><br />
   {{object.short_description}}<br />
   {{object.long_description}}<br />
