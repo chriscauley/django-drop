@@ -19,7 +19,7 @@
 
 <shopping-cart>
   <div class="mask" onclick={ close }></div>
-  <dialog open style="top: 0; bottom: 0;">
+  <dialog open>
     <a class="close" onclick={ close }>&times;</a>
     <div class="card">
       <div class="card-content">
@@ -74,7 +74,7 @@
       url: '/drop/ajax/edit/',
       data: {id: e.item.id,quantity:e.item.quantity,product_model: e.item.model_slug},
       success: function(data) { uR.drop.cart = data.cart; },
-      type: "POST",
+      method: "POST",
       that: self,
     });
   }
