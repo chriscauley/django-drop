@@ -13,6 +13,8 @@ from drop.util.fields import CurrencyField
 from drop.util.loader import get_model_string
 import django
 
+from lablackey.utils import get_admin_url
+
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 class JsonMixin(object):
@@ -49,47 +51,26 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     slug = property(lambda self: slugify(self.name))
     active = models.BooleanField(default=False, verbose_name=_('Active'))
-    date_added = models.DateTimeField(auto_now_add=True,
-        verbose_name=_('Date added'))
-    last_modified = models.DateTimeField(auto_now=True,
-        verbose_name=_('Last modified'))
-    unit_price = CurrencyField(verbose_name=_('Unit price'))
+    date_added = models.DateTimeField(auto_now_add=True, verbose_name=_('Date added'))
+    last_modified = models.DateTimeField(auto_now=True, verbose_name=_('Last modified'))
+    unit_price = CurrencyField(verbose_name=_('Unit price'),default=0)
     json_fields = ['name','active','date_added','last_modified','unit_price','model_slug']
     model_slug = property(lambda self: '%s.%s'%(self._meta.app_label,self._meta.model_name))
+    get_admin_url = get_admin_url
     class Meta(object):
         abstract = True
         app_label = 'drop'
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
 
-    def __unicode__(self):
-        return self.name
+    __unicode__ = lambda self: self.name
+    get_absolute_url = lambda: reverse('product_detail', args=[self.id,self.slug])
+    can_be_added_to_cart = property(lambda self: self.active)
 
-    def get_absolute_url(self):
-        return reverse('product_detail', args=[self.id,self.slug])
-
-    def get_price(self):
-        """
-        Returns the price for this item (provided for extensibility).
-        """
-        return self.unit_price
-
-    def get_name(self):
-        """
-        Returns the name of this Product (provided for extensibility).
-        """
-        return self.name
-
-    def get_product_reference(self):
-        """
-        Returns product reference of this Product (provided for extensibility).
-        """
-        return unicode(self.pk)
-
-    @property
-    def can_be_added_to_cart(self):
-        return self.active
-
+    # These functions all do virtually nothing, provited for extensibility
+    get_price = lambda self: return self.price
+    get_name = lambda self: self.name
+    get_product_reference = lambda self: unicode(self.pk)
 
 #==============================================================================
 # Carts
