@@ -64,11 +64,11 @@ class BaseProduct(PolymorphicModel,JsonMixin):
         verbose_name_plural = _('Products')
 
     __unicode__ = lambda self: self.name
-    get_absolute_url = lambda: reverse('product_detail', args=[self.id,self.slug])
+    get_absolute_url = lambda self: reverse('product_detail', args=[self.id,self.slug])
     can_be_added_to_cart = property(lambda self: self.active)
 
     # These functions all do virtually nothing, provited for extensibility
-    get_price = lambda self: return self.price
+    get_price = lambda self: self.unit_price
     get_name = lambda self: self.name
     get_product_reference = lambda self: unicode(self.pk)
 
