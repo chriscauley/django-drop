@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import RedirectView
 
 from drop.forms import BillingShippingForm
-from drop.models import AddressModel, OrderExtraInfo
+from drop.models import OrderExtraInfo #AddressModel temporarily removed
 from drop.models import Order
 from drop.util.address import (
     assign_address_to_request,

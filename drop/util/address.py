@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 from django.contrib.auth.models import AnonymousUser
-from drop.models import AddressModel
+#from drop.models import AddressModel
 
 
 #==============================================================================
