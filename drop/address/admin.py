@@ -14,9 +14,7 @@ class CountryAdmin(admin.ModelAdmin):
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    list_display = (
-        'name', 'address', 'address2', 'zip_code', 'city', 'country',
-        'user_shipping', 'user_billing')
-    raw_id_fields = ('user_shipping', 'user_billing')
+    list_display = ('name', 'address', 'address2', 'zip_code', 'city', 'country', 'user')
+    raw_id_fields = ('user',)
 
 

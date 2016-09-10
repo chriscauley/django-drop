@@ -20,8 +20,6 @@ Country: %(country)s
 
 ADDRESS_TEMPLATE = getattr(settings, 'SHOP_ADDRESS_TEMPLATE',
                            BASE_ADDRESS_TEMPLATE)
-USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
-
 class Country(models.Model):
     name = models.CharField(max_length=255)
 
@@ -34,11 +32,7 @@ class Country(models.Model):
 
 
 class Address(models.Model):
-    user_shipping = models.OneToOneField(USER_MODEL, related_name='shipping_address',
-                                         blank=True, null=True)
-    user_billing = models.OneToOneField(USER_MODEL, related_name='billing_address',
-                                        blank=True, null=True)
-
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     name = models.CharField(_('Name'), max_length=255)
     address = models.CharField(_('Address'), max_length=255)
     address2 = models.CharField(_('Address2'), max_length=255, blank=True)
