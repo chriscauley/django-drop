@@ -2,28 +2,24 @@
 {% load thumbnail %}
 
 {% block content %}
-  <h1>Product list:</h1>
-  <hr />
-  {% for object in object_list %}
-  {% thumbnail object.first_photo.file "300x300" as im %}
-  <div><img src="{{ im.url }}" /></div>
-  {% endthumbnail %}
-  <a href="{{ object.get_absolute_url }}">{{object.get_name}}</a><br />
-  {{object.short_description}}<br />
-  {{object.long_description}}<br />
-  {{object.active}}<br />
-
-  {{object.date_added}}<br />
-  {{object.last_modified}}<br />
-
-  {{object.unit_price}}<br />
-
-  {% if object.category %}
-  {{object.category.name}}<br />
-  {% else %}
-  (Product is at root category)<br />
-  {% endif %}
-  <hr />
-
-  {% endfor %}
+<h1>Product list:</h1>
+<hr />
+<div class="row">
+{% for object in object_list %}
+<div class="col l4 m6 s13">
+  <div class="card">
+    <div class="card-image">
+      {% thumbnail object.first_photo.file "300x300" as im %}
+      <a href="{{ object.get_absolute_url }}"><img src="{{ im.url }}" /></a>
+      {% endthumbnail %}
+    </div>
+    <div class="card-content">
+      <a href="{{ object.get_absolute_url }}">
+        {{object.get_name}}<br/>
+        <b>{{object.unit_price}}</b>
+      </a>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

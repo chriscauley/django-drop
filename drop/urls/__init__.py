@@ -2,9 +2,11 @@
 from django.conf.urls import include, url
 
 from drop import views
+from drop.views.product import (ProductListView, ProductDetailView)
 
 urlpatterns = [
-  url(r'^$', views.DropTemplateView.as_view(template_name="drop/welcome.html"),name='drop_welcome'),
+  url(r'^$',ProductListView.as_view(),name='product_list'),
+  url(r'^product/(?P<pk>\d+)/([0-9A-Za-z-_.//]+)/$', ProductDetailView.as_view(), name='product_detail'),
   url(r'^products.js',views.ajax.products_json),
   url(r'^ajax/', include('drop.urls.ajax')),
   url(r'^pay/', include('drop.payment.urls')),
@@ -12,5 +14,4 @@ urlpatterns = [
   url(r'^orders/', include('drop.urls.order')),
   url(r'^checkout/', include('drop.urls.checkout')),
   url(r'^cart/', include('drop.urls.cart')),
-  url(r'^products/', include('drop.urls.catalog')),
 ]
