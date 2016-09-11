@@ -32,5 +32,6 @@ class ProductDetailView(DropDetailView):
         ret = super(ProductDetailView, self).get_template_names()
         if not self.generic_template in ret:
             ret.append(self.generic_template)
+        print ret
         return ret
 

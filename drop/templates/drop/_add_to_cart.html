@@ -1,0 +1,7 @@
+<form method="post" action="{% url 'cart_edit' %}" id="a2c">
+  <input type="hidden" name="id" value="{{ object.pk }}" />
+  <input type="hidden" name="quantity" value="1" />
+  <input type="hidden" name="product_model" value="{{ object.model_slug }}" />
+  <input type="submit" value="Add to cart" class="btn blue"
+         onclick="uR.drop.addToCart(this.parentElement);return false;" />
+</form>
