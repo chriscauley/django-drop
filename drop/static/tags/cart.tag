@@ -6,7 +6,7 @@
 
   this.on("mount",function() {
     uR.ajax({
-      url: '/drop/ajax/cart.js',
+      url: '/ajax/cart.js',
       success: function(data) { uR.drop.cart = data; },
       that: this
     });
