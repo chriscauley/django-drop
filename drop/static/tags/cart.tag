@@ -71,7 +71,7 @@
   }
   function updateCart(e) {
     uR.ajax({
-      url: '/drop/ajax/edit/',
+      url: '/ajax/edit/',
       data: {id: e.item.id,quantity:e.item.quantity,product_model: e.item.model_slug},
       success: function(data) { uR.drop.cart = data.cart; },
       method: "POST",
@@ -93,7 +93,7 @@
   startCheckout(e) {
     var form = $(e.target).closest('form');
     uR.ajax({
-      url: '/drop/start_checkout/',
+      url: '/start_checkout/',
       success: function(data) {
         if (data.errors.length) {
           self.errors = data.errors;
