@@ -7,7 +7,8 @@ from drop.views.product import (ProductListView, ProductDetailView)
 urlpatterns = [
   url(r'^$',ProductListView.as_view(),name='product_list'),
   url(r'^product/(?P<pk>\d+)/([0-9A-Za-z-_.//]+)/$', ProductDetailView.as_view(), name='product_detail'),
-  url(r'^products.js',views.ajax.products_json),
+  url(r'^products.js',views.ajax.products_json,name='products_json'),
+  url(r'^cart.js$',views.ajax.cart_json,name='cart_json'),
   url(r'^ajax/', include('drop.urls.ajax')),
   url(r'^pay/', include('drop.payment.urls')),
   url(r'^ship/', include('drop.shipping.urls')),
