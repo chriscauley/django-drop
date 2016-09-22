@@ -1,20 +1,8 @@
 <cart-button>
-  <button class="btn blue" onclick={ openCart }>
+  <button class={ uR.config.btn_primary } onclick={ uR.drop.openCart }>
     <i class="fa fa-shopping-cart"></i>
-    { cart.all_items.length } items ${ cart.total_price }
+    { uR.drop.cart.all_items.length } items ${ uR.drop.cart.total_price }
   </button>
-
-  this.on("mount",function() {
-    uR.ajax({
-      url: '/ajax/cart.js',
-      success: function(data) { uR.drop.cart = data; },
-      that: this
-    });
-  });
-  this.on("update",function() { this.cart = uR.drop.cart; });
-  openCart(e) {
-    uR.mountElement("shopping-cart",{mount_to:"#alertdiv"})
-  }
 </cart-button>
 
 <shopping-cart>
