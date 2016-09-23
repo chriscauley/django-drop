@@ -50,10 +50,8 @@
   var self = this;
   this.on("update",function() {
     this.cart_items = [];
-    uR.forEach(uR.drop.cart.all_items,function(item){
-      var product = uR.drop.products[item.product_id];
-      product.quantity = item.quantity;
-      product.total_price = (item.quantity*parseInt(product.unit_price)).toFixed(2);
+    uR.forEach(uR.drop.cart.all_items,function(product){
+      product.total_price = (product.quantity*parseInt(product.unit_price)).toFixed(2);
       self.cart_items.push(product);
     });
     riot.update("cart-button");
@@ -63,26 +61,17 @@
     this.unmount();
     riot.update("*");
   }
-  function updateCart(e) {
-    uR.ajax({
-      url: '/ajax/edit/',
-      data: {id: e.item.id,quantity:e.item.quantity,product_model: e.item.model_slug},
-      success: function(data) { uR.drop.cart = data.cart; },
-      method: "POST",
-      that: self,
-    });
-  }
   plusOne(e) {
     e.item.quantity++;
-    updateCart(e);
+    uR.drop.saveCartItem(e.item);
   }
   minusOne(e) {
     e.item.quantity--;
-    updateCart(e);
+    uR.drop.saveCartItem(e.item);
   }
   remove(e) {
     e.item.quantity = 0;
-    updateCart(e);
+    uR.drop.saveCartItem(e.item);
   }
   startCheckout(e) {
     var form = $(e.target).closest('form');

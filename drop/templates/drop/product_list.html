@@ -20,8 +20,8 @@
       <a href="{{ object.get_absolute_url }}" class="price">${{ object.unit_price }}</a>
       <button class="button left btn btn-large btn-floating indigo accent-4">
         <i class="fa fa-shopping-cart"></i></button>
-      <button class="button right btn btn-large btn-floating blue-grey darken-2">
-        <i class="fa fa-eye"></i></button>
+      <a class="button right btn btn-large btn-floating blue-grey darken-2" href="{{ object.get_absolute_url }}">
+        <i class="fa fa-eye"></i></a>
     </div>
   </div>
 </div>

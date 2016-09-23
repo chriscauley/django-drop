@@ -2,27 +2,41 @@
 {% load thumbnail %}
 
 {% block content %}
-<h1>Product detail:</h1>
-{% thumbnail object.first_photo.file "300x300" as im %}
-<div><img src="{{ im.url }}" /></div>
-{% endthumbnail %}
-{{object.get_name}}<br />
-{{object.short_description}}<br />
-{{object.long_description}}<br />
-{{object.active}}<br />
-
-{{object.date_added}}<br />
-{{object.last_modified}}<br />
-
-{{object.unit_price}}<br />
-
-{% if object.category %}
-{{object.category.name}}
-{% else %}
-(Product is at root category)
+{% if object.get_breadcrumbs %}
+<div class="BreadCrumbs">
+  <div class="container">
+    <span class="hide-on-small-only"><a href="/" class="crumb">Home</a> /</span>
+    {% for category in object.get_breadcrumbs %}
+    <a href="{{ category.get_absolute_url }}" class="crumb level{{ category.level }}">{{ category.name }}</a>
+    {% if not forloop.last %}/{% endif %}
+    {% endfor %}
+    <span class="hide-on-small-only crumb">/ {{ object.name|truncatewords:10 }}</span>
+  </div>
+</div>
 {% endif %}
-<br />
+<div class="row ProductDetail">
+  <div class="col m4 s12">
+    <h1>{{ object.name }}</h1>
+    {% include "drop/_add_to_cart.html" %}
+  </div>
+  <div class="col m8 s12">
+    {% thumbnail object.first_photo.file "300x300" as im %}
+    <div><img src="{{ im.url }}" /></div>
+    {% endthumbnail %}
+    {{object.get_name}}<br />
+    {{object.short_description}}<br />
+    {{object.long_description}}<br />
+    {{object.active}}<br />
 
-{% include "drop/_add_to_cart.html" %}
+    {{object.date_added}}<br />
+    {{object.last_modified}}<br />
+
+    {{object.unit_price}}<br />
+
+    {% if object.category %}
+    {{object.category.name}}
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
 
