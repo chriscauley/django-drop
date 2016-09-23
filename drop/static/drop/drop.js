@@ -27,6 +27,7 @@
     });
   }
   function saveCartItem(product) {
+    uR.drop.cart.all_items = uR.drop.cart.all_items.filter(function(c){ return c.quantity; });
     if (uR.drop.cart.all_items.indexOf(product) == -1) {
       product.price = parseInt(product.unit_price);
       uR.drop.cart.all_items.push(product);

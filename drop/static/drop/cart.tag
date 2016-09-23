@@ -1,8 +1,14 @@
 <cart-button>
   <button class={ uR.config.btn_primary } onclick={ uR.drop.openCart }>
     <i class="fa fa-shopping-cart"></i>
-    { uR.drop.cart.all_items.length } items ${ uR.drop.cart.total_price }
+    { uR.drop.cart.all_items.length } items ${ total_price.toFixed(2) }
   </button>
+
+  this.on("update",function() {
+    this.total_price = parseInt(uR.drop && uR.drop.cart && uR.drop.cart.total_price);
+    if (!this.total_price) { this.root.style.display = "none"; }
+    else { this.root.style = "block"; }
+  })
 </cart-button>
 
 <shopping-cart>
