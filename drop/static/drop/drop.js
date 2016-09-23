@@ -28,6 +28,7 @@
   }
   function saveCartItem(product) {
     if (uR.drop.cart.all_items.indexOf(product) == -1) {
+      product.price = parseInt(product.unit_price);
       uR.drop.cart.all_items.push(product);
     }
     uR.drop.ajax({
