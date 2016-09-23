@@ -38,8 +38,7 @@ def cart_json(request):
 def cart_edit(request):
   cart = get_or_create_cart(request,save=True)
   quantity =  int(request.POST['quantity'])
-  product_model = apps.get_model(*request.POST['product_model'].split("."))
-  product = get_object_or_404(product_model,id=request.POST['id'])
+  product = get_object_or_404(Product,id=request.POST['id'])
   defaults = {'quantity': 0}
   cart_item,new = CartItem.objects.get_or_create(product=product,cart=cart,defaults=defaults)
   if quantity:

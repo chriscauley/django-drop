@@ -26,29 +26,37 @@
       },
     });
   }
-  function addToCart(that) {
+  function saveCartItem(product) {
+    if (uR.drop.cart.all_items.indexOf(product) == -1) {
+      uR.drop.cart.all_items.push(product);
+    }
     uR.drop.ajax({
-      data: { id: that.dataset.id, model: that.dataset.model },
-      target: that,
-      success: function(data) {
-        uR.drop.cart = data.cart;
-        uR.drop.openCart();
-      }
+      url: "/ajax/edit/",
+      data: {id: product.id, quantity: product.quantity},
+      method: "POST",
     });
   }
   function openCart() {
     uR.mountElement(uR.drop.cart_tag,{mount_to:uR.config.mount_alerts_to});
   }
   function updateTags() {
-    uR.drop.cart.total = 0;
     if (!uR.drop.products || !uR.drop.cart) { return }
-    uR.forEach(uR.drop.cart.all_items,function(c) {
-      if (uR.drop.products[c.product_id]) { uR.drop.products[c.product_id].quantity = c.quantity; }
+    uR.drop.cart.total_price = 0;
+    uR.forEach(uR.drop.cart.all_items,function(c,i) {
+      if (c.product_id) {
+        var p = uR.drop.products[c.product_id];
+        p.quantity = c.quantity;
+        p.price = parseInt(p.unit_price);
+        c = p;
+        uR.drop.cart.all_items[i] = c;
+      }
+      uR.drop.cart.total_price += c.quantity*c.price;
     });
+    uR.drop.cart.all_items = uR.drop.cart.all_items.filter(function(c){ return c.quantity; });
     riot.update([uR.drop.cart_tag].join(','));
   }
   uR.drop = {
-    addToCart: addToCart,
+    saveCartItem: saveCartItem,
     updateProducts: updateProducts,
     updateCart: updateCart,
     updateTags: uR.debounce(updateTags,100),
