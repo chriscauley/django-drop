@@ -9,7 +9,7 @@
 <div class="col l4 m6 s13">
   <div class="card product-card">
     <div class="card-image">
-      {% thumbnail object.first_photo.file "350x440" as im %}
+      {% thumbnail object.first_photo.file "350x440" crop="center" as im %}
       <a href="{{ object.get_absolute_url }}"><img src="{{ im.url }}" /></a>
       {% endthumbnail %}
     </div>

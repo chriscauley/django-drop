@@ -26,7 +26,7 @@
       },
     });
   }
-  function saveCartItem(product) {
+  function saveCartItem(product,open_cart) {
     if (typeof product == "number") {
       product = uR.drop.products[product];
       product.quantity = 1;
@@ -41,6 +41,7 @@
       data: {id: product.id, quantity: product.quantity},
       method: "POST",
     });
+    open_cart && uR.drop.openCart();
   }
   function openCart() {
     uR.mountElement(uR.drop.cart_tag,{mount_to:uR.config.mount_alerts_to});
