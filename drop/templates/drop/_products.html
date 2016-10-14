@@ -1,0 +1,25 @@
+{% load thumbnail %}
+
+<div class="row ProductList">
+  {% for object in object_list %}
+  <div class="col l4 m6 s13">
+    <div class="card product-card">
+      <div class="card-image">
+        {% thumbnail object.first_photo.file "350x440" crop="center" as im %}
+        <a href="{{ object.get_absolute_url }}"><img src="{{ im.url }}" /></a>
+        {% endthumbnail %}
+      </div>
+      <div class="card-content">
+        <a href="{{ object.get_absolute_url }}" class="title">
+          {{ object.get_name }}
+        </a>
+        <a href="{{ object.get_absolute_url }}" class="price">${{ object.unit_price }}</a>
+        <button class="button left btn btn-large btn-floating indigo accent-4">
+          <i class="fa fa-shopping-cart"></i></button>
+        <a class="button right btn btn-large btn-floating blue-grey darken-2" href="{{ object.get_absolute_url }}">
+          <i class="fa fa-eye"></i></a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
