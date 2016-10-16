@@ -100,7 +100,7 @@ def admin_products_json(request):
   extra_fields = ['purchase_url','purchase_domain','purchase_url2','purchase_domain2',
                   'purchase_quantity','in_stock']
   out = {product.pk:{k:getattr(product,k) for k in extra_fields}
-         for product in Consumable.objects.filter(active=True)}
+         for product in Product.objects.filter(active=True)}
   return HttpResponse("window.PRODUCTS_EXTRA = %s;"%json.dumps(out))
 
 @staff_member_required
