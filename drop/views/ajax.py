@@ -8,9 +8,11 @@ from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from drop.models import CartItem, Order, Product
+from drop.payment.api import PaymentAPI
 from drop.util.cart import get_or_create_cart
 
 import json, datetime
+from decimal import Decimal
 
 DROP = getattr(settings,"DROP",{})
 
@@ -113,3 +115,31 @@ def admin_add(request):
   product.in_stock = max(old + quantity,0)
   product.save()
   return HttpResponse(str(product.in_stock))
+
+#! TODO this should be moved to a separate app to remove global dependency on djstripe
+from djstripe.models import stripe
+
+def stripe_payment(request):
+  # everything until the try/except should be abstracted elsewhere
+  cart = get_or_create_cart(request,save=True)
+  cart.update(request)
+  try:
+    order = Order.objects.filter(cart_pk=cart.pk,status__lt=Order.COMPLETED)[0]
+  except IndexError:
+    order = Order.objects.create_from_cart(cart,request)
+  if order.order_total != Decimal(request.POST['total']):
+    e = "Front end and back end order totals do not match (%s != %s)"
+    raise NotImplementedError(e%(order.order_total, Decimal(request.POST['total'])))
+  try:
+    charge = stripe.Charge.create(
+      amount=int(order.order_total*100), # Amount in cents
+      currency="usd",
+      source=request.POST['token'],
+      description="Payment for order #%s"%order.id,
+      metadata={"order_id": order.id}
+    )
+  except stripe.error.CardError,e:
+    error = "An error made while processing your payment: %s"%e
+    return JsonResponse({'errors': {'non_field_error': error}},status=400)
+  PaymentAPI().confirm_payment(order, Decimal(charge['amount'])/100, charge['id'], 'Stripe Token')
+  return JsonResponse({})

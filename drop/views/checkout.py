@@ -8,8 +8,8 @@ from django.http import HttpResponseRedirect
 from django.views.generic import RedirectView
 
 from drop.forms import BillingShippingForm
-from drop.models import OrderExtraInfo #AddressModel temporarily removed
-from drop.models import Order
+from drop.models import OrderExtraInfo, Order
+from drop.address.models import Address as AddressModel
 from drop.util.address import (
     assign_address_to_request,
     get_billing_address_from_request,
@@ -29,7 +29,7 @@ class CheckoutSelectionView(LoginMixin, DropTemplateView):
         Returns a dynamic ModelForm from the loaded AddressModel
         """
         form_class = model_forms.modelform_factory(
-            AddressModel, exclude=['user_shipping', 'user_billing'])
+            AddressModel, exclude=['user'])
         return form_class
 
     def get_shipping_form_class(self):
