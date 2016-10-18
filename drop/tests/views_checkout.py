@@ -60,8 +60,7 @@ class ShippingBillingViewTestCase(TestCase):
     def test_shipping_address_form_user_no_preset(self):
         setattr(self.request, 'user', self.user)
 
-        address = Address.objects.create(country=self.country,
-            user_shipping=self.user)
+        address = Address.objects.create(country=self.country,user=self.user)
         address.save()
 
         view = CheckoutSelectionView(request=self.request)
@@ -94,8 +93,7 @@ class ShippingBillingViewTestCase(TestCase):
     def test_billing_address_form_user_no_preset(self):
         setattr(self.request, 'user', self.user)
 
-        address = Address.objects.create(country=self.country,
-            user_billing=self.user)
+        address = Address.objects.create(country=self.country,user=user)
         address.save()
 
         view = CheckoutSelectionView(request=self.request)

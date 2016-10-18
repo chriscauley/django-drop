@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 from django.contrib.auth.models import AnonymousUser
-#from drop.models import AddressModel
+from drop.address.models import Address as AddressModel
 
 
 #==============================================================================
@@ -18,8 +18,7 @@ def get_shipping_address_from_request(request):
         # There is a logged-in user here, but he might not have an address
         # defined.
         try:
-            shipping_address = AddressModel.objects.get(
-                user_shipping=request.user)
+            shipping_address = AddressModel.objects.get(user=request.user)
         except AddressModel.DoesNotExist:
             shipping_address = None
     else:
@@ -43,8 +42,7 @@ def get_billing_address_from_request(request):
         # There is a logged-in user here, but he might not have an address
         # defined.
         try:
-            billing_address = AddressModel.objects.get(
-                user_billing=request.user)
+            billing_address = AddressModel.objects.get(user=request.user)
         except AddressModel.DoesNotExist:
             billing_address = None
     else:

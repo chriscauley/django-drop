@@ -39,8 +39,7 @@ class Address(models.Model):
     zip_code = models.CharField(_('Zip Code'), max_length=20)
     city = models.CharField(_('City'), max_length=20)
     state = models.CharField(_('State'), max_length=255)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), blank=True,
-                                null=True)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), blank=True, null=True)
 
     class Meta(object):
         verbose_name = _('Address')
