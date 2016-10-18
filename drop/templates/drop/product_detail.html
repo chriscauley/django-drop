@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load thumbnail %}
 
+{% block title %}{{ object.name }}{% endblock %}
+
 {% block content %}
 {% if object.get_breadcrumbs %}
 <div class="BreadCrumbs">

@@ -1,5 +1,0 @@
-{% extends "base.html" %}
-
-{% block content %}
-{% block store_content %}{% endblock %}
-{% 
