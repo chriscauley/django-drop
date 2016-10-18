@@ -95,7 +95,9 @@
     {'name': 'exp_month'},
     {'name': 'exp_year'},
   ];
-  this.initial = {number: '4111 1111 1111 1111', cvc: '123', exp_month: '01',exp_year: 2019}
+  if (uR.DEBUG && window.location.search.indexOf("cheat") != -1) {
+    this.initial = {number: '4111 1111 1111 1111', cvc: '123', exp_month: '01',exp_year: 2019}
+  }
   submit(ur_form) {
     Stripe.card.createToken(ur_form.getData(),this.stripeResponseHandler)
   }
