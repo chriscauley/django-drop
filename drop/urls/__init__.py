@@ -15,5 +15,5 @@ urlpatterns = [
   url(r'^orders/', include('drop.urls.order')),
   url(r'^checkout/', include('drop.urls.checkout')),
   url(r'^cart/', include('drop.urls.cart')),
-  url(r'^stripe/payment/$/',views.ajax.stripe_payment),
+  url(r'^stripe/payment/$',views.ajax.stripe_payment),
 ]

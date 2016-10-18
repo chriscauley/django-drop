@@ -2,10 +2,13 @@
 """
 This models the checkout process using views.
 """
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.forms import models as model_forms
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.views.generic import RedirectView
+from django.template.response import TemplateResponse
 
 from drop.forms import BillingShippingForm
 from drop.models import OrderExtraInfo, Order
@@ -251,20 +254,6 @@ class OrderConfirmView(RedirectView):
         self.url = reverse(self.url_name)
         return super(OrderConfirmView, self).get_redirect_url(**kwargs)
 
-class ThankYouView(LoginMixin, DropTemplateView):
-    template_name = 'drop/checkout/thank_you.html'
-
-    def get_context_data(self, **kwargs):
-        ctx = super(DropTemplateView, self).get_context_data(**kwargs)
-
-        # put the latest order in the context only if it is completed
-        order = get_order_from_request(self.request)
-        if order and order.status == Order.COMPLETED:
-            ctx.update({'order': order, })
-
-        return ctx
-
-
 class ShippingBackendRedirectView(LoginMixin, DropView):
     def get(self, *args, **kwargs):
         try:
@@ -281,3 +270,8 @@ class PaymentBackendRedirectView(LoginMixin, DropView):
             return HttpResponseRedirect(reverse(backend_namespace))
         except KeyError:
             return HttpResponseRedirect(reverse('cart'))
+
+@login_required
+def thank_you(request,order_pk):
+    values = {'order': get_object_or_404(Order,pk=order_pk,user=request.user)}
+    return TemplateResponse(request,'drop/checkout/thank_you.html',values)

@@ -1,12 +1,12 @@
 from django.conf.urls import url
 from drop.util.decorators import cart_required
 
+from drop.views import checkout as views
 from drop.views.checkout import (
     CheckoutSelectionView,
     PaymentBackendRedirectView,
     ShippingBackendRedirectView,
     OrderConfirmView,
-    ThankYouView,
 )
 
 urlpatterns = [
@@ -14,5 +14,5 @@ urlpatterns = [
   url(r'^ship/$', ShippingBackendRedirectView.as_view(),name='checkout_shipping'),
   url(r'^confirm/$', OrderConfirmView.as_view(),name='checkout_confirm'),
   url(r'^pay/$', PaymentBackendRedirectView.as_view(),name='checkout_payment'),
-  url(r'^thank_you/$', ThankYouView.as_view(), name='thank_you_for_your_order')
+  url(r'^thank_you/(\d+)/$', views.thank_you, name='thank_you_for_your_order')
 ]
