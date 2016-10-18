@@ -33,7 +33,7 @@
     }
     uR.drop.cart.all_items = uR.drop.cart.all_items.filter(function(c){ return c.quantity; });
     if (uR.drop.cart.all_items.indexOf(product) == -1) {
-      product.price = parseInt(product.unit_price);
+      product.price = parseFloat(product.unit_price);
       uR.drop.cart.all_items.push(product);
     }
     uR.drop.ajax({
@@ -53,7 +53,7 @@
       if (c.product_id) {
         var p = uR.drop.products[c.product_id];
         p.quantity = c.quantity;
-        p.price = parseInt(p.unit_price);
+        p.price = parseFloat(p.unit_price);
         c = p;
         uR.drop.cart.all_items[i] = c;
       }

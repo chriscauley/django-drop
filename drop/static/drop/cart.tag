@@ -5,7 +5,7 @@
   </button>
 
   this.on("update",function() {
-    this.total_price = parseInt(uR.drop && uR.drop.cart && uR.drop.cart.total_price);
+    this.total_price = parseFloat(uR.drop && uR.drop.cart && uR.drop.cart.total_price);
     if (!this.total_price) { this.root.style.display = "none"; }
     else { this.root.style = "block"; }
   })
@@ -42,7 +42,7 @@
       </div>
       <div class="card-action valign-wrapper">
         <a onclick={ close }>&laquo; Keep Shopping</a>
-        <button onclick={ startCheckout } class="right btn blue" alt="Buy it Now">Checkout</button>
+        <button onclick={ openCheckout } class="right btn blue" alt="Buy it Now">Checkout</button>
       </div>
     </div>
   </dialog>
@@ -51,7 +51,7 @@
   this.on("update",function() {
     this.cart_items = [];
     uR.forEach(uR.drop.cart.all_items,function(product){
-      product.total_price = (product.quantity*parseInt(product.unit_price)).toFixed(2);
+      product.total_price = (product.quantity*parseFloat(product.unit_price)).toFixed(2);
       self.cart_items.push(product);
     });
     riot.update("cart-button");
@@ -73,20 +73,45 @@
     e.item.quantity = 0;
     uR.drop.saveCartItem(e.item);
   }
-  startCheckout(e) {
-    var form = $(e.target).closest('form');
-    uR.ajax({
-      url: '/start_checkout/',
-      success: function(data) {
-        if (data.errors.length) {
-          self.errors = data.errors;
-          self.update();
-        } else {
-          form.find("[name=invoice]").val(data.order_pk);
-          form.submit();
-        }
-      },
-      that: self,
-    })
+  openCheckout(e) {
+    uR.mountElement("checkout-modal",{mount_to:uR.config.mount_alerts_to});
   }
 </shopping-cart>
+
+<checkout-modal>
+  <div class="mask" onclick={ close }></div>
+  <dialog open>
+    <div class="card">
+      <div class="card-content">
+        <ur-form schema={ schema } initial={ initial }></ur-form>
+      </div>
+    </div>
+  </dialog>
+
+  var self = this;
+  this.schema = [
+    {'name': 'number'},
+    {'name': 'cvc'},
+    {'name': 'exp_month'},
+    {'name': 'exp_year'},
+  ];
+  this.initial = {number: '4111 1111 1111 1111', cvc: '123', exp_month: '01',exp_year: 2019}
+  submit(ur_form) {
+    Stripe.card.createToken(ur_form.getData(),this.stripeResponseHandler)
+  }
+  this.stripeResponseHandler = function(status,response) {
+    var ur_form = self.tags['ur-form'];
+    var target = ur_form.root;
+    if (response.error) {
+      target.removeAttribute('[data-loading]');
+      ur_form.errors = {non_field_error: "An error occurred while processing your payment: "+response.error.message};
+      return;
+    }
+    uR.ajax({
+      method: "POST",
+      url: "/stripe/payment/",
+      data: {token: response.id,total:uR.drop.cart.total_price},
+      target: target,
+    });
+  }
+</checkout-modal>
