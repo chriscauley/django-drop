@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
+
 from drop.models.productmodel import Product
 from drop.views import (DropListView, DropDetailView)
-
 
 class ProductListView(DropListView):
     """
@@ -16,22 +19,12 @@ class ProductListView(DropListView):
         """
         return Product.objects.filter(active=True)
 
-
-class ProductDetailView(DropDetailView):
-    """
-    This view handles displaying the right template for the subclasses of
-    Product.
-    It will look for a template at the normal (conventional) place, but will
-    fallback to using the default product template in case no template is
-    found for the subclass.
-    """
-    model = Product  # It must be the biggest ancestor of the inheritance tree.
-    generic_template = 'drop/product_detail.html'
-
-    def get_template_names(self):
-        ret = super(ProductDetailView, self).get_template_names()
-        if not self.generic_template in ret:
-            ret.append(self.generic_template)
-        print ret
-        return ret
-
+def detail(request,object_id,slug=None):
+    object = get_object_or_404(Product,id=object_id)
+    is_staff = request.user.is_authenticated() and request.user.is_staff
+    if not (object.is_visible or is_staff):
+        raise Http404()
+    values = {'object': object}
+    meta = object._meta
+    templates = ["%s/%s_detail.html"%(meta.app_label,meta.model_name),'drop/product_detail.html']
+    return TemplateResponse(request,templates,values)
