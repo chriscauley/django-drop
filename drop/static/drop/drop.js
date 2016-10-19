@@ -29,6 +29,7 @@
   function saveCartItem(product,open_cart) {
     if (typeof product == "number") {
       product = uR.drop.products[product];
+      if (!product) { alert("Sorry this item is sold out"); return }
       product.quantity = 1;
     }
     uR.drop.cart.all_items = uR.drop.cart.all_items.filter(function(c){ return c.quantity; });
