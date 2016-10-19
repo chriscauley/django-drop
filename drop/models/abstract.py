@@ -50,7 +50,7 @@ class BaseProduct(PolymorphicModel,JsonMixin):
 
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     slug = property(lambda self: slugify(self.name))
-    active = models.BooleanField(default=False, verbose_name=_('Active'))
+
     date_added = models.DateTimeField(auto_now_add=True, verbose_name=_('Date added'))
     last_modified = models.DateTimeField(auto_now=True, verbose_name=_('Last modified'))
     unit_price = CurrencyField(verbose_name=_('Unit price'),default=0)
@@ -65,13 +65,21 @@ class BaseProduct(PolymorphicModel,JsonMixin):
 
     __unicode__ = lambda self: self.name
     get_absolute_url = lambda self: reverse('product_detail', args=[self.id,self.slug])
-    can_be_added_to_cart = property(lambda self: self.active)
+
+    # active controls when things are listed on homepage, the rest are useful to fine tune behavior
+    active = models.BooleanField(default=False, verbose_name=_('Active'))
+    is_visible = property(lambda self: self.active) #turn on/off detail view
+    sold_out = property(lambda self: not self.active) #for front end display of SOLD OUT!
+    can_be_added_to_cart = property(lambda self,user=None: self.active) #backend to block adding to cart
 
     # These functions all do virtually nothing, provited for extensibility
     get_price = lambda self: self.unit_price
     get_name = lambda self: self.name
     display_name = property(lambda self: self.get_name())
     get_product_reference = lambda self: unicode(self.pk)
+
+    # this hook is used to update the quantity of a product, is such a thing exists
+    purchase = lambda self,quantity: None
 
 #==============================================================================
 # Carts
