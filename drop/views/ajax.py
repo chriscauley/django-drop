@@ -9,6 +9,7 @@ from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from drop.models import CartItem, Order, Product
+from drop.discount.models import ProductDiscount
 from drop.payment.api import PaymentAPI
 from drop.util.cart import get_or_create_cart
 
@@ -28,7 +29,10 @@ if DROP.get('login_required',False):
   index = login_required(index)
 
 def products_json(request):
-  return JsonResponse({'products': [p.as_json for p in Product.objects.active()]})
+  return JsonResponse({
+    'products': [p.as_json for p in Product.objects.active()],
+    'discounts': [d.as_json for d in ProductDiscount.objects.all()],
+  })
 
 def cart_json(request):
   cart = get_or_create_cart(request,save=False)

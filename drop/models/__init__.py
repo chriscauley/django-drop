@@ -1,5 +1,6 @@
 from django.conf import settings
 
+from abstract import JsonMixin
 from cartmodel import *  # NOQA
 from ordermodel import *  # NOQA
 from productmodel import *  # NOQA
