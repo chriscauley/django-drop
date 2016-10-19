@@ -1,12 +1,12 @@
 <add-to-cart>
-  <div class="pre-sale" if={ product.sale_price != product.price }>${ product.price }</div>
-  <div class="price">${ product.sale_price }</div>
+  <div class="pre-sale" if={ product.sale_price != product.price }>${ product.price.toFixed(2) }</div>
+  <div class="price">${ product.sale_price.toFixed(2) }</div>
   <button class={ btn_class }>Add to Cart</button>
 
   this.on("mount",function() {
     this.product = uR.drop.products[this.opts.product_id];
     this.btn_class = this.opts.btn_class || uR.config.btn_primary;
-    if (this.opts.root_class) { this.root.className.add(this.opts.root_class); }
+    if (this.opts.root_class) { this.root.classList.add(this.opts.root_class); }
     this.update();
   });
 </add-to-cart>

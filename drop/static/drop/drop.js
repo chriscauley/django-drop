@@ -22,7 +22,7 @@
         uR.forEach(data.discounts,function(discount) {
           uR.forEach(discount.product_ids, function(product_id) {
             var product = uR.drop.products[product_id];
-            var discount_price = product.price*(1-discount.percent/100)
+            var discount_price = product.price*(1-discount.percentage/100)
             if (product.sale_price > discount_price) {
               product.discount = discount;
               product.sale_price = discount_price;
