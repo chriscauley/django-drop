@@ -49,6 +49,9 @@ class PaymentAPI(DropAPI):
             order.status = Order.COMPLETED
             order.save()
 
+            # fire the purchase method for products to update inventory or whatever
+            for item in order.items.all():
+                item.product.purchase(item.quantity)
             # empty the related cart
             try:
                 cart = Cart.objects.get(pk=order.cart_pk)
