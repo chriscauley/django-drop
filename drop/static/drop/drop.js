@@ -14,7 +14,21 @@
       success: function(data) {
         uR.drop.products_list = data.products;
         uR.drop.products = {};
-        uR.forEach(data.products,function(product) { uR.drop.products[product.id] = product });
+        uR.forEach(data.products,function(product) {
+          uR.drop.products[product.id] = product;
+          product.price = product.sale_price = parseFloat(product.unit_price);
+        });
+        uR.drop.discounts = data.discounts;
+        uR.forEach(data.discounts,function(discount) {
+          uR.forEach(discount.product_ids, function(product_id) {
+            var product = uR.drop.products[product_id];
+            var discount_price = product.price*(1-discount.percent/100)
+            if (product.sale_price > discount_price) {
+              product.discount = discount;
+              product.sale_price = discount_price;
+            }
+          });
+        });
       }
     });
   }
@@ -61,7 +75,11 @@
       uR.drop.cart.total_price += c.quantity*c.price;
     });
     uR.drop.cart.all_items = uR.drop.cart.all_items.filter(function(c){ return c.quantity; });
-    riot.update([uR.drop.cart_tag].join(','));
+    if (uR.drop._mounted) {
+      riot.update([uR.drop.cart_tag].join(','));
+    } else {
+      riot.mount("cart-button,add-to-cart");
+    }
   }
   uR.drop = {
     saveCartItem: saveCartItem,
