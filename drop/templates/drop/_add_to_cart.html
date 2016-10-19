@@ -1,1 +1,4 @@
-<button class="btn blue" onclick="uR.drop.saveCartItem({{ object.pk }},true);">Add To Cart</button>
+<div class="add-to-cart {% if object.sold_out %}sold-out{% endif %}">
+  <div class="price">${{ object.unit_price }}</div>
+  <button class="btn blue" onclick="uR.drop.saveCartItem({{ object.pk }},true);">Add To Cart</button>
+</div>
