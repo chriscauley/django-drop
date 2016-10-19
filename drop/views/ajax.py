@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -142,4 +143,4 @@ def stripe_payment(request):
     error = "An error made while processing your payment: %s"%e
     return JsonResponse({'errors': {'non_field_error': error}},status=400)
   PaymentAPI().confirm_payment(order, Decimal(charge['amount'])/100, charge['id'], 'Stripe Token')
-  return JsonResponse({})
+  return JsonResponse({'next': reverse('checkout-thank_you',args=[order.pk])})

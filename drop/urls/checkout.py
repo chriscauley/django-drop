@@ -14,5 +14,5 @@ urlpatterns = [
   url(r'^ship/$', ShippingBackendRedirectView.as_view(),name='checkout_shipping'),
   url(r'^confirm/$', OrderConfirmView.as_view(),name='checkout_confirm'),
   url(r'^pay/$', PaymentBackendRedirectView.as_view(),name='checkout_payment'),
-  url(r'^thank_you/(\d+)/$', views.thank_you, name='thank_you_for_your_order')
+  url(r'^thank_you/(\d+)/$', views.thank_you, name='checkout-thank_you')
 ]

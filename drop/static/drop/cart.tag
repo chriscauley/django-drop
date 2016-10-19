@@ -90,30 +90,38 @@
 
   var self = this;
   this.schema = [
-    {'name': 'number'},
-    {'name': 'cvc'},
-    {'name': 'exp_month'},
-    {'name': 'exp_year'},
+    {name: 'number', label: "Credit Card Number", type: "tel"},
+    {name: 'cvc', label: "CVC Code", type: "number"},
+    {name: 'exp_month', label: "Expiration Month", type: "number",max_length: 2},
+    {name: 'exp_year', label: "Expiration Year", type: "number",max_length: 4},
   ];
   if (uR.DEBUG && window.location.search.indexOf("cheat") != -1) {
     this.initial = {number: '4111 1111 1111 1111', cvc: '123', exp_month: '01',exp_year: 2019}
   }
   submit(ur_form) {
+    self.root.querySelector("ur-form").setAttribute("data-loading","spinner");
     Stripe.card.createToken(ur_form.getData(),this.stripeResponseHandler)
   }
   this.stripeResponseHandler = function(status,response) {
     var ur_form = self.tags['ur-form'];
-    var target = ur_form.root;
+    var target = self.root.querySelector("ur-form");
+
     if (response.error) {
-      target.removeAttribute('[data-loading]');
-      ur_form.errors = {non_field_error: "An error occurred while processing your payment: "+response.error.message};
+      target.removeAttribute('data-loading');
+      ur_form.non_field_error = "An error occurred while processing your payment: "+response.error.message;
+      ur_form.update()
       return;
     }
+
     uR.ajax({
       method: "POST",
       url: "/stripe/payment/",
       data: {token: response.id,total:uR.drop.cart.total_price},
       target: target,
+      success: function(data) {
+        target.setAttribute("data-loading","spinner");
+        window.location = data.next;
+      }
     });
   }
 </checkout-modal>
