@@ -1,14 +1,27 @@
 <add-to-cart>
   <div class="pre-sale" if={ product.sale_price != product.price }>${ product.price.toFixed(2) }</div>
   <div class="price">${ product.sale_price.toFixed(2) }</div>
-  <button class={ btn_class }>Add to Cart</button>
+  <button class={ btn_class } onclick={ addToCart } if={ !in_cart }>Add to Cart</button>
+  <button class={ btn_class } onclick={ uR.drop.openCart } if={ in_cart }>Show in Cart</button>
 
+  var self = this;
+  this.ajax_success = uR.drop.openCart;
+  this.target = this.root;
   this.on("mount",function() {
     this.product = uR.drop.products[this.opts.product_id];
     this.btn_class = this.opts.btn_class || uR.config.btn_primary;
     if (this.opts.root_class) { this.root.classList.add(this.opts.root_class); }
     this.update();
   });
+  this.on("update",function() {
+    this.in_cart = false;
+    uR.forEach(uR.drop.cart.all_items,function(item) {
+      if (self.opts.product_id == item.product_id) { self.in_cart = true }
+    })
+  });
+  addToCart() {
+    uR.drop.saveCartItem(this.opts.product_id,1,this)
+  }
 </add-to-cart>
 
 <cart-button>
@@ -33,17 +46,21 @@
         <div class="card-title">
           Shopping Cart
         </div>
-        <div if={ !cart_items.length }>Your cart is empty</div>
+        <div if={ !uR.drop.cart.all_items.length }>Your cart is empty</div>
         <div class="items">
-          <div class="item" each={ cart_items }>
+          <div class="item" each={ uR.drop.cart.all_items }>
             <a class="fa fa-times remove" onclick={ parent.remove }></a>
             <div class="name"><b>{ display_name }</b> { after }</div>
             <div class="quantity">
               { quantity }
               <i class="fa fa-times"></i> { unit_price } =
-              <span class="total">${ total_price }</span>
+              <span class="total">${ line_subtotal }</span>
               <a class="fa fa-plus-circle increment" onclick={ parent.plusOne }></a>
               <a class="fa fa-minus-circle decrement" onclick={ parent.minusOne }></a>
+            </div>
+            <div class="extra_price_field" each={ field in extra_price_fields }>
+              <div class="description">{ field[0] }</div>
+              <div class="amount">{ field[1] }</div>
             </div>
           </div>
         </div>
@@ -62,10 +79,11 @@
 
   var self = this;
   this.on("update",function() {
-    this.cart_items = [];
-    uR.forEach(uR.drop.cart.all_items,function(product){
-      product.total_price = (product.quantity*parseFloat(product.unit_price)).toFixed(2);
-      self.cart_items.push(product);
+    self.target = self.root.querySelector(".card");
+    uR.forEach(uR.drop.cart.all_items,function(item) {
+      var product = uR.drop.products[item.product_id];
+      item.display_name = product.display_name;
+      item.unit_price = product.unit_price;
     });
     riot.update("cart-button");
   });
@@ -74,17 +92,20 @@
     this.unmount();
     riot.update("*");
   }
+  saveCart(e) {
+    uR.drop.saveCartItem(e.item.product_id,e.item.quantity,this);
+  }
   plusOne(e) {
     e.item.quantity++;
-    uR.drop.saveCartItem(e.item);
+    this.saveCart(e);
   }
   minusOne(e) {
     e.item.quantity--;
-    uR.drop.saveCartItem(e.item);
+    this.saveCart(e);
   }
   remove(e) {
-    e.item.quantity = 0;
-    uR.drop.saveCartItem(e.item);
+    e.item.quantity=0;
+    this.saveCart(e);
   }
   openCheckout(e) {
     uR.mountElement("checkout-modal",{mount_to:uR.config.mount_alerts_to});

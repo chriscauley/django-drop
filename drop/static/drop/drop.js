@@ -35,46 +35,27 @@
   function updateCart() {
     uR.drop.ajax({
       url: '/cart.js',
-      success: function(data) {
-        uR.drop.cart = data;
-      },
+      success: function(data) { uR.drop.cart = data; },
     });
   }
-  function saveCartItem(product,open_cart) {
-    if (typeof product == "number") {
-      product = uR.drop.products[product];
-      if (!product) { alert("Sorry this item is sold out"); return }
-      product.quantity = 1;
-    }
-    uR.drop.cart.all_items = uR.drop.cart.all_items.filter(function(c){ return c.quantity; });
-    if (uR.drop.cart.all_items.indexOf(product) == -1) {
-      product.price = parseFloat(product.unit_price);
-      uR.drop.cart.all_items.push(product);
-    }
+  function saveCartItem(product_id,quantity,riot_tag) {
     uR.drop.ajax({
       url: "/ajax/edit/",
-      data: {id: product.id, quantity: product.quantity},
+      that: riot_tag,
+      data: { id: product_id, quantity: quantity },
+      success: function(data) {
+        uR.drop.cart = data.cart;
+        riot_tag && riot_tag.update();
+      },
       method: "POST",
     });
-    open_cart && uR.drop.openCart();
   }
   function openCart() {
     uR.mountElement(uR.drop.cart_tag,{mount_to:uR.config.mount_alerts_to});
   }
   function updateTags() {
     if (!uR.drop.products || !uR.drop.cart) { return }
-    uR.drop.cart.total_price = 0;
-    uR.forEach(uR.drop.cart.all_items,function(c,i) {
-      if (c.product_id) {
-        var p = uR.drop.products[c.product_id];
-        p.quantity = c.quantity;
-        p.price = parseFloat(p.unit_price);
-        c = p;
-        uR.drop.cart.all_items[i] = c;
-      }
-      uR.drop.cart.total_price += c.quantity*c.price;
-    });
-    uR.drop.cart.all_items = uR.drop.cart.all_items.filter(function(c){ return c.quantity; });
+    console.log(uR.drop.cart_tag);
     if (uR.drop._mounted) {
       riot.update([uR.drop.cart_tag].join(','));
     } else {
