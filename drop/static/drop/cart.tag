@@ -37,7 +37,7 @@
         <div class="items">
           <div class="item" each={ cart_items }>
             <a class="fa fa-times remove" onclick={ parent.remove }></a>
-            <div class="name"><b>{ name }</b> { after }</div>
+            <div class="name"><b>{ display_name }</b> { after }</div>
             <div class="quantity">
               { quantity }
               <i class="fa fa-times"></i> { unit_price } =

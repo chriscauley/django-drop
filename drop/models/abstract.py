@@ -96,9 +96,12 @@ class BaseCart(models.Model,JsonMixin):
     session_id = None
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    json_fields = ['user_id','session_id','total_price']
-    m2m_json_fields = ['all_items']
-    all_items = property(lambda self: self.items.all())
+    json_fields = ['user_id','session_id','total_price','all_items']
+    all_items = property(lambda self:[c.as_json for c in self._updated_cart_items])
+
+    def get_json(self,request):
+        self.update(request)
+        return self.as_json
 
     class Meta(object):
         abstract = True
@@ -300,7 +303,7 @@ class BaseCartItem(models.Model,JsonMixin):
     quantity = models.IntegerField()
 
     product = models.ForeignKey(get_model_string('Product'))
-    json_fields = ['quantity','product_id']
+    json_fields = ['quantity','product_id','line_subtotal','line_total','extra_price_fields']
 
     class Meta(object):
         abstract = True
@@ -326,7 +329,7 @@ class BaseCartItem(models.Model,JsonMixin):
 
         for modifier in cart_modifiers_pool.get_modifiers_list():
             # We now loop over every registered price modifier,
-            # most of them will simply add a field to extra_payment_fields
+            # most of them will simply add a field to extra_price_fields
             modifier.process_cart_item(self, request)
 
         self.line_total = self.current_total

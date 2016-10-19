@@ -39,7 +39,7 @@ def cart_json(request):
   cart.update(request)
   for item in cart.items.all():
     item.update(request)
-  return JsonResponse(cart.as_json)
+  return JsonResponse(cart.get_json(request))
 
 @csrf_exempt
 def cart_edit(request):
@@ -55,7 +55,7 @@ def cart_edit(request):
     cart_item.delete()
 
   cart.update(request)
-  return JsonResponse({'cart': cart.as_json})
+  return JsonResponse({'cart': cart.get_json(request)})
 
 def start_checkout(request):
   cart = get_or_create_cart(request,save=True)
