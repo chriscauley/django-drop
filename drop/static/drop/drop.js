@@ -56,8 +56,10 @@
   function updateTags() {
     if (!uR.drop.products || !uR.drop.cart) { return }
     if (!uR.drop._mounted) {
-      riot.mount("cart-button,add-to-cart");
+      riot.mount(uR.drop.store_tags);
       uR.drop._mounted = true;
+    } else {
+      riot.update(uR.drop.store_tags);
     }
   }
   uR.drop = {
@@ -65,6 +67,7 @@
     updateProducts: updateProducts,
     updateCart: updateCart,
     updateTags: uR.debounce(updateTags,100),
+    store_tags: "cart-button,add-to-cart",
     openCart: openCart,
     ajax: ajax,
     cart_tag: 'shopping-cart',
