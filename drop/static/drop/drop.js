@@ -54,7 +54,11 @@
     uR.mountElement(uR.drop.cart_tag,{mount_to:uR.config.mount_alerts_to});
   }
   function updateTags() {
-    if (!uR.drop.products || !uR.drop.cart) { return }
+    if (!uR.drop.products_list || !uR.drop.cart) { return }
+    uR.forEach(uR.drop.products_list,function (p) { p.quantity = 0; })
+    uR.forEach(uR.drop.cart.all_items,function (item) {
+      if (uR.drop.products[item.product_id]) { uR.drop.products[item.product_id].quantity = item.quantity; }
+    });
     if (!uR.drop._mounted) {
       riot.mount(uR.drop.store_tags);
       uR.drop._mounted = true;
