@@ -55,11 +55,9 @@
   }
   function updateTags() {
     if (!uR.drop.products || !uR.drop.cart) { return }
-    console.log(uR.drop.cart_tag);
-    if (uR.drop._mounted) {
-      riot.update([uR.drop.cart_tag].join(','));
-    } else {
+    if (!uR.drop._mounted) {
       riot.mount("cart-button,add-to-cart");
+      uR.drop._mounted = true;
     }
   }
   uR.drop = {

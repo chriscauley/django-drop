@@ -68,6 +68,8 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     date_added = models.DateTimeField(auto_now_add=True, verbose_name=_('Date added'))
     last_modified = models.DateTimeField(auto_now=True, verbose_name=_('Last modified'))
     unit_price = CurrencyField(verbose_name=_('Unit price'),default=0)
+    categories = models.ManyToManyField(Category,blank=True)
+
     json_fields = ['display_name','active','date_added','last_modified','unit_price','model_slug','has_quantity']
     model_slug = property(lambda self: '%s.%s'%(self._meta.app_label,self._meta.model_name))
     get_admin_url = get_admin_url
@@ -95,6 +97,19 @@ class BaseProduct(PolymorphicModel,JsonMixin):
 
     # this hook is used to update the quantity of a product, is such a thing exists
     purchase = lambda self,quantity: None
+
+    def get_breadcrumbs(self):
+        out = []
+        categories = self.categories.order_by("-level")
+        if not categories:
+            return []
+        level = categories[0].level
+        for category in categories:
+            if category.level != level:
+                break
+            out.append(category)
+        out += categories[0].get_ancestors()
+        return out[::-1]
 
 #==============================================================================
 # Carts
