@@ -37,19 +37,20 @@ class JsonMixin(object):
             out[f] = [i .as_json for i in getattr(self,f)]
         return out
 
-class Category(NamedTreeModel):
-  slug = property(lambda self: slugify(self.name))
-  def get_ancestors(self):
-    out = []
-    category = self.parent
-    while category:
-      out.append(category)
-      category = category.parent
-    return out
-  def get_absolute_url(self):
-    if self.parent:
-      return "/search/%s_%s/%s_%s/"%(self.parent.id,self.parent.slug,self.id,self.slug)
-    return "/search/%s_%s/"%(self.id,self.slug)
+class Category(NamedTreeModel,JsonMixin):
+    json_fields = ['id','name']
+    slug = property(lambda self: slugify(self.name))
+    def get_ancestors(self):
+        out = []
+        category = self.parent
+        while category:
+            out.append(category)
+            category = category.parent
+        return out
+    def get_absolute_url(self):
+        if self.parent:
+            return "/search/%s_%s/%s_%s/"%(self.parent.id,self.parent.slug,self.id,self.slug)
+        return "/search/%s_%s/"%(self.id,self.slug)
 
 #==============================================================================
 # Product
