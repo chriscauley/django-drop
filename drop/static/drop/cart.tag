@@ -51,12 +51,15 @@
           <div class="item" each={ uR.drop.cart.all_items }>
             <a class="fa fa-times remove" onclick={ parent.remove }></a>
             <div class="name"><b>{ display_name }</b> { after }</div>
-            <div class="quantity">
+            <div class="quantity" if={ has_quantity }>
               { quantity }
               <i class="fa fa-times"></i> { unit_price } =
               <span class="total">${ line_subtotal }</span>
               <a class="fa fa-plus-circle increment" onclick={ parent.plusOne }></a>
               <a class="fa fa-minus-circle decrement" onclick={ parent.minusOne }></a>
+            </div>
+            <div class={ !has_quantity }>
+              <span class="total">${ line_subtotal }</span>
             </div>
             <div class="extra_price_field" each={ field in extra_price_fields }>
               <div class="description">{ field[0] }</div>

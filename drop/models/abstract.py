@@ -54,9 +54,10 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     date_added = models.DateTimeField(auto_now_add=True, verbose_name=_('Date added'))
     last_modified = models.DateTimeField(auto_now=True, verbose_name=_('Last modified'))
     unit_price = CurrencyField(verbose_name=_('Unit price'),default=0)
-    json_fields = ['display_name','active','date_added','last_modified','unit_price','model_slug']
+    json_fields = ['display_name','active','date_added','last_modified','unit_price','model_slug','has_quantity']
     model_slug = property(lambda self: '%s.%s'%(self._meta.app_label,self._meta.model_name))
     get_admin_url = get_admin_url
+    has_quantity = False
     class Meta(object):
         abstract = True
         app_label = 'drop'
