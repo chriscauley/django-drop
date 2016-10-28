@@ -38,7 +38,7 @@
 </cart-button>
 
 <shopping-cart>
-  <div class="mask" onclick={ close }></div>
+  <div ur-mask onclick={ close }></div>
   <dialog open>
     <a class="close" onclick={ close }>&times;</a>
     <div class="card">
@@ -116,7 +116,7 @@
 </shopping-cart>
 
 <checkout-modal>
-  <div class="mask" onclick={ close }></div>
+  <div ur-mask onclick={ close }></div>
   <dialog open>
     <div class="card">
       <div class="card-content">

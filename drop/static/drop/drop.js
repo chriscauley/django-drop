@@ -53,6 +53,7 @@
   function openCart() {
     uR.mountElement(uR.drop.cart_tag,{mount_to:uR.config.mount_alerts_to});
   }
+  openCart = uR.auth.loginRequired(openCart)
   function updateTags() {
     if (!uR.drop.products_list || !uR.drop.cart) { return }
     uR.forEach(uR.drop.products_list,function (p) { p.quantity = 0; })
