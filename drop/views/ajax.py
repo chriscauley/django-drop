@@ -122,7 +122,8 @@ def admin_add(request):
   return HttpResponse(str(product.in_stock))
 
 #! TODO this should be moved to a separate app to remove global dependency on djstripe
-from djstripe.models import stripe
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def stripe_payment(request):
   # everything until the try/except should be abstracted elsewhere

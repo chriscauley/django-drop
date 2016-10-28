@@ -158,7 +158,8 @@
       success: function(data) {
         target.setAttribute("data-loading","spinner");
         window.location = data.next;
-      }
+      },
+      error: function(data) { alert('an unknown error has occurred') }
     });
   }
 </checkout-modal>
