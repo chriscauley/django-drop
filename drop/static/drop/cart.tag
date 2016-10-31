@@ -39,44 +39,47 @@
 
 <shopping-cart>
   <div ur-mask onclick={ close }></div>
-  <dialog open>
+  <dialog open class="{ uR.theme.modal_outer }">
     <a class="close" onclick={ close }>&times;</a>
-    <div class="card">
-      <div class="card-content">
-        <div class="card-title">
-          Shopping Cart
-        </div>
-        <div if={ !uR.drop.cart.all_items.length }>Your cart is empty</div>
-        <div class="items">
-          <div class="item" each={ uR.drop.cart.all_items }>
-            <a class="fa fa-times remove" onclick={ parent.remove }></a>
-            <div class="name"><b>{ display_name }</b> { after }</div>
-            <div class="quantity" if={ has_quantity }>
-              { quantity }
-              <i class="fa fa-times"></i> { unit_price } =
-              <span class="total">${ line_subtotal }</span>
+    <div class="{ uR.theme.modal_header }">
+      <h3>Shopping Cart</h3>
+    </div>
+    <div class="{ uR.theme.modal_content }">
+      <div if={ !uR.drop.cart.all_items.length }>Your cart is empty</div>
+      <div class={ uR.theme.cart_items }>
+        <div class="item" each={ uR.drop.cart.all_items }>
+          <div class="name">
+            <b>{ display_name }</b> { after }<br/>
+            <a class="remove" onclick={ parent.remove }>Remove</a>
+          </div>
+          <div class="price-box" if={ has_quantity }>
+            <div class="unit-price"> ${ unit_price }</div>
+            <div class="quantity">
               <a class="fa fa-plus-circle increment" onclick={ parent.plusOne }></a>
               <a class="fa fa-minus-circle decrement" onclick={ parent.minusOne }></a>
-            </div>
-            <div class={ !has_quantity }>
-              <span class="total">${ line_subtotal }</span>
-            </div>
-            <div class="extra_price_field" each={ field in extra_price_fields }>
-              <div class="description">{ field[0] }</div>
-              <div class="amount">{ field[1] }</div>
-            </div>
+              <i class="fa fa-times"></i> { quantity }
+              </div>
+            <span class="total">${ line_subtotal }</span>
+          </div>
+          <div if={ !has_quantity } class="price-box">
+            <span class="total">${ line_subtotal }</span>
+          </div>
+          <div class="extra_price_field" each={ field in extra_price_fields }>
+            <div class="description">{ field[0] }</div>
+            <div class="amount">{ field[1] }</div>
           </div>
         </div>
-        <div class="checkout-box">
-          <div class="subtotals"></div>
-          Order Total: <b>${ uR.drop.cart.total_price }</b>
-        </div>
-        <div class="alert alert-danger" style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
       </div>
-      <div class="card-action valign-wrapper">
-        <a onclick={ close }>&laquo; Keep Shopping</a>
-        <button onclick={ openCheckout } class="right btn blue" alt="Buy it Now">Checkout</button>
+      <div class="checkout-box">
+        <div class="subtotals"></div>
+        Order Total: <b>${ uR.drop.cart.total_price }</b>
       </div>
+      <div class="alert alert-danger" style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
+    </div>
+    <div class="{ uR.theme.modal_footer } valign-wrapper">
+      <a onclick={ close }>&laquo; Keep Shopping</a>
+      <button onclick={ stripeCheckout } class="right { uR.config.btn_primary }"
+              alt="Checkout with Credit Card">Checkout with Credit Card</button>
     </div>
   </dialog>
 
@@ -87,13 +90,13 @@
       var product = uR.drop.products[item.product_id];
       item.display_name = product.display_name;
       item.unit_price = product.unit_price;
+      item.has_quantity = product.has_quantity;
     });
     riot.update("cart-button");
   });
 
   close(e) {
     this.unmount();
-    riot.update("*");
   }
   saveCart(e) {
     uR.drop.saveCartItem(e.item.product_id,e.item.quantity,this);
@@ -110,18 +113,24 @@
     e.item.quantity=0;
     this.saveCart(e);
   }
-  openCheckout(e) {
-    uR.mountElement("checkout-modal",{mount_to:uR.config.mount_alerts_to});
+  stripeCheckout(e) {
+    uR.mountElement("stripe-checkout",{mount_to:uR.config.mount_alerts_to});
   }
 </shopping-cart>
 
-<checkout-modal>
+<stripe-checkout>
   <div ur-mask onclick={ close }></div>
-  <dialog open>
-    <div class="card">
-      <div class="card-content">
-        <ur-form schema={ schema } initial={ initial }></ur-form>
-      </div>
+  <dialog open class={ uR.theme.modal_outer }>
+    <a class="close" onclick={ close }>&times;</a>
+    <div class={ uR.theme.modal_header }>
+      <h3>Checkout with Stripe</h3>
+    </div>
+    <div class={ uR.theme.modal_content }>
+      <ur-form schema={ schema } initial={ initial }>
+        <yield to="button_div">
+          <div class="stripe_logo"></div>
+        </yield>
+      </ur-form>
     </div>
   </dialog>
 
@@ -162,4 +171,7 @@
       error: function(data) { alert('an unknown error has occurred') }
     });
   }
-</checkout-modal>
+  close(e) {
+    this.unmount();
+  }
+</stripe-checkout>
