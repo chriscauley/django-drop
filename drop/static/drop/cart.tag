@@ -136,13 +136,19 @@
 
   var self = this;
   this.schema = [
-    {name: 'number', label: "Credit Card Number", type: "tel"},
-    {name: 'cvc', label: "CVC Code", type: "number"},
-    {name: 'exp_month', label: "Expiration Month", type: "number",max_length: 2},
-    {name: 'exp_year', label: "Expiration Year", type: "number",max_length: 4},
+    {
+      name: 'number', label: "Credit Card Number", type: "tel",
+      onMount: function() { $("stripe-checkout [name=number]").payment("formatCardNumber"); }
+    },
+    { name: 'exp_month', label: "Expiration Month", type: "number", max_length: 2 },
+    { name: 'exp_year', label: "Expiration Month", type: "number", max_length: 2 },
+    {
+      name: 'cvc', label: "CVC Code", type: "number",
+      onMount: function() { $("stripe-checkout [name=cvc]").payment("formatCardCVC"); }
+    },
   ];
   if (uR.DEBUG && window.location.search.indexOf("cheat") != -1) {
-    this.initial = {number: '4111 1111 1111 1111', cvc: '123', exp_month: '01',exp_year: 2019}
+    this.initial = {number: '4111 1111 1111 1111', cvc: '123', expiry: "01 / 19" }
   }
   submit(ur_form) {
     self.root.querySelector("ur-form").setAttribute("data-loading","spinner");
