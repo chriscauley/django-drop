@@ -40,9 +40,9 @@
 <shopping-cart>
   <div ur-mask onclick={ close }></div>
   <dialog open class="{ uR.theme.modal_outer }">
-    <a class="close" onclick={ close }>&times;</a>
     <div class="{ uR.theme.modal_header }">
       <h3>Shopping Cart</h3>
+      <a class="close" onclick={ close }>&times;</a>
     </div>
     <div class="{ uR.theme.modal_content }">
       <div if={ !uR.drop.cart.all_items.length }>Your cart is empty</div>
@@ -121,12 +121,12 @@
 <stripe-checkout>
   <div ur-mask onclick={ close }></div>
   <dialog open class={ uR.theme.modal_outer }>
-    <a class="close" onclick={ close }>&times;</a>
     <div class={ uR.theme.modal_header }>
+      <a class="close" onclick={ close }>&times;</a>
       <h3>Checkout with Stripe</h3>
     </div>
     <div class={ uR.theme.modal_content }>
-      <ur-form schema={ schema } initial={ initial }>
+      <ur-form schema={ schema } initial={ initial } success_text="Pay ${ uR.drop.cart.total_price }">
         <yield to="button_div">
           <div class="stripe_logo"></div>
         </yield>
@@ -148,7 +148,7 @@
     },
   ];
   if (uR.DEBUG && window.location.search.indexOf("cheat") != -1) {
-    this.initial = {number: '4111 1111 1111 1111', cvc: '123', expiry: "01 / 19" }
+    this.initial = {number: "4111 1111 1111 1111", cvc: '123', exp_month: "01", exp_date: "2019" }
   }
   submit(ur_form) {
     self.root.querySelector("ur-form").setAttribute("data-loading","spinner");
