@@ -5,6 +5,7 @@ from django.template.response import TemplateResponse
 
 from drop.models.productmodel import Product
 
+# Use django next please to paginate this
 def index(request):
     return TemplateResponse(request,"drop/product_list.html",
                             {'object_list':Product.objects.filter(active=True)})

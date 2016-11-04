@@ -2,7 +2,6 @@
 from django.conf.urls import include, url
 
 from drop import views
-from drop.views.product import ProductListView
 
 urlpatterns = [
   url(r'^$',views.product.index,name='product_list'),
