@@ -5,7 +5,7 @@ from drop import views
 from drop.views.product import ProductListView
 
 urlpatterns = [
-  url(r'^$',ProductListView.as_view(),name='product_list'),
+  url(r'^$',views.product.index,name='product_list'),
   url(r'^product/(\d+)/([0-9A-Za-z-_.//]+)/$', views.product.detail, name='product_detail'),
   url(r'^products.js',views.ajax.products_json,name='products_json'),
   url(r'^cart.js$',views.ajax.cart_json,name='cart_json'),

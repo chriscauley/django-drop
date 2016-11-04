@@ -4,20 +4,10 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
 from drop.models.productmodel import Product
-from drop.views import (DropListView, DropDetailView)
 
-class ProductListView(DropListView):
-    """
-    This view handles displaying the product catalogue to customers.
-    It filters out inactive products and shows only those that are active.
-    """
-    generic_template = 'drop/product_list.html'
-
-    def get_queryset(self):
-        """
-        Return all active products.
-        """
-        return Product.objects.filter(active=True)
+def index(request):
+    return TemplateResponse(request,"drop/product_list.html",
+                            {'object_list':Product.objects.filter(active=True)})
 
 def detail(request,object_id,slug=None):
     object = get_object_or_404(Product,id=object_id)

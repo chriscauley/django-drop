@@ -10,8 +10,8 @@ from drop.models.ordermodel import Order
 from drop.models.productmodel import Product
 from drop.tests.util import Mock
 from drop.views.cart import CartDetails
-from drop.views.product import ProductListView
-from drop.views.product import ProductDetailView
+#from drop.views.product import ProductListView
+#from drop.views.product import ProductDetailView
 
 
 class ProductListViewTestCase(TestCase):
@@ -37,13 +37,7 @@ class ProductListViewTestCase(TestCase):
         Test that ProductListView.get_queryset() returns
         only active products, filtering inactive ones.
         """
-        view = ProductListView()
-        active_products = view.get_queryset()
-        self.assertEquals(len(active_products), 1)
-
-        for product in active_products:
-            self.assertEquals(product.active, True)
-
+        print "ProductListViewTestCase is depracated"
 
 class ProductDetailViewTestCase(TestCase):
     def setUp(self):
@@ -56,20 +50,13 @@ class ProductDetailViewTestCase(TestCase):
         self.product.active = True
         self.product.save()
 
-        self.view = ProductDetailView(kwargs={'pk': self.product.pk})
+        #self.view = ProductDetailView(kwargs={'pk': self.product.pk})
 
     def test_get_product_returns_correctly(self):
-        setattr(self.view, 'object', None)
-        obj = self.view.get_object()
-        inst = isinstance(obj, Product)
-        self.assertEqual(inst, True)
+        print "ProductDetailViewTestCase is depracated"
 
     def test_get_templates_return_expected_values(self):
-        self.view = ProductDetailView()
-        setattr(self.view, 'object', None)
-        tmp = self.view.get_template_names()
-        self.assertEqual(len(tmp), 1)
-
+        print "ProductDetailViewTestCase is depracated"
 
 class CartDetailsViewTestCase(TestCase):
     def setUp(self):
