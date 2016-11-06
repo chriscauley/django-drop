@@ -164,7 +164,7 @@
       return;
     }
 
-    uR.ajax({
+    uR.drop.ajax({
       method: "POST",
       url: "/stripe/payment/",
       data: {token: response.id,total:uR.drop.cart.total_price},

@@ -15,6 +15,7 @@ from drop.util.cart import get_or_create_cart
 
 import json, datetime
 from decimal import Decimal
+from djstripe.models import Customer
 
 DROP = getattr(settings,"DROP",{})
 
@@ -106,7 +107,7 @@ def admin_page(request):
 def admin_products_json(request):
   extra_fields = ['purchase_url','purchase_domain','purchase_url2','purchase_domain2',
                   'purchase_quantity','in_stock']
-  out = {product.pk:{k:getattr(product,k) for k in extra_fields}
+  out = {product.pk:{k:getattr(product,k,None) for k in extra_fields}
          for product in Product.objects.filter(active=True)}
   return HttpResponse("window.PRODUCTS_EXTRA = %s;"%json.dumps(out))
 
@@ -142,7 +143,8 @@ def stripe_payment(request):
       currency="usd",
       source=request.POST['token'],
       description="Payment for order #%s"%order.id,
-      metadata={"order_id": order.id}
+      metadata={"order_id": order.id},
+      customer=Customer.get_or_create(subscriber=order.user)[1],
     )
   except stripe.error.CardError,e:
     error = "An error made while processing your payment: %s"%e
