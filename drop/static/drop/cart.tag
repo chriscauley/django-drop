@@ -42,7 +42,6 @@
   <dialog open class="{ uR.theme.modal_outer }">
     <div class="{ uR.theme.modal_header }">
       <h3>Shopping Cart</h3>
-      <a class="close" onclick={ close }>&times;</a>
     </div>
     <div class="{ uR.theme.modal_content }">
       <div if={ !uR.drop.cart.all_items.length }>Your cart is empty</div>
@@ -78,7 +77,7 @@
     </div>
     <div class="{ uR.theme.modal_footer } valign-wrapper">
       <a onclick={ close }>&laquo; Keep Shopping</a>
-      <button onclick={ stripeCheckout } class="right { uR.config.btn_primary }"
+      <button onclick={ stripeCheckout } class="{ uR.config.btn_primary }"
               alt="Checkout with Credit Card">Checkout with Credit Card</button>
     </div>
   </dialog>
