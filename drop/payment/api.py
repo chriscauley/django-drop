@@ -45,13 +45,15 @@ class PaymentAPI(DropAPI):
             payment_method=payment_method)
         
         if save and self.is_order_paid(order):
+            old_status = order.status
             # Set the order status:
             order.status = Order.COMPLETED
             order.save()
 
-            # fire the purchase method for products to update inventory or whatever
-            for item in order.items.all():
-                item.product.purchase(item.quantity)
+            if old_status < Order.COMPLETED:
+                # fire the purchase method for products to update inventory or whatever
+                for item in order.items.all():
+                    item.product.purchase(order.user,item.quantity)
             # empty the related cart
             try:
                 cart = Cart.objects.get(pk=order.cart_pk)
