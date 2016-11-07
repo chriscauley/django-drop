@@ -140,14 +140,15 @@
       onMount: function() { $("stripe-checkout [name=number]").payment("formatCardNumber"); }
     },
     { name: 'exp_month', label: "Expiration Month", type: "number", max_length: 2 },
-    { name: 'exp_year', label: "Expiration Month", type: "number", max_length: 2 },
+    { name: 'exp_year', label: "Expiration Year", type: "number", max_length: 2 },
     {
       name: 'cvc', label: "CVC Code", type: "number",
-      onMount: function() { $("stripe-checkout [name=cvc]").payment("formatCardCVC"); }
+      //onMount: function() { $("stripe-checkout [name=cvc]").payment("formatCardCVC"); }
     },
+    //{ name: 'customer', }
   ];
   if (uR.DEBUG && window.location.search.indexOf("cheat") != -1) {
-    this.initial = {number: "4111 1111 1111 1111", cvc: '123', exp_month: "01", exp_date: "2019" }
+    this.initial = {number: "4111 1111 1111 1111", cvc: '123', exp_month: "01", exp_year: "2019", customer:'cus_9OVOTsrv4LwJo6' }
   }
   submit(ur_form) {
     self.root.querySelector("ur-form").setAttribute("data-loading","spinner");

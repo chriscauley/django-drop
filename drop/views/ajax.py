@@ -8,14 +8,12 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from drop.models import CartItem, Order, Product
+from drop.models import CartItem, Order, Product, Cart
 from drop.discount.models import ProductDiscount
-from drop.payment.api import PaymentAPI
 from drop.util.cart import get_or_create_cart
 
 import json, datetime
 from decimal import Decimal
-from djstripe.models import Customer
 
 DROP = getattr(settings,"DROP",{})
 
@@ -123,6 +121,7 @@ def admin_add(request):
   return HttpResponse(str(product.in_stock))
 
 #! TODO this should be moved to a separate app to remove global dependency on djstripe
+from djstripe.models import Customer
 import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -140,14 +139,32 @@ def stripe_payment(request):
   try:
     charge = stripe.Charge.create(
       amount=int(order.order_total*100), # Amount in cents
-      currency="usd",
       source=request.POST['token'],
+      currency="usd",
       description="Payment for order #%s"%order.id,
       metadata={"order_id": order.id},
-      customer=Customer.get_or_create(subscriber=order.user)[1],
     )
   except stripe.error.CardError,e:
     error = "An error made while processing your payment: %s"%e
     return JsonResponse({'errors': {'non_field_error': error}},status=400)
-  PaymentAPI().confirm_payment(order, Decimal(charge['amount'])/100, charge['id'], 'Stripe Token')
+  # empty the related cart                                                                                   
+  try:
+    cart = Cart.objects.get(pk=order.cart_pk)
+    cart.empty()
+  except Cart.DoesNotExist:
+    pass
   return JsonResponse({'next': reverse('checkout-thank_you',args=[order.pk])})
+
+from django.dispatch import receiver
+from djstripe import signals
+
+from drop.payment.api import PaymentAPI
+  
+@receiver(signals.WEBHOOK_SIGNALS['charge.succeeded'])
+def process(sender,**kwargs):
+  amount = kwargs['event'].webhook_message['object']['amount']
+  obj_id = kwargs['event'].webhook_message['object']['id']
+  metadata = kwargs['event'].webhook_message['object']['metadata']
+  if 'order_id' in metadata:
+    order = Order.objects.get(pk=metadata['order_id'])
+    PaymentAPI().confirm_payment(order, Decimal(amount)/100, obj_id, 'Stripe Token')
