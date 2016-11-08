@@ -97,7 +97,10 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     get_product_reference = lambda self: unicode(self.pk)
 
     # this hook is used to update the quantity of a product, is such a thing exists
-    purchase = lambda self,quantity: None
+    purchase = lambda self,user,quantity: None
+
+    # hook to reverse the effects of purchase
+    refund = lambda self,user,quantity: None
 
     def get_breadcrumbs(self):
         out = []
@@ -380,13 +383,12 @@ class BaseOrder(models.Model):
     like the status, shipping costs, taxes, etc.
     """
 
+    REFUNDED = -10  # Order was canceled via the PaymentAPI
     PROCESSING = 10  # New order, addresses and shipping/payment methods chosen (user is in the shipping backend)
     CONFIRMING = 20  # The order is pending confirmation (user is on the confirm view)
     CONFIRMED = 30  # The order was confirmed (user is in the payment backend)
     COMPLETED = 40  # Payment backend successfully completed
     SHIPPED = 50  # The order was shipped to client
-    CANCELED = 60  # The order was canceled
-    CANCELLED = CANCELED  # DEPRECATED SPELLING
 
     PAYMENT = 30  # DEPRECATED!
 
@@ -396,7 +398,6 @@ class BaseOrder(models.Model):
         (CONFIRMED, _('Confirmed')),
         (COMPLETED, _('Completed')),
         (SHIPPED, _('Shipped')),
-        (CANCELED, _('Canceled')),
     )
 
     # If the user is null, the order was created with a session
@@ -431,7 +432,6 @@ class BaseOrder(models.Model):
     def is_paid(self):
         """Has this order been integrally paid for?"""
         return self.amount_paid >= self.order_total
-    is_payed = is_paid #Backward compatability, deprecated spelling
 
     def is_completed(self):
         return self.status == self.COMPLETED
@@ -444,14 +444,11 @@ class BaseOrder(models.Model):
         """
         The amount paid is the sum of related orderpayments
         """
-        from drop.models import OrderPayment
-        sum_ = OrderPayment.objects.filter(order=self).aggregate(
-                sum=Sum('amount'))
+        sum_ = self.orderpayment_set.filter(refunded=False).aggregate(sum=Sum('amount'))
         result = sum_.get('sum')
         if result is None:
             result = Decimal(0)
         return result
-    amount_payed = amount_paid #Backward compatability, deprecated spelling
 
     @property
     def shipping_costs(self):

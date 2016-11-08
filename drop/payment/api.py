@@ -9,8 +9,13 @@ from drop.models import Cart
 from drop.models.ordermodel import OrderPayment
 from drop.models.ordermodel import Order
 from drop.drop_api import DropAPI
-from drop.order_signals import completed
+from drop.order_signals import completed, refunded
+from django.contrib import messages
 from django.core.urlresolvers import reverse
+
+def messages_success(request,message):
+    if request and message:
+        messages.success(request.message)
 
 class PaymentAPI(DropAPI):
     """
@@ -37,23 +42,23 @@ class PaymentAPI(DropAPI):
         The optional save argument allows backends to explicitly not save the
         order yet
         """
-        OrderPayment.objects.create(
+        #! TODO this bit should probably be in the "if save..." block below. Check rest of code base first
+        OrderPayment.objects.get_or_create(
             order=order,
             # How much was paid with this particular transfer
             amount=Decimal(amount),
             transaction_id=transaction_id,
             payment_method=payment_method)
-        
+
         if save and self.is_order_paid(order):
-            old_status = order.status
+            if order.status < Order.COMPLETED:
+                # first time completing order. fire the purchase method for products to update inventory or whatever
+                for item in order.items.all():
+                    item.product.purchase(order.user,item.quantity)
             # Set the order status:
             order.status = Order.COMPLETED
             order.save()
 
-            if old_status < Order.COMPLETED:
-                # fire the purchase method for products to update inventory or whatever
-                for item in order.items.all():
-                    item.product.purchase(order.user,item.quantity)
             # empty the related cart
             try:
                 cart = Cart.objects.get(pk=order.cart_pk)
@@ -63,6 +68,26 @@ class PaymentAPI(DropAPI):
 
             completed.send(sender=self, order=order)
 
+    def refund_order(self,order,request=None):
+        if not order.status in [Order.COMPLETED,SHIPPED]:
+            # Already done!
+            return
+
+        for item in order.items.all():
+            message = item.product.refund(order,user,item.quantity)
+            messages_success(request,message)
+        order.status = Order.REFUNDED
+        order.save()
+
+        for payment in order.orderpayment_set.filter(refunded=False):
+            if False: # payment.payment_method == "stripe", for example
+                pass
+            else: # catch all
+                m = "%s was marked as refunded, but no refund could be issued for this payment method."%order
+                messages_success(request,m)
+                payment.refunded = True
+                payment.save()
+        refunded.send(sender=self, order=order)
 
     #==========================================================================
     # URLS
