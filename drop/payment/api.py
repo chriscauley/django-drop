@@ -13,9 +13,9 @@ from drop.order_signals import completed, refunded
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 
-def messages_success(request,message):
+def send_message(request,message,status=messages.SUCCESS):
     if request and message:
-        messages.success(request.message)
+        messages.add_message(request,status,message)
 
 class PaymentAPI(DropAPI):
     """
@@ -69,13 +69,13 @@ class PaymentAPI(DropAPI):
             completed.send(sender=self, order=order)
 
     def refund_order(self,order,request=None):
-        if not order.status in [Order.COMPLETED,SHIPPED]:
-            # Already done!
+        if not order.status in [Order.COMPLETED,Order.SHIPPED]:
+            send_message(request,"Cannot refund this order because it was never completed.",messages.ERROR)
             return
 
         for item in order.items.all():
-            message = item.product.refund(order,user,item.quantity)
-            messages_success(request,message)
+            message = item.product.refund(order.user,item.quantity)
+            send_message(request,message)
         order.status = Order.REFUNDED
         order.save()
 
@@ -84,7 +84,7 @@ class PaymentAPI(DropAPI):
                 pass
             else: # catch all
                 m = "%s was marked as refunded, but no refund could be issued for this payment method."%order
-                messages_success(request,m)
+                send_message(request,m,messages.WARNING)
                 payment.refunded = True
                 payment.save()
         refunded.send(sender=self, order=order)

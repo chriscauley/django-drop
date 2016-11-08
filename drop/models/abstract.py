@@ -398,6 +398,7 @@ class BaseOrder(models.Model):
         (CONFIRMED, _('Confirmed')),
         (COMPLETED, _('Completed')),
         (SHIPPED, _('Shipped')),
+        (REFUNDED, _('Refunded')),
     )
 
     # If the user is null, the order was created with a session
