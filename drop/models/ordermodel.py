@@ -101,6 +101,7 @@ class OrderPayment(models.Model):
     payment_method = models.CharField(max_length=255,
             verbose_name=_('Payment method'),
             help_text=_("The payment backend used to process the purchase"))
+    refunded = models.BooleanField(default=False)
 
     class Meta(object):
         app_label = 'drop'
