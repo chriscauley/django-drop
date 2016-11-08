@@ -42,7 +42,7 @@ class ForwardFundBackend(object):
 
     def _create_confirmed_order(self, order, transaction_id):
         """
-        Create an order from the current cart but does not mark it as payed.
+        Create an order from the current cart but does not mark it as paid.
         Instead mark the order as CONFIRMED only, as somebody manually has to
         check bank account statements and mark the payments.
         """

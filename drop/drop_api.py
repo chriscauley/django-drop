@@ -44,7 +44,6 @@ class DropAPI(object):
     def is_order_paid(self, order):
         """Whether the passed order is fully paid or not."""
         return order.is_paid()
-    is_order_payed = is_order_paid #Backward compatability, deprecated spelling
 
     def is_order_completed(self, order):
         return order.is_completed()

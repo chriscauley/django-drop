@@ -34,8 +34,6 @@ class DropApiTestCase(TestCase):
     def test_is_order_paid(self):
         api = DropAPI()
         # Ensure deprecated method still works
-        res = api.is_order_payed(self.order)
-        self.assertEqual(res, False)
         res = api.is_order_paid(self.order)
         self.assertEqual(res, False)
 

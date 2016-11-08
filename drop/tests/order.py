@@ -122,8 +122,6 @@ class OrderTestCase(TestCase):
 
     def test_is_paid_works(self):
         # Ensure deprecated method still works
-        ret = self.order.is_payed()
-        self.assertEqual(ret, False)
         ret = self.order.is_paid()
         self.assertEqual(ret, False)
 
