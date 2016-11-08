@@ -69,7 +69,7 @@ def order_required(url_name='cart'):
     def decorator(func):
         def inner(request, *args, **kwargs):
             order = get_order_from_request(request)
-            if order is None or getattr(order, 'status', Order.COMPLETED) >= Order.COMPLETED:
+            if order is None or getattr(order, 'status', Order.PAID) >= Order.PAID:
                 return HttpResponseRedirect(reverse(url_name))
             return func(request, *args, **kwargs)
         return wraps(func)(inner)

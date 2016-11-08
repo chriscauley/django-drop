@@ -9,7 +9,7 @@ from drop.models import Cart
 from drop.models.ordermodel import OrderPayment
 from drop.models.ordermodel import Order
 from drop.drop_api import DropAPI
-from drop.order_signals import completed, refunded
+from drop.order_signals import paid, refunded
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 
@@ -51,12 +51,12 @@ class PaymentAPI(DropAPI):
             payment_method=payment_method)
 
         if save and self.is_order_paid(order):
-            if order.status < Order.COMPLETED:
+            if order.status < Order.PAID:
                 # first time completing order. fire the purchase method for products to update inventory or whatever
                 for item in order.items.all():
                     item.product.purchase(order.user,item.quantity)
             # Set the order status:
-            order.status = Order.COMPLETED
+            order.status = Order.PAID
             order.save()
 
             # empty the related cart
@@ -66,11 +66,11 @@ class PaymentAPI(DropAPI):
             except Cart.DoesNotExist:
                 pass
 
-            completed.send(sender=self, order=order)
+            paid.send(sender=self, order=order)
 
     def refund_order(self,order,request=None):
-        if not order.status in [Order.COMPLETED,Order.SHIPPED]:
-            send_message(request,"Cannot refund this order because it was never completed.",messages.ERROR)
+        if not order.status in [Order.PAID,Order.SHIPPED]:
+            send_message(request,"Cannot refund this order because it was never paid.",messages.ERROR)
             return
 
         for item in order.items.all():

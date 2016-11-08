@@ -45,9 +45,6 @@ class DropAPI(object):
         """Whether the passed order is fully paid or not."""
         return order.is_paid()
 
-    def is_order_completed(self, order):
-        return order.is_completed()
-
     def get_order_total(self, order):
         """The total amount to be charged for passed order"""
         return order.order_total

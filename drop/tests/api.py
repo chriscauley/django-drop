@@ -37,9 +37,9 @@ class DropApiTestCase(TestCase):
         res = api.is_order_paid(self.order)
         self.assertEqual(res, False)
 
-    def test_is_order_complete(self):
+    def test_is_order_paid(self):
         api = DropAPI()
-        res = api.is_order_completed(self.order)
+        res = api.is_order_paid(self.order)
         self.assertEqual(res, False)
 
     def test_get_order_total(self):

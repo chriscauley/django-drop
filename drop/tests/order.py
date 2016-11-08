@@ -116,9 +116,9 @@ class OrderTestCase(TestCase):
 
         self.order.save()
 
-    def test_order_is_completed_works(self):
-        ret = self.order.is_completed()
-        self.assertNotEqual(ret, Order.COMPLETED)
+    def test_order_is_paid_works(self):
+        ret = self.order.is_paid()
+        self.assertNotEqual(ret, Order.PAID)
 
     def test_is_paid_works(self):
         # Ensure deprecated method still works

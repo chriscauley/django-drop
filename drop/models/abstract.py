@@ -387,7 +387,7 @@ class BaseOrder(models.Model):
     PROCESSING = 10  # New order, addresses and shipping/payment methods chosen (user is in the shipping backend)
     CONFIRMING = 20  # The order is pending confirmation (user is on the confirm view)
     CONFIRMED = 30  # The order was confirmed (user is in the payment backend)
-    COMPLETED = 40  # Payment backend successfully completed
+    PAID = 40  # Payment backend successfully completed
     SHIPPED = 50  # The order was shipped to client
 
     PAYMENT = 30  # DEPRECATED!
@@ -396,7 +396,7 @@ class BaseOrder(models.Model):
         (PROCESSING, _('Processing')),
         (CONFIRMING, _('Confirming')),
         (CONFIRMED, _('Confirmed')),
-        (COMPLETED, _('Completed')),
+        (PAID, _('Paid')),
         (SHIPPED, _('Shipped')),
         (REFUNDED, _('Refunded')),
     )
@@ -433,9 +433,6 @@ class BaseOrder(models.Model):
     def is_paid(self):
         """Has this order been integrally paid for?"""
         return self.amount_paid >= self.order_total
-
-    def is_completed(self):
-        return self.status == self.COMPLETED
 
     def get_status_name(self):
         return dict(self.STATUS_CODES)[self.status]

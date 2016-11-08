@@ -13,7 +13,7 @@ success or failure)"""
 confirmed = django.dispatch.Signal(providing_args=['order'])
 
 """Emitted when the payment was received for the Order"""
-completed = django.dispatch.Signal(providing_args=['order'])
+paid = django.dispatch.Signal(providing_args=['order'])
 
 """Emitted if the payment was refused or other fatal problem"""
 refunded = django.dispatch.Signal(providing_args=['order'])

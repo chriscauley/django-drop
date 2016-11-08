@@ -58,7 +58,7 @@ class OrderAdmin(LocalizeDecimalFieldsMixin, ModelAdmin):
     def _status(self,obj=None):
         if obj:
             link = "None"
-            if obj.status in [Order.COMPLETED, Order.SHIPPED]:
+            if obj.status in [Order.PAID, Order.SHIPPED]:
                 link = "<a href='%s'>Refund Order</a>"%reverse("admin:drop_refund_order",args=[obj.id])
             return "%s<br/>Action: %s"%(obj.get_status_display(), link)
     _status.allow_tags = True
