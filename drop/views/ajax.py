@@ -167,4 +167,4 @@ def process(sender,**kwargs):
   metadata = kwargs['event'].webhook_message['object']['metadata']
   if 'order_id' in metadata:
     order = Order.objects.get(pk=metadata['order_id'])
-    PaymentAPI().confirm_payment(order, Decimal(amount)/100, obj_id, 'Stripe Token')
+    PaymentAPI().confirm_payment(order, Decimal(amount)/100, obj_id, 'stripe')
