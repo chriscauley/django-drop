@@ -156,20 +156,22 @@
     this.initial = {number: "4111 1111 1111 1111", cvc: '123', exp_month: "01", exp_year: "2019", customer:'cus_9OVOTsrv4LwJo6' }
   }
   submit(ur_form) {
+    self.error = undefined;
     self.root.querySelector("ur-form").setAttribute("data-loading","spinner");
     Stripe.card.createToken(ur_form.getData(),this.stripeResponseHandler)
   }
-  this.stripeResponseHandler = function(status,response) {
+  setError(error) {
     var ur_form = self.tags['ur-form'];
+    ur_form.non_field_error = "An error occurred while processing your payment: "+error;
+    ur_form.update();
+  }
+  this.stripeResponseHandler = function(status,response) {
     var target = self.root.querySelector("ur-form");
-
     if (response.error) {
       target.removeAttribute('data-loading');
-      ur_form.non_field_error = "An error occurred while processing your payment: "+response.error.message;
-      ur_form.update()
+      self.setError(response.error.message);
       return;
     }
-
     uR.drop.ajax({
       method: "POST",
       url: "/stripe/payment/",
@@ -179,7 +181,7 @@
         target.setAttribute("data-loading","spinner");
         window.location = data.next;
       },
-      error: function(data) { alert('an unknown error has occurred') }
+      error: function(data) { self.setError(data.error); }
     });
   }
   close(e) {

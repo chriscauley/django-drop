@@ -21,8 +21,10 @@ class Stripe(PaymentBackend):
     if order.user:
       kwargs['customer'] = customer = Customer.get_or_create(order.user)[0]
       token = kwargs.pop('source')
-      card = customer.add_card(token)
     try:
+      # both these could cause cards to be declines, so they both need to be in here
+      if customer:
+        card = customer.add_card(token)
       charge = stripe.Charge.create(**kwargs)
     except stripe.error.CardError,e:
       raise PaymentError(e)
