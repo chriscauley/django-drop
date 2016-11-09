@@ -1,6 +1,6 @@
 from django.apps import apps
-from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -8,8 +8,10 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from drop.models import CartItem, Order, Product, Cart
+from drop.backends_pool import payment_backends
 from drop.discount.models import ProductDiscount
+from drop.exceptions import PaymentError
+from drop.models import CartItem, Order, Product, Cart
 from drop.util.cart import get_or_create_cart
 
 import json, datetime
@@ -120,37 +122,23 @@ def admin_add(request):
   product.save()
   return HttpResponse(str(product.in_stock))
 
-#! TODO this should be moved to a separate app to remove global dependency on djstripe
-from djstripe.models import Customer
-import stripe
-stripe.api_key = settings.STRIPE_SECRET_KEY
-
-def stripe_payment(request):
+def payment(request,_backend):
+  backend = payment_backends.get(_backend)
   # everything until the try/except should be abstracted elsewhere
   cart = get_or_create_cart(request,save=True)
   cart.update(request)
-  try:
-    order = Order.objects.filter(cart_pk=cart.pk,status__lt=Order.PAID)[0]
-  except IndexError:
-    order = Order.objects.create_from_cart(cart,request)
+  order = Order.objects.create_from_cart(cart,request)
   if order.order_total != Decimal(request.POST['total']):
     e = "Front end and back end order totals do not match (%s != %s)"
     raise NotImplementedError(e%(order.order_total, Decimal(request.POST['total'])))
   try:
-    charge = stripe.Charge.create(
-      amount=int(order.order_total*100), # Amount in cents
-      source=request.POST['token'],
-      currency="usd",
-      description="Payment for order #%s"%order.id,
-      metadata={"order_id": order.id},
-    )
-  except stripe.error.CardError,e:
+    charge = backend.charge(order,request)
+  except PaymentError,e:
     error = "An error made while processing your payment: %s"%e
     return JsonResponse({'errors': {'non_field_error': error}},status=400)
   # empty the related cart                                                                                   
   try:
-    cart = Cart.objects.get(pk=order.cart_pk)
-    cart.empty()
+    Cart.objects.get(pk=order.cart_pk).empty()
   except Cart.DoesNotExist:
     pass
   return JsonResponse({'next': reverse('checkout-thank_you',args=[order.pk])})
