@@ -76,13 +76,18 @@
       <div class="alert alert-danger" style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
     </div>
     <div class="{ uR.theme.modal_footer } valign-wrapper">
-      <a onclick={ close }>&laquo; Keep Shopping</a>
-      <button onclick={ stripeCheckout } class="{ uR.config.btn_primary }"
-              alt="Checkout with Credit Card">Checkout with Credit Card</button>
+      <div class="payment_buttons">
+        <button each={ backends } onclick={ parent.checkout } class={ className } alt={ copy }>{ copy }</button>
+        <a onclick={ close }>&laquo; Keep Shopping</a>
+      </div>
     </div>
   </dialog>
 
   var self = this;
+  this.backends = [ //#! TODO should be uR.drop.payment_backends and should be derived from server
+    { tagname: 'stripe-checkout', copy: "Pay with Credit Card", className: uR.config.btn_primary },
+    { tagname: 'paypal-checkout', copy: "Pay with Paypal", className: "paypal_button or" },
+  ]
   this.on("update",function() {
     self.target = self.root.querySelector(".card");
     uR.forEach(uR.drop.cart.all_items,function(item) {
@@ -112,8 +117,8 @@
     e.item.quantity=0;
     this.saveCart(e);
   }
-  stripeCheckout(e) {
-    uR.mountElement("stripe-checkout",{mount_to:uR.config.mount_alerts_to});
+  checkout(e) {
+    uR.alertElement(e.item.tagname);
   }
 </shopping-cart>
 
@@ -181,3 +186,38 @@
     this.unmount();
   }
 </stripe-checkout>
+
+<paypal-checkout>
+  <div ur-mask onclick={ close }></div>
+  <dialog open class={ uR.theme.modal_outer }>
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="POST">
+      <input name="business" type="hidden" value="{ uR.drop.paypal_email }">
+      <span each={ n,i in uR.drop.cart.all_items }>
+        <input name="item_name_{ i+1 }" type="hidden" value="{ n.display_name }">
+        <input name="item_number_{ i+1 }" type="hidden" value="{ n.product_id }">
+        <input name="quantity_{ i+1 }" type="hidden" value="{ n.quantity }">
+        <input name="amount_{ i+1 }" type="hidden" value="{ n.line_total }">
+      </span>
+      <input name="notify_url" type="hidden" value="{ SHOP.base_url}/tx/rx/ipn/handler/">
+      <input name="cancel_return" type="hidden" value="{ SHOP.base_url }/shop/">
+      <input name="return" type="hidden" value="{ SHOP.base_url }/shop/">
+      <input name="invoice" type="hidden" value={ invoice_id }>
+      <input name="cmd" type="hidden" value="_cart">
+      <input type="hidden" name="upload" value="1">
+      <input type="hidden" name="tax_cart" value="0">
+      <input name="charset" type="hidden" value="utf-8">
+      <input name="currency_code" type="hidden" value="USD">
+      <input name="no_shipping" type="hidden" value="1">
+      <input type="submit"/>
+    </form>
+    <div class={ uR.theme.modal_content }>
+      Redirecting to PayPal to complete transaction.
+    </div>
+  </dialog>
+
+  this.on("mount",function() {
+    this.update();
+  //this.root.querySelector("dialog").setAttribute("data-loading",uR.config.loading_attribute);
+    //this.root.querySelector("form").submit();
+  });
+</paypal-checkout>

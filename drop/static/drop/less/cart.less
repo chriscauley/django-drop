@@ -12,6 +12,33 @@ shopping-cart,checkout-modal{
     align-items: center;
     a { line-height: 1em; }
   }
+  .payment_buttons {
+    text-align: center;
+    button {
+      display: block;
+      margin-bottom: 10px;
+      &.paypal_button {
+        background: url(/static/drop/paypal.png) no-repeat;
+        border: 0;
+        color: transparent;
+        height: 42px;
+        outline: 0;
+        width: 147px;
+      }
+      &.or {
+        margin-top: 20px;
+        position: relative;
+        &:before {
+          content: "- or -";
+          color: black;
+          position: absolute;
+          bottom: 100%;
+          left: 0;
+          width: 100%;
+        }
+      }
+    }
+  }
 }
 ur-form { display: block; }
 cart-button { float: right; }
