@@ -1,3 +1,5 @@
+#! TODO Depracated. From django-shop, not used in drop ccc 11/16
+
 # -*- coding: utf-8 -*-
 from decimal import Decimal
 from datetime import date

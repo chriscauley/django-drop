@@ -9,10 +9,8 @@ urlpatterns = [
   url(r'^products.js',views.ajax.products_json,name='products_json'),
   url(r'^cart.js$',views.ajax.cart_json,name='cart_json'),
   url(r'^ajax/', include('drop.urls.ajax')),
-  url(r'^pay/', include('drop.payment.urls')),
-  url(r'^ship/', include('drop.shipping.urls')),
   url(r'^orders/', include('drop.urls.order')),
   url(r'^checkout/', include('drop.urls.checkout')),
   url(r'^cart/', include('drop.urls.cart')),
-  url(r'^stripe/payment/$',views.ajax.stripe_payment),
+  url(r'^(stripe)/payment/$',views.ajax.payment,name="drop_payment"),
 ]

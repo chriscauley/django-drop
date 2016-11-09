@@ -1,3 +1,5 @@
+#! TODO So much depracation. Almost all this will be handled via front end validation.
+
 #-*- coding: utf-8 -*-
 """Forms for the django-drop app."""
 from django import forms
@@ -5,17 +7,20 @@ from django.conf import settings
 from django.forms.models import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 
-from drop.backends_pool import backends_pool
 from drop.models.cartmodel import CartItem
 from drop.util.loader import load_class
 
 
 def get_shipping_backends_choices():
+    if True:
+        return []
     shipping_backends = backends_pool.get_shipping_backends_list()
     return tuple([(x.url_namespace, getattr(x, 'backend_verbose_name', x.backend_name)) for x in shipping_backends])
 
 
 def get_billing_backends_choices():
+    if True:
+        return []
     billing_backends = backends_pool.get_payment_backends_list()
     return tuple([(x.url_namespace, getattr(x, 'backend_verbose_name', x.backend_name)) for x in billing_backends])
 

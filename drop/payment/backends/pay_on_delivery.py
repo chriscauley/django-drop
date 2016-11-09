@@ -1,3 +1,5 @@
+#! TODO Depracated. From django-shop, not used in drop ccc 11/16
+
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
 from django.http import HttpResponseRedirect
