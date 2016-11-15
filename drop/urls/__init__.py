@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.conf.urls import include, url
 
 from drop import views
@@ -14,3 +15,6 @@ urlpatterns = [
   url(r'^cart/', include('drop.urls.cart')),
   url(r'^(stripe)/payment/$',views.ajax.payment,name="drop_payment"),
 ]
+
+if 'drop.address' in settings.INSTALLED_APPS:
+  urlpatterns.append(url(r'^address/',include('drop.address.urls')))
