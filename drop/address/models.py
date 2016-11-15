@@ -20,16 +20,9 @@ Country: %(country)s
 
 ADDRESS_TEMPLATE = getattr(settings, 'SHOP_ADDRESS_TEMPLATE',
                            BASE_ADDRESS_TEMPLATE)
-class Country(models.Model):
-    name = models.CharField(max_length=255)
-
-    def __unicode__(self):
-        return u'%s' % self.name
-
-    class Meta(object):
-        verbose_name = _('Country')
-        verbose_name_plural = _('Countries')
-
+COUNTRY_CHOICES = [
+    ('US', 'United States of America'),
+]
 
 class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -39,7 +32,8 @@ class Address(models.Model):
     zip_code = models.CharField(_('Zip Code'), max_length=20)
     city = models.CharField(_('City'), max_length=20)
     state = models.CharField(_('State'), max_length=255)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), blank=True, null=True)
+    country = models.CharField(max_length=2,choices=COUNTRY_CHOICES,default="US")
+    schema_exclude = ['user']
 
     class Meta(object):
         verbose_name = _('Address')
