@@ -210,7 +210,6 @@
       <input name="charset" type="hidden" value="utf-8">
       <input name="currency_code" type="hidden" value="USD">
       <input name="no_shipping" type="hidden" value="1">
-      <input type="submit"/>
     </form>
     <div class={ uR.theme.modal_content }>
       Redirecting to PayPal to complete transaction.
@@ -219,7 +218,7 @@
 
   this.on("mount",function() {
     this.update();
-  //this.root.querySelector("dialog").setAttribute("data-loading",uR.config.loading_attribute);
-    //this.root.querySelector("form").submit();
+    this.root.querySelector("dialog").setAttribute("data-loading",uR.config.loading_attribute);
+    this.root.querySelector("form").submit();
   });
 </paypal-checkout>
