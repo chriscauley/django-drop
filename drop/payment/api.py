@@ -80,13 +80,20 @@ class PaymentAPI(DropAPI):
         order.save()
 
         for payment in order.orderpayment_set.filter(refunded=False):
-            if False: # payment.payment_method == "stripe", for example
-                pass
+            backend = payment_backends.get(payment.payment_method.lower())
+            if backend:
+                refund_id = backend.refund(payment.transaciton_id)
+                order.orderpayment_set.create(
+                    amount=-payment.amount,
+                    transaction_id=refund_id,
+                    payment_method=order.payment_method
+                )
+                send_message(request,"%s refunded via %s"%(payment.amount,backend.name))
             else: # catch all
                 m = "%s was marked as refunded, but no refund could be issued for this payment method."%order
                 send_message(request,m,messages.WARNING)
-                payment.refunded = True
-                payment.save()
+            payment.refunded = True
+            payment.save()
         refunded.send(sender=self, order=order)
 
     #==========================================================================
