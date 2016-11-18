@@ -2,16 +2,17 @@
   <div each={ addresses } onclick={ selectAddress }>
     { name }<br />
     { address }<br />
-    { address2 }<br />
+    <div if={ address2 }>{ address2 }</div>
     { city }, { state } { zip_code }<br />
     { country.name }<br />
   </div>
   <ur-form schema={ uR.schema.address_Address } action="/address/add/" method="POST"></ur-form>
 
-  this.on("mount",function() {
+  this.on("mount", function() {
     var query = `
     query {
       myAddresses {
+        id,
         name,
         address,
         address2,
@@ -27,12 +28,20 @@
       data: {query: query},
       success: function(data) {
         self.addresses = data.data.myAddresses;
-        console.log(data);
-        console.log(self.addresses);
       },
       that: this,
       target: this.root,
     });
   });
+  this.ajax_success = function(data,request) {
+    uR.ajax({
+      url: this.opts.post_to,
+      method: "POST",
+      data: data,
+    });
+  }
+  selectAddress(e) {
+    this.ajax_success({address_id: e.item.id});
+  }
 
 </select-address>
