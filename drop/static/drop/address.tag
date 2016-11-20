@@ -6,7 +6,7 @@
     { city }, { state } { zip_code }<br />
     { country.name }<br />
   </div>
-  <ur-form schema={ uR.schema.address_Address } action="/address/add/" method="POST"></ur-form>
+  <ur-form schema="/api/schema/address.Address/" action="/address/add/" method="POST"></ur-form>
 
   this.on("mount", function() {
     var query = `
