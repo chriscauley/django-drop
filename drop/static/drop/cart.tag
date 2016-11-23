@@ -118,7 +118,15 @@
     this.saveCart(e);
   }
   checkout(e) {
-    uR.alertElement(e.item.tagname);
+    uR.drop.ajax({
+      url: "/ajax/start_checkout/",
+      that: this,
+      target: self.root,
+      success: function(data) {
+        if (data.errors.length) { this.errors = data.error }
+        else { uR.alertElement(e.item.tagname,data); }
+      }
+    });
   }
 </shopping-cart>
 
@@ -203,7 +211,7 @@
       <input name="notify_url" type="hidden" value="{ SHOP.base_url}/tx/rx/ipn/handler/">
       <input name="cancel_return" type="hidden" value="{ SHOP.base_url }/shop/">
       <input name="return" type="hidden" value="{ SHOP.base_url }/shop/">
-      <input name="invoice" type="hidden" value={ invoice_id }>
+      <input name="invoice" type="hidden" value={ opts.order_id }>
       <input name="cmd" type="hidden" value="_cart">
       <input type="hidden" name="upload" value="1">
       <input type="hidden" name="tax_cart" value="0">

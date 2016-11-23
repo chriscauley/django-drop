@@ -68,7 +68,7 @@ def start_checkout(request):
   order.status = Order.CONFIRMED
   order.save()
   out = {
-    'order_pk': order.pk,
+    'order_id': order.id,
     'errors': []
   }
   for item in cart.items.all():
