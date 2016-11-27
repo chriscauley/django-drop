@@ -9,14 +9,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 BASE_ADDRESS_TEMPLATE = \
-_("""
-Name: %(name)s,
-Address: %(address)s,
+_("""Name: %(name)s,
+Address: %(address)s
 Zip-Code: %(zipcode)s,
 City: %(city)s,
 State: %(state)s,
-Country: %(country)s
-""")
+Country: %(country)s""")
 
 ADDRESS_TEMPLATE = getattr(settings, 'SHOP_ADDRESS_TEMPLATE',
                            BASE_ADDRESS_TEMPLATE)
@@ -48,9 +46,12 @@ class Address(models.Model):
         return self.__class__.objects.create(**new_kwargs)
 
     def as_text(self):
+        a = self.address
+        if self.address2:
+            a += "\n"+self.address2
         return ADDRESS_TEMPLATE % {
             'name': self.name,
-            'address': '%s\n%s' % (self.address, self.address2),
+            'address': a,
             'zipcode': self.zip_code,
             'city': self.city,
             'state': self.state,

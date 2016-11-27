@@ -71,8 +71,12 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     unit_price = CurrencyField(verbose_name=_('Unit price'),default=0)
     categories = models.ManyToManyField(Category,blank=True)
 
-    json_fields = ['display_name','active','date_added','last_modified','unit_price','model_slug','has_quantity']
+    json_fields = [
+        'display_name','active','date_added','last_modified','unit_price','model_slug','has_quantity',
+        'requires_shipping'
+    ]
     model_slug = property(lambda self: '%s.%s'%(self._meta.app_label,self._meta.model_name))
+    requires_shipping = False
     get_admin_url = get_admin_url
     has_quantity = False
     class Meta(object):
