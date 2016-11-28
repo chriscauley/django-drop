@@ -7,5 +7,10 @@ stripe-checkout ur-form {
     overflow: hidden;
     padding-left: 130px;
     .btn { float: right; margin-bottom: 0; }
+    @media (max-width: 400px) {
+      background-size: auto 20px;
+      padding-left: 105px;
+      .btn { padding-left: 10px; padding-right: 10px; }
+    }
   }
 }
