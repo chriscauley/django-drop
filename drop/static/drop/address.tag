@@ -15,6 +15,7 @@
     </div>
   </div>
 
+  var self = this;
   this.on("mount", function() {
     var query = `
     query {
@@ -41,14 +42,14 @@
     });
   });
   this.ajax_success = function(data,request) {
-    if (this.opts.post_to) {
+    if (self.opts.post_to) {
       uR.ajax({
-        url: this.opts.post_to,
+        url: self.opts.post_to,
         method: "POST",
         data: data,
       });
     }
-    if (this.opts.success) { this.opts.success({selected_address: data}) }
+    if (self.opts.success) { self.opts.success({selected_address: data}) }
   }
   selectAddress(e) {
     this.ajax_success(e.item);
