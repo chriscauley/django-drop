@@ -38,11 +38,11 @@
 </cart-button>
 
 <shopping-cart>
-  <div class="{ theme.outer }">
-    <div class="{ theme.header }">
+  <div class={ theme.outer }>
+    <div class={ theme.header }>
       <h3>Shopping Cart</h3>
     </div>
-    <div class="{ theme.content }">
+    <div class={ theme.content }>
       <div if={ !uR.drop.cart.all_items.length }>Your cart is empty</div>
       <div class={ uR.theme.cart_items }>
         <div class="item" each={ uR.drop.cart.all_items }>
@@ -79,6 +79,17 @@
         <div if={ !shipping_address }>
           <button class={ uR.config.btn_primary } onclick={ selectShipping }>Enter Shipping Address</button>
         </div>
+        <div if={ shipping_address }>
+          <div>
+            <h5>Ship to:</h5>
+            { shipping_address.name }<br/>
+            { shipping_address.address }<br/>
+            { shipping_address.city }
+          </div>
+          <div>
+            <button class={ uR.config.btn_primary } onclick={ selectShipping }>Change Shipping Address</button>
+          </div>
+        </div>
       </div>
       <div class="payment_buttons" if={ checkoutReady }>
         <button each={ backends } onclick={ parent.checkout } class={ className } alt={ copy }>{ copy }</button>
@@ -92,9 +103,6 @@
     { tagname: 'stripe-checkout', copy: "Pay with Credit Card", className: uR.config.btn_primary },
     { tagname: 'paypal-checkout', copy: "Pay with Paypal", className: "paypal_button or" },
   ]
-  this.on("mount", function() {
-    this.shipping_address = this.opts.selected_address;
-  })
   this.on("update",function() {
     self.target = self.root.querySelector(".card");
     uR.forEach(uR.drop.cart.all_items,function(item) {
@@ -105,6 +113,7 @@
       self.requires_shipping = self.requires_shipping || product.requires_shipping;
     });
     self.checkoutReady = true;
+    this.shipping_address = this.opts.selected_address;
     if (self.requires_shipping && !self.shipping_address) { self.checkoutReady = false }
     riot.update("cart-button");
   });
