@@ -155,7 +155,6 @@
 <stripe-checkout>
   <div class={ theme.outer }>
     <div class={ theme.header }>
-      <a class="close" onclick={ close }>&times;</a>
       <h3>Checkout with Stripe</h3>
     </div>
     <div class={ theme.content }>

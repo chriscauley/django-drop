@@ -72,7 +72,7 @@ def start_checkout(request):
     'errors': []
   }
   for item in cart.items.all():
-    if item.product.in_stock is None:
+    if not item.product.has_quantity or item.product.in_stock is None:
       continue
     if item.product.in_stock < item.quantity:
       s = "Sorry, we only have %s in stock of the following item: %s"
