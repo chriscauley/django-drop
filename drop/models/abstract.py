@@ -79,6 +79,11 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     requires_shipping = False
     get_admin_url = get_admin_url
     has_quantity = False
+    def get_purchase_error(self,quantity,cart):
+        # Overwrite this to check quantity or other availability
+        if self.has_quantity and self.in_stock < quantity:
+            s = "Sorry, we only have %s in stock of the following item: %s"
+            return s%(self.in_stock,self)
     class Meta(object):
         abstract = True
         app_label = 'drop'

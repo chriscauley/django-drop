@@ -72,11 +72,9 @@ def start_checkout(request):
     'errors': []
   }
   for item in cart.items.all():
-    if not item.product.has_quantity or item.product.in_stock is None:
-      continue
-    if item.product.in_stock < item.quantity:
-      s = "Sorry, we only have %s in stock of the following item: %s"
-      out['errors'].append(s%(item.product.in_stock,item.product))
+    restriction = item.product.get_purchase_error(item.quantity,cart)
+    if restriction:
+      out['errors'].append(restriction)
   return HttpResponse(json.dumps(out))
 
 @staff_member_required
