@@ -34,14 +34,17 @@
     });
   });
   this.ajax_success = function(data,request) {
-    uR.ajax({
-      url: this.opts.post_to,
-      method: "POST",
-      data: data,
-    });
+    if (this.opts.post_to) {
+      uR.ajax({
+        url: this.opts.post_to,
+        method: "POST",
+        data: data,
+      });
+    }
+    if (this.opts.success) { this.opts.success({selected_address: data}) }
   }
   selectAddress(e) {
-    this.ajax_success({address_id: e.item.id});
+    this.ajax_success(e.item);
   }
 
 </select-address>
