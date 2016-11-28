@@ -50,8 +50,8 @@
       method: "POST",
     });
   }
-  function openCart() {
-    uR.mountElement(uR.drop.cart_tag,{mount_to:uR.config.mount_alerts_to});
+  function openCart(data) {
+    uR.alertElement(uR.drop.cart_tag,data)
   }
   openCart = uR.auth.loginRequired(openCart)
   function updateTags() {
@@ -74,6 +74,7 @@
     updateTags: uR.debounce(updateTags,100),
     store_tags: "cart-button,add-to-cart",
     openCart: openCart,
+    modal_cart: true,
     ajax: ajax,
     cart_tag: 'shopping-cart',
     prefix: "",

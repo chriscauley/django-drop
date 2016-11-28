@@ -38,12 +38,11 @@
 </cart-button>
 
 <shopping-cart>
-  <div ur-mask onclick={ close }></div>
-  <dialog open class="{ uR.theme.modal_outer }">
-    <div class="{ uR.theme.modal_header }">
+  <div class="{ theme.outer }">
+    <div class="{ theme.header }">
       <h3>Shopping Cart</h3>
     </div>
-    <div class="{ uR.theme.modal_content }">
+    <div class="{ theme.content }">
       <div if={ !uR.drop.cart.all_items.length }>Your cart is empty</div>
       <div class={ uR.theme.cart_items }>
         <div class="item" each={ uR.drop.cart.all_items }>
@@ -75,19 +74,27 @@
       </div>
       <div class="alert alert-danger" style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
     </div>
-    <div class="{ uR.theme.modal_footer } valign-wrapper">
-      <div class="payment_buttons">
+    <div class="{ theme.footer } valign-wrapper">
+      <div class="shipping_choice" if={ requires_shipping }>
+        <div if={ !shipping_address }>
+          <button class={ uR.config.btn_primary } onclick={ selectShipping }>Enter Shipping Address</button>
+        </div>
+      </div>
+      <div class="payment_buttons" if={ checkoutReady }>
         <button each={ backends } onclick={ parent.checkout } class={ className } alt={ copy }>{ copy }</button>
         <a onclick={ close }>&laquo; Keep Shopping</a>
       </div>
     </div>
-  </dialog>
+  </div>
 
   var self = this;
   this.backends = [ //#! TODO should be uR.drop.payment_backends and should be derived from server
     { tagname: 'stripe-checkout', copy: "Pay with Credit Card", className: uR.config.btn_primary },
     { tagname: 'paypal-checkout', copy: "Pay with Paypal", className: "paypal_button or" },
   ]
+  this.on("mount", function() {
+    this.shipping_address = this.opts.selected_address;
+  })
   this.on("update",function() {
     self.target = self.root.querySelector(".card");
     uR.forEach(uR.drop.cart.all_items,function(item) {
@@ -95,7 +102,10 @@
       item.display_name = product.display_name;
       item.unit_price = product.unit_price;
       item.has_quantity = product.has_quantity;
+      self.requires_shipping = self.requires_shipping || product.requires_shipping;
     });
+    self.checkoutReady = true;
+    if (self.requires_shipping && !self.shipping_address) { self.checkoutReady = false }
     riot.update("cart-button");
   });
 
@@ -117,6 +127,9 @@
     e.item.quantity=0;
     this.saveCart(e);
   }
+  selectShipping(e) {
+    uR.alertElement('select-address',{success: uR.drop.openCart});
+  }
   checkout(e) {
     uR.drop.ajax({
       url: "/ajax/start_checkout/",
@@ -131,20 +144,19 @@
 </shopping-cart>
 
 <stripe-checkout>
-  <div ur-mask onclick={ close }></div>
-  <dialog open class={ uR.theme.modal_outer }>
-    <div class={ uR.theme.modal_header }>
+  <div class={ theme.outer }>
+    <div class={ theme.header }>
       <a class="close" onclick={ close }>&times;</a>
       <h3>Checkout with Stripe</h3>
     </div>
-    <div class={ uR.theme.modal_content }>
+    <div class={ theme.content }>
       <ur-form schema={ schema } initial={ initial } success_text="Pay ${ uR.drop.cart.total_price }">
         <yield to="button_div">
           <div class="stripe_logo"></div>
         </yield>
       </ur-form>
     </div>
-  </dialog>
+  </div>
 
   var self = this;
   this.schema = [
@@ -198,8 +210,7 @@
 </stripe-checkout>
 
 <paypal-checkout>
-  <div ur-mask onclick={ close }></div>
-  <dialog open class={ uR.theme.modal_outer }>
+  <div class="target { theme.outer }">
     <form action="https://www.paypal.com/cgi-bin/webscr" method="POST">
       <input name="business" type="hidden" value="{ uR.drop.paypal_email }">
       <span each={ n,i in uR.drop.cart.all_items }>
@@ -219,14 +230,14 @@
       <input name="currency_code" type="hidden" value="USD">
       <input name="no_shipping" type="hidden" value="1">
     </form>
-    <div class={ uR.theme.modal_content }>
+    <div class={ theme.content }>
       Redirecting to PayPal to complete transaction.
     </div>
-  </dialog>
+  </div>
 
   this.on("mount",function() {
     this.update();
-    this.root.querySelector("dialog").setAttribute("data-loading",uR.config.loading_attribute);
+    this.root.querySelector(".target").setAttribute("data-loading",uR.config.loading_attribute);
     this.root.querySelector("form").submit();
   });
 </paypal-checkout>
