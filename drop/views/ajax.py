@@ -138,7 +138,8 @@ def payment(request,_backend):
     Cart.objects.get(pk=order.cart_pk).empty()
   except Cart.DoesNotExist:
     pass
-  return JsonResponse({'next': reverse('checkout-thank_you',args=[order.pk])})
+  url = reverse('checkout-thank_you',args=[order.pk])+"?token="+order.make_token()
+  return JsonResponse({'next': url})
 
 from django.dispatch import receiver
 from djstripe import signals

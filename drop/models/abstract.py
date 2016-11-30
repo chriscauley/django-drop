@@ -6,12 +6,13 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.aggregates import Sum
 from django.template.defaultfilters import slugify
+from django.utils.crypto import salted_hmac
 from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
 from drop.cart.modifiers_pool import cart_modifiers_pool
 from drop.util.fields import CurrencyField
 from drop.util.loader import get_model_string
-import django
+import django, datetime
 
 from lablackey.utils import get_admin_url
 from lablackey.db.models import NamedTreeModel
@@ -445,6 +446,18 @@ class BaseOrder(models.Model):
 
     def get_status_name(self):
         return dict(self.STATUS_CODES)[self.status]
+
+    # these two methods are used to allow non-logged in users to see checkout page
+    def make_token(self,ts=None):
+        ts = (ts or datetime.date.today()).strftime("%m/%d/%y")
+        value = "%s-%s"%(ts,unicode(self))
+        return "%s-%s"%(ts,salted_hmac(settings.SECRET_KEY, value).hexdigest()[::2])
+    def check_token(self,token):
+        ts_str, s = token.split("-")
+        ts = datetime.datetime.strptime(ts_str,"%m/%d/%y").date()
+        #if (datetime.date.today()-ts).days > 10:
+        #    return False
+        return self.make_token(ts) == token
 
     @property
     def amount_paid(self):
