@@ -184,19 +184,26 @@
       name: 'cvc', label: "CVC Code", type: "number",
       //onMount: function() { $("stripe-checkout [name=cvc]").payment("formatCardCVC"); }
     },
-    //{ name: 'customer', }
   ];
+  if (!uR.auth.user) {
+    // stripe doesn't give us email, so we need it
+    this.schema.push({'name': 'email', type: 'email', label: 'Email Address'})
+  }
   if (uR.DEBUG && window.location.search.indexOf("cheat") != -1) {
-    this.initial = {number: "4111 1111 1111 1111", cvc: '123', exp_month: "01", exp_year: "2019", customer:'cus_9OVOTsrv4LwJo6' }
+    this.initial = {number: "4111 1111 1111 1111", cvc: '123', exp_month: "01", exp_year: "2019" }
   }
   submit(ur_form) {
     self.error = undefined;
     self.root.querySelector("ur-form").setAttribute("data-loading","spinner");
-    Stripe.card.createToken(ur_form.getData(),this.stripeResponseHandler)
+    var data = ur_form.getData();
+    self.email = data.email;
+    delete data.email;
+    Stripe.card.createToken(data,this.stripeResponseHandler)
   }
   setError(error) {
     var ur_form = self.tags['ur-form'];
-    ur_form.non_field_error = "An error occurred while processing your payment: "+error;
+    ur_form.non_field_error = "An error occurred while processing your payment";
+    if (error) { ur_form.non_field_error += ": "+ error }
     ur_form.update();
   }
   this.stripeResponseHandler = function(status,response) {
@@ -209,7 +216,7 @@
     uR.drop.ajax({
       method: "POST",
       url: "/stripe/payment/",
-      data: {token: response.id,total:uR.drop.cart.total_price},
+      data: {token: response.id,total:uR.drop.cart.total_price,email: self.email},
       target: target,
       success: function(data) {
         target.setAttribute("data-loading","spinner");

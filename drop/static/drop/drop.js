@@ -56,7 +56,6 @@
   function openCart(data) {
     uR.alertElement(uR.drop.cart_tag,data)
   }
-  openCart = uR.auth.loginRequired(openCart)
   function updateTags() {
     if (!uR.drop.products_list || !uR.drop.cart) { return }
     uR.forEach(uR.drop.products_list,function (p) { p.quantity = 0; })
@@ -82,9 +81,11 @@
     cart_tag: 'shopping-cart',
     prefix: "",
     ready: function(f) { _ready.push(f) },
+    login_required: true
   };
   uR.ready(function() {
     uR.drop.updateProducts();
     uR.drop.updateCart();
+    if (uR.drop.login_required) { uR.drop.openCart = uR.auth.loginRequired(openCart) }
   });
 })()
