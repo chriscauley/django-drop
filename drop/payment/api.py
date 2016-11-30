@@ -10,8 +10,11 @@ from drop.models.ordermodel import OrderPayment
 from drop.models.ordermodel import Order
 from drop.drop_api import DropAPI
 from drop.order_signals import paid, refunded
+from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+
+from lablackey.mail import send_template_email
 
 def send_message(request,message,status=messages.SUCCESS):
     if request and message:
@@ -33,6 +36,25 @@ class PaymentAPI(DropAPI):
     # Payment-specific
     #==========================================================================
 
+    def send_payment_confirmation_email(self,order):
+        """
+        Send a payment confirmation email. Certain products may need to send a confirmation seperately.
+        Maybe eventually there will need to be a settings.DROP_MAIL_CONFIRMATION_NO_MATTER_WHAT option?
+        """
+        order_items = [i for i in order.items.all()]
+        for cls in set([i.product.__class__ for i in order_items]):
+            if not hasattr(cls,"send_payment_confirmation_email"):
+                continue
+            cls_items = [i for i in order_items if isinstance(i.product,cls)]
+            cls.send_payment_confirmation_email(order,cls_items)
+            order_items = [i for i in order_items if not isinstance(i.product,cls)]
+        if not order_items:
+            return
+        template = getattr(settings,"DROP_PAYMENT_CONFIRMATION_EMAIL_TEMPLATE","email/payment_confirmation")
+        from_email = getattr(settings,"DROP_SHOPKEEPER_EMAIL",settings.DEFAULT_FROM_EMAIL)
+        send_template_email(template,[order.user.email],from_email=from_email,
+                            context={'order': order,'items': order_items})
+
     def confirm_payment(self, order, amount, transaction_id, payment_method,
                         save=True):
         """
@@ -45,7 +67,6 @@ class PaymentAPI(DropAPI):
         #! TODO this bit should probably be in the "if save..." block below. Check rest of code base first
         OrderPayment.objects.get_or_create(
             order=order,
-            # How much was paid with this particular transfer
             amount=Decimal(amount),
             transaction_id=transaction_id,
             payment_method=payment_method)
@@ -55,6 +76,7 @@ class PaymentAPI(DropAPI):
                 # first time completing order. fire the purchase method for products to update inventory or whatever
                 for item in order.items.all():
                     item.product.purchase(order.user,item.quantity)
+                self.send_payment_confirmation_email(order)
             # Set the order status:
             order.status = Order.PAID
             order.save()
