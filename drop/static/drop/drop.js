@@ -29,9 +29,12 @@
             }
           });
         });
+        uR.drop.mount = riot.mount.bind(riot);
+        uR.forEach(_mount,function(a) { riot.mount(a[0],a[1]); });
       }
     });
   }
+  var _mount = [];
   function updateCart() {
     uR.drop.ajax({
       url: '/cart.js',
@@ -78,6 +81,7 @@
     ajax: ajax,
     cart_tag: 'shopping-cart',
     prefix: "",
+    mount: function mount(a,b) { _mount.push([a,b]); },
   };
   uR.ready(function() {
     uR.drop.updateProducts();
