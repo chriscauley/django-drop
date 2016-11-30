@@ -141,16 +141,57 @@ def payment(request,_backend):
   url = reverse('checkout-thank_you',args=[order.pk])+"?token="+order.make_token()
   return JsonResponse({'next': url})
 
+# STRIPE LISTENERS
+# Move these some place intelligent
+
 from django.dispatch import receiver
-from djstripe import signals
+import djstripe.signals
 
 from drop.payment.api import PaymentAPI
   
-@receiver(signals.WEBHOOK_SIGNALS['charge.succeeded'])
-def process(sender,**kwargs):
+@receiver(djstripe.signals.WEBHOOK_SIGNALS['charge.succeeded'])
+def stripe_payment_successful(sender,**kwargs):
   amount = kwargs['event'].webhook_message['object']['amount']
-  obj_id = kwargs['event'].webhook_message['object']['id']
+  txn_id = kwargs['event'].webhook_message['object']['id']
   metadata = kwargs['event'].webhook_message['object']['metadata']
   if 'order_id' in metadata:
     order = Order.objects.get(pk=metadata['order_id'])
-    PaymentAPI().confirm_payment(order, Decimal(amount)/100, obj_id, 'stripe')
+    PaymentAPI().confirm_payment(order, Decimal(amount)/100, txn_id, 'stripe')
+
+# PAYPAL LISTENERS
+# Move these some place intelligent
+
+from paypal.standard.ipn.signals import payment_was_successful, payment_was_flagged
+from django.core.mail import mail_admins
+from django.http import QueryDict
+
+from drop.util.loader import load_class
+
+@receiver(payment_was_successful, dispatch_uid='drop.listeners.paypal_payment_successful')
+def paypal_payment_successful(sender,**kwargs):
+  params = QueryDict(sender.query)
+
+  # for now this is how we differentiate what came from drop
+  if not params.get("invoice",None):
+    return
+
+  user,new_user = load_class(getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER','err'))(params)
+  # If they're paying us, don't worry about the registration activation process.
+  user.active = True
+  user.save()
+  order = Order.objects.get(pk=params['invoice'])
+  if order.user != user:
+    #! TODO: not sure when this will happen so let's keep an eye on this
+    mail_admins("Paypal order jumping users!","%s %s %s %s"%(user,order.user,order,sender))
+    order.user = user
+    order.save()
+  if not "num_cart_items" in params:
+    #! TODO this was a problem with the last ipn handler
+    mail_admins("No cart items found for %s"%sender.txn_id,"")
+
+  PaymentAPI().confirm_payment(order, Decimal(params['mc_gross']), sender.txn_id, 'paypal')
+
+@receiver(payment_was_flagged, dispatch_uid='drop.listeners.paypal_payent_flagged')
+def paypal_payment_flagged(sender,**kwargs):
+  mail_admins("paypal flag","%s was flagged and I'd like to know why"%sender)
+  paypal_payment_successful(sender,**kwargs)
