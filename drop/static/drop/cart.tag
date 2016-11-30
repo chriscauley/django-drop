@@ -1,13 +1,14 @@
 <add-to-cart>
   <div class="pre-sale" if={ product.sale_price != product.price }>${ product.price.toFixed(2) }</div>
   <div class="price">${ product.sale_price.toFixed(2) }</div>
-  <button class={ btn_class } onclick={ addToCart } if={ !in_cart }>Add to Cart</button>
-  <button class={ btn_class } onclick={ uR.drop.openCart } if={ in_cart }>Show in Cart</button>
+  <button class={ btn_class } onclick={ addToCart } if={ !in_cart }>{ add_text }</button>
+  <button class={ btn_class } onclick={ uR.drop.openCart } if={ in_cart }>{ show_text }</button>
 
   var self = this;
-  this.ajax_success = uR.drop.openCart;
   this.target = this.root;
   this.on("mount",function() {
+    this.add_text = this.opts.add_text || "Add to Cart";
+    this.show_text = this.opts.show_text || "View in Cart";
     this.product = uR.drop.products[this.opts.product_id];
     this.btn_class = this.opts.btn_class || uR.config.btn_primary;
     if (this.opts.root_class) { this.root.classList.add(this.opts.root_class); }
@@ -43,38 +44,45 @@
       <h3>Shopping Cart</h3>
     </div>
     <div class={ theme.content }>
-      <div if={ !uR.drop.cart.all_items.length }>Your cart is empty</div>
-      <div class={ uR.theme.cart_items }>
-        <div class="item" each={ uR.drop.cart.all_items }>
-          <div class="name">
-            <b>{ display_name }</b> { after }<br/>
-            <a class="remove" onclick={ parent.remove }>Remove</a>
-          </div>
-          <div class="price-box" if={ has_quantity }>
-            <div class="unit-price"> ${ unit_price }</div>
-            <div class="quantity">
-              <a class="fa fa-plus-circle increment" onclick={ parent.plusOne }></a>
-              <a class="fa fa-minus-circle decrement" onclick={ parent.minusOne }></a>
-              <i class="fa fa-times"></i> { quantity }
+      <div if={ !uR.drop.cart.all_items.length }>
+        Your cart is empty. Please close me. Thank you.
+      </div>
+      <div if={ uR.drop.cart.all_items.length }>
+        <div class={ uR.theme.cart_items }>
+          <div class="item" each={ uR.drop.cart.all_items }>
+            <div class="name">
+              <b>{ display_name }</b> { after }<br/>
+              <a class="remove" onclick={ parent.remove }>Remove</a>
+            </div>
+            <div class="price-box" if={ has_quantity }>
+              <div class="unit-price"> ${ unit_price }</div>
+              <div class="quantity">
+                <a class="fa fa-plus-circle increment" onclick={ parent.plusOne }></a>
+                <a class="fa fa-minus-circle decrement" onclick={ parent.minusOne }></a>
+                <i class="fa fa-times"></i> { quantity }
               </div>
-            <span class="total">${ line_subtotal }</span>
-          </div>
-          <div if={ !has_quantity } class="price-box">
-            <span class="total">${ line_subtotal }</span>
-          </div>
-          <div class="extra_price_field" each={ field in extra_price_fields }>
-            <div class="description">{ field[0] }</div>
-            <div class="amount">{ field[1] }</div>
+              <span class="total">${ line_subtotal }</span>
+            </div>
+            <div if={ !has_quantity } class="price-box">
+              <span class="total">${ line_subtotal }</span>
+            </div>
+            <div class="extra_price_field" each={ field in extra_price_fields }>
+              <div class="description">{ field[0] }</div>
+              <div class="amount">${ field[1] }</div>
+            </div>
           </div>
         </div>
+        <div class="checkout-box">
+          <div class="subtotals"></div>
+          Order Total: <b>${ uR.drop.cart.total_price }</b>
+        </div>
+        <div class="alert alert-danger" style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
       </div>
-      <div class="checkout-box">
-        <div class="subtotals"></div>
-        Order Total: <b>${ uR.drop.cart.total_price }</b>
-      </div>
-      <div class="alert alert-danger" style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
     </div>
-    <div class="{ theme.footer } valign-wrapper">
+    <div class="{ theme.footer } valign-wrapper" if={ !uR.drop.cart.all_items.length }>
+      <button class={ uR.config.btn_cancel } onclick={ close }>Close</button>
+    </div>
+    <div class="{ theme.footer } valign-wrapper" if={ uR.drop.cart.all_items.length }>
       <div class="shipping_choice" if={ requires_shipping }>
         <div if={ !shipping_address }>
           <button class={ uR.config.btn_primary } onclick={ selectShipping }>Enter Shipping Address</button>
