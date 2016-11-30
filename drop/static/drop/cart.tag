@@ -39,7 +39,7 @@
 </cart-button>
 
 <shopping-cart>
-  <div class={ theme.outer }>
+  <div class={ theme.outer } name="ajax_target">
     <div class={ theme.header }>
       <h3>Shopping Cart</h3>
     </div>
@@ -76,7 +76,7 @@
           <div class="subtotals"></div>
           Order Total: <b>${ uR.drop.cart.total_price }</b>
         </div>
-        <div class="alert alert-danger" style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
+        <div class={ uR.theme.error_class } style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
       </div>
     </div>
     <div class="{ theme.footer } valign-wrapper" if={ !uR.drop.cart.all_items.length }>
@@ -148,14 +148,12 @@
     uR.alertElement('select-address',{success: uR.drop.openCart});
   }
   checkout(e) {
+    this.errors = undefined;
     uR.drop.ajax({
       url: "/ajax/start_checkout/",
       that: this,
-      target: self.root,
-      success: function(data) {
-        if (data.errors.length) { this.errors = data.error }
-        else { uR.alertElement(e.item.tagname,data); }
-      }
+      success: function(data) { uR.alertElement(e.item.tagname,data); },
+      error: function(data) { self.errors = data.errors },
     });
   }
 </shopping-cart>

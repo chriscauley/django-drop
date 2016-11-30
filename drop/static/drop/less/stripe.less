@@ -1,16 +1,19 @@
-stripe-checkout ur-form {
-  display: block;
-  .button_div {
-    background: url(/static/drop/powered_by_stripe2x.png) no-repeat bottom left;
-    background-size: auto 26px;
-    min-height: 0;
-    overflow: hidden;
-    padding-left: 130px;
-    .btn { float: right; margin-bottom: 0; }
-    @media (max-width: 400px) {
-      background-size: auto 20px;
-      padding-left: 105px;
-      .btn { padding-left: 10px; padding-right: 10px; }
+stripe-checkout {
+  .card, .modal-content { max-width: 320px; }
+  ur-form {
+    display: block;
+    .button_div {
+      background: url(/static/drop/powered_by_stripe2x.png) no-repeat bottom left;
+      background-size: auto 26px;
+      min-height: 0;
+      overflow: hidden;
+      padding-left: 130px;
+      .btn { float: right; margin-bottom: 0; }
+      @media (max-width: 400px) {
+        background-size: auto 20px;
+        padding-left: 105px;
+        .btn { padding-left: 10px; padding-right: 10px; }
+      }
     }
   }
 }

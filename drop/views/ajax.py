@@ -131,9 +131,8 @@ def payment(request,_backend):
     raise NotImplementedError(e%(order.order_total, Decimal(request.POST['total'])))
   try:
     charge = backend.charge(order,request)
-  except PaymentError,e:
-    error = "An error made while processing your payment: %s"%e
-    return JsonResponse({'errors': {'non_field_error': error}},status=400)
+  except Exception,e:
+    return JsonResponse({'error': str(e)},status=400)
   # empty the related cart                                                                                   
   try:
     Cart.objects.get(pk=order.cart_pk).empty()
