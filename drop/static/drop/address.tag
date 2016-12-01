@@ -1,3 +1,9 @@
+(function() {
+  uR.addRoutes({
+    "/select-address/": uR.auth.loginRequired("select-address"),
+  });
+})()
+
 <select-address>
   <div class={ theme.outer }>
     <div class={ theme.header }>
