@@ -1,6 +1,12 @@
+(function() {
+  uR.drop._addToCart = {}
+})();
+
 <add-to-cart>
-  <div class="pre-sale" if={ product.sale_price != product.price }>${ product.price.toFixed(2) }</div>
-  <div class="price">${ product.sale_price.toFixed(2) }</div>
+  <div if={ !opts.hide_price }>
+    <div class="pre-sale" if={ product.sale_price != product.price }>${ product.price.toFixed(2) }</div>
+    <div class="price">${ product.sale_price.toFixed(2) }</div>
+  </div>
   <button class={ btn_class } onclick={ addToCart } if={ !in_cart }>{ add_text }</button>
   <button class={ btn_class } onclick={ uR.drop.openCart } if={ in_cart }>{ show_text }</button>
 
@@ -21,7 +27,9 @@
     })
   });
   addToCart() {
-    uR.drop.saveCartItem(this.opts.product_id,1,this)
+    if (uR.drop._addToCart[this.product.model_slug]) {
+      uR.drop._addToCart[this.product.model_slug]({product: this.product});
+    } else { uR.drop.saveCartItem(this.opts.product_id,this.opts.quantity || 1,this) }
   }
 </add-to-cart>
 
