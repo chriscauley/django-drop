@@ -49,6 +49,8 @@ def cart_edit(request):
   product = get_object_or_404(Product,id=request.POST['id'])
   defaults = {'quantity': 0}
   cart_item,new = CartItem.objects.get_or_create(product=product,cart=cart,defaults=defaults)
+  for field in product.extra_fields:
+    cart_item.extra[field] = request.POST.get(field,cart_item.extra.get(field,None))
   if quantity:
     cart_item.quantity = quantity
     cart_item.save()

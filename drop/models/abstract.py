@@ -12,7 +12,7 @@ from polymorphic.models import PolymorphicModel
 from drop.cart.modifiers_pool import cart_modifiers_pool
 from drop.util.fields import CurrencyField
 from drop.util.loader import get_model_string
-import django, datetime
+import django, datetime, jsonfield
 
 from lablackey.utils import get_admin_url
 from lablackey.db.models import NamedTreeModel
@@ -74,12 +74,13 @@ class BaseProduct(PolymorphicModel,JsonMixin):
 
     json_fields = [
         'display_name','active','date_added','last_modified','unit_price','model_slug','has_quantity',
-        'requires_shipping'
+        'requires_shipping','extra_fields'
     ]
     model_slug = property(lambda self: '%s.%s'%(self._meta.app_label,self._meta.model_name))
     requires_shipping = False
     get_admin_url = get_admin_url
     has_quantity = False
+    extra_fields = []
     def get_purchase_error(self,quantity,cart):
         # Overwrite this to check quantity or other availability
         if self.has_quantity and self.in_stock < quantity:
@@ -347,7 +348,8 @@ class BaseCartItem(models.Model,JsonMixin):
     quantity = models.IntegerField()
 
     product = models.ForeignKey(get_model_string('Product'))
-    json_fields = ['quantity','product_id','line_subtotal','line_total','extra_price_fields']
+    extra = jsonfield.JSONField(default=dict)
+    json_fields = ['quantity','product_id','line_subtotal','line_total','extra_price_fields','extra']
 
     class Meta(object):
         abstract = True
@@ -537,6 +539,7 @@ class BaseOrderItem(models.Model):
     quantity = models.IntegerField(verbose_name=_('Quantity'))
     line_subtotal = CurrencyField(verbose_name=_('Line subtotal'))
     line_total = CurrencyField(verbose_name=_('Line total'))
+    extra = jsonfield.JSONField(default=dict)
 
     class Meta(object):
         abstract = True

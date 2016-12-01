@@ -41,14 +41,19 @@
       success: function(data) { uR.drop.cart = data; },
     });
   }
-  function saveCartItem(product_id,quantity,riot_tag) {
+  function saveCartItem(product_id, quantity, riot_tag, data) {
+    data = data ||{};
+    data.id = product_id;
+    data.quantity = quantity;
     uR.drop.ajax({
       url: "/ajax/edit/",
       that: riot_tag,
-      data: { id: product_id, quantity: quantity },
+      data: data,
       success: function(data) {
         uR.drop.cart = data.cart;
         riot_tag && riot_tag.update();
+        riot_tag && riot_tag.add_successful && riot_tag.add_successful();
+        uR.openCart();
       },
       method: "POST",
     });
