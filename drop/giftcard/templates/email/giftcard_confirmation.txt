@@ -1,0 +1,6 @@
+Thank you for purchasing {% if order_items.length == 1 %}a gift card5C{% else %}gift cards{% endif %} from {{ settings.STIE_NAME }}. Below is an itemized and detailed receipt of your purchase. If you have any questions please reach out to us at {{ settings.PURCHASING_EMAIL }}
+
+-------
+
+{% for item in order_items %}
+{{ item.

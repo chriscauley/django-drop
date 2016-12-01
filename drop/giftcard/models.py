@@ -5,10 +5,14 @@ from drop.models import Product, Order
 from drop.util.fields import CurrencyField
 
 from lablackey.decorators import cached_property
+from lablackey.mail import send_template_email
+
+import datetime
 
 class GiftCardProduct(Product):
   has_quantity = True
   in_stock = 1e6
+  extra_fields = ['recipient_name','recipient_email','delivery_date','amount']
   class Meta:
     app_label = "giftcard"
   def purchase(self,user,quantity):
@@ -17,7 +21,10 @@ class GiftCardProduct(Product):
       purchased_by=user,
       amount=quantity,
     )
-  
+  @classmethod
+  def send_payment_confirmation_email(cls,order,order_items):
+    context = {'order': order, 'order_items': order_items}
+    send_template_email('email/giftcard_confirmation',[order.user.email],context=context)
 
 class Credit(models.Model):
   code = models.CharField(max_length=16)
@@ -25,6 +32,7 @@ class Credit(models.Model):
   purchased_by = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="+")
   owner = models.ForeignKey(settings.AUTH_USER_MODEL)
   recepiant_email = models.EmailField(null=True,blank=True)
+  delivery_date = models.DateField(default=datetime.date.today)
   product = models.ForeignKey(GiftCardProduct)
   amount = CurrencyField()
   @cached_property
