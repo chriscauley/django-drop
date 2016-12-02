@@ -88,9 +88,9 @@
     ready: function(f) { _ready.push(f) },
     login_required: true
   };
+  uR.theme.checkout_button = uR.config.btn_primary;
   uR.ready(function() {
     uR.drop.updateProducts();
     uR.drop.updateCart();
-    if (uR.drop.login_required) { uR.drop.openCart = uR.auth.loginRequired(openCart) }
   });
 })()

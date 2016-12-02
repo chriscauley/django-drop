@@ -93,7 +93,7 @@
     <div class="{ theme.footer } valign-wrapper" if={ uR.drop.cart.all_items.length }>
       <div class="shipping_choice" if={ requires_shipping }>
         <div if={ !shipping_address }>
-          <button class={ uR.config.btn_primary } onclick={ selectShipping }>Enter Shipping Address</button>
+          <button class={ uR.config.btn_primary } onclick={ selectShipping }>Checkout</button>
         </div>
         <div if={ shipping_address }>
           <div>
@@ -163,6 +163,10 @@
       success: function(data) { uR.alertElement(e.item.tagname,data); },
       error: function(data) { self.errors = data.errors },
     });
+  }
+  if (uR.drop.login_required) {
+    this.checkout = uR.auth.loginRequired(this.checkout)
+    this.selectShipping = uR.auth.loginRequired(this.selectShipping);
   }
 </shopping-cart>
 

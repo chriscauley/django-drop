@@ -11,9 +11,10 @@ shopping-cart,checkout-modal{
   }
   .payment_buttons {
     text-align: center;
+    a { margin-right: 0 !important; }
     button {
       display: block;
-      margin-bottom: 10px;
+      margin: 0 auto 10px;
       &.paypal_button {
         background: url(/static/drop/paypal.png) no-repeat;
         border: 0;
@@ -23,7 +24,7 @@ shopping-cart,checkout-modal{
         width: 147px;
       }
       &.or {
-        margin-top: 20px;
+        margin-top: 30px;
         position: relative;
         &:before {
           content: "- or -";
