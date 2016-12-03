@@ -2,6 +2,14 @@ stripe-checkout {
   .card, .modal-content { max-width: 320px; }
   ur-form {
     display: block;
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      ur-input { flex-grow: 1; }
+      ur-input.expiry { flex-basis: 60%; padding-right: 5%; }
+      ur-input.cvc { flex-basis: 40%; }
+    }
     .button_div {
       background: url(/static/drop/powered_by_stripe2x.png) no-repeat bottom left;
       background-size: auto 26px;

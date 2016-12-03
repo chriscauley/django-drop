@@ -190,11 +190,12 @@
       name: 'number', label: "Credit Card Number", type: "tel",
       onMount: function() { $("stripe-checkout [name=number]").payment("formatCardNumber"); }
     },
-    { name: 'exp_month', label: "Expiration Month", type: "number", max_length: 2 },
-    { name: 'exp_year', label: "Expiration Year", type: "number", max_length: 2 },
+    { name: 'expiry', label: "Expiration Date", max_length: 2,
+      onMount: function() { $("stripe-checkout [name=expiry]").payment("formatCardExpiry"); }
+    },
     {
-      name: 'cvc', label: "CVC Code", type: "number",
-      //onMount: function() { $("stripe-checkout [name=cvc]").payment("formatCardCVC"); }
+      name: 'cvc', label: "CVC Code",
+      onMount: function() { $("stripe-checkout [name=cvc]").payment("formatCardCVC"); }
     },
   ];
   if (!uR.auth.user) {
