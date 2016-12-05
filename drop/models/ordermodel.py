@@ -98,9 +98,10 @@ class OrderPayment(models.Model):
     transaction_id = models.CharField(max_length=255,
             verbose_name=_('Transaction ID'),
             help_text=_("The transaction processor's reference"))
-    payment_method = models.CharField(max_length=255,
-            verbose_name=_('Payment method'),
-            help_text=_("The payment backend used to process the purchase"))
+    backend = models.CharField(max_length=255,
+                               verbose_name=_('Payment backend'),
+                               help_text=_("The payment backend used to process the purchase"))
+    description = models.CharField(max_length=255)
     refunded = models.BooleanField(default=False)
 
     class Meta(object):
