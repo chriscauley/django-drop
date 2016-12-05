@@ -4,8 +4,13 @@
       <th>Payment Method</th>
       <th>Amount</th>
     </tr>
+  </thead>
+  <tbody>
+    {% for payment in order.orderpayment_set.all %}
     <tr>
-      <td>{{ </td>
-      <td></td>
-
+      <td>{{ payment.description }}</td>
+      <td>${{ payment.amount }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
