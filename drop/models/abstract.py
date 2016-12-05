@@ -436,6 +436,10 @@ class BaseOrder(models.Model):
         verbose_name = _('Order')
         verbose_name_plural = _('Orders')
 
+    def get_user_display(self):
+        if self.user:
+            return self.user.get_full_name() or self.user.username
+
     def __unicode__(self):
         return _('Order ID: %(id)s') % {'id': self.pk}
 

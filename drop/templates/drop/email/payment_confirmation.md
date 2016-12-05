@@ -1,4 +1,4 @@
-Dear {{ user.get_full_name }},
+Dear {{ order.get_user_display }},
 
 Thank you for ordering with {{ settings.SITE_NAME }}. Full details of your order are attached below.
 
