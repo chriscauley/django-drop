@@ -10,7 +10,7 @@ from lablackey.mail import send_template_email
 import datetime
 
 class GiftCardProduct(Product):
-  has_quantity = True
+  has_quantity = False
   in_stock = 1e6
   extra_fields = ['recipient_name','recipient_email','delivery_date','amount']
   class Meta:

@@ -53,12 +53,16 @@
         uR.drop.cart = data.cart;
         riot_tag && riot_tag.update();
         riot_tag && riot_tag.add_successful && riot_tag.add_successful();
-        uR.openCart();
+        uR.drop.openCart();
+      },
+      error: function(data) {
+        console.log(data);
       },
       method: "POST",
     });
   }
   function openCart(data) {
+    if (document.querySelector(uR.drop.cart_tag)) { return; } // cart is already open!
     uR.alertElement(uR.drop.cart_tag,data)
   }
   function updateTags() {

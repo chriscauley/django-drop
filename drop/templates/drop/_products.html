@@ -2,7 +2,7 @@
 
 <div class="row ProductList">
   {% for object in object_list %}
-  <div class="col l4 m6 s13">
+  <div class="col l3 m4 s12">
     <a href="{{ object.get_absolute_url }}" class="card product-card">
       <div class="card-image">
         {% thumbnail object.first_photo.file "350x440" crop="center" as im %}

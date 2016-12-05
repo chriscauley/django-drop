@@ -16,6 +16,7 @@
     this.add_text = this.opts.add_text || "Add to Cart";
     this.show_text = this.opts.show_text || "View in Cart";
     this.product = uR.drop.products[this.opts.product_id];
+    if (!this.product) { return this.unmount() }
     this.btn_class = this.opts.btn_class || uR.config.btn_primary;
     if (this.opts.root_class) { this.root.classList.add(this.opts.root_class); }
     this.update();
@@ -73,6 +74,9 @@
             </div>
             <div if={ !has_quantity } class="price-box">
               <span class="total">${ line_subtotal }</span>
+              <div if={ has_widget }>
+                <a onclick={ parent.editCartItem }><i class="fa fa-edit"></i> edit</a>
+              </div>
             </div>
             <div class="extra_price_field" each={ field in extra_price_fields }>
               <div class="description">{ field[0] }</div>
@@ -127,6 +131,8 @@
       item.unit_price = product.unit_price;
       item.has_quantity = product.has_quantity;
       self.requires_shipping = self.requires_shipping || product.requires_shipping;
+      item.has_widget = uR.drop._addToCart[product.model_slug];
+      item.model_slug = product.model_slug;
     });
     self.checkoutReady = true;
     this.shipping_address = this.opts.selected_address;
@@ -167,6 +173,9 @@
   if (uR.drop.login_required) {
     this.checkout = uR.auth.loginRequired(this.checkout)
     this.selectShipping = uR.auth.loginRequired(this.selectShipping);
+  }
+  editCartItem(e) {
+    uR.drop._addToCart[e.item.model_slug]({product:uR.drop.products[e.item.product_id],initial:e.item.extra});
   }
 </shopping-cart>
 
