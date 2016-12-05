@@ -50,13 +50,12 @@ class PaymentAPI(DropAPI):
             order_items = [i for i in order_items if not isinstance(i.product,cls)]
         if not order_items:
             return
-        template = getattr(settings,"DROP_PAYMENT_CONFIRMATION_EMAIL_TEMPLATE","email/payment_confirmation")
+        template = getattr(settings,"DROP_PAYMENT_CONFIRMATION_EMAIL_TEMPLATE","drop/email/payment_confirmation")
         from_email = getattr(settings,"DROP_SHOPKEEPER_EMAIL",settings.DEFAULT_FROM_EMAIL)
         send_template_email(template,[order.user.email],from_email=from_email,
                             context={'order': order,'items': order_items})
 
-    def confirm_payment(self, order, amount, transaction_id, payment_method,
-                        save=True):
+    def confirm_payment(self, order, amount, transaction_id, backend, description, save=True):
         """
         Marks the specified amount for the given order as paid.
         This allows to hook in more complex behaviors (like saving a history
@@ -69,7 +68,9 @@ class PaymentAPI(DropAPI):
             order=order,
             amount=Decimal(amount),
             transaction_id=transaction_id,
-            payment_method=payment_method)
+            backend=backend,
+            description=description
+        )
 
         if save and self.is_order_paid(order):
             if order.status < Order.PAID:
@@ -102,13 +103,14 @@ class PaymentAPI(DropAPI):
         order.save()
 
         for payment in order.orderpayment_set.filter(refunded=False):
-            backend = payment_backends.get(payment.payment_method.lower())
+            backend = payment_backends.get(payment.backend.lower())
             if backend:
                 refund_id = backend.refund(payment.transaciton_id)
                 order.orderpayment_set.create(
                     amount=-payment.amount,
                     transaction_id=refund_id,
-                    payment_method=order.payment_method
+                    backend=order.backend,
+                    description = "%s payment requnded"%order.backend,
                 )
                 send_message(request,"%s refunded via %s"%(payment.amount,backend.name))
             else: # catch all

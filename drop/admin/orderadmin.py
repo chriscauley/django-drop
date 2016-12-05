@@ -29,6 +29,7 @@ class ExtraOrderPriceFieldInline(LocalizeDecimalFieldsMixin, admin.TabularInline
 class OrderItemInline(LocalizeDecimalFieldsMixin, admin.TabularInline):
     model = OrderItem
     extra = 0
+    exclude = ("extra",)
     raw_id_fields = ('product',)
 
 #TODO: add ExtraOrderItemPriceField inline, ideas?
@@ -44,7 +45,7 @@ class OrderAdmin(LocalizeDecimalFieldsMixin, ModelAdmin):
     readonly_fields = ('created', 'modified', '_status', 'order_total', 'order_subtotal')
     raw_id_fields = ('user',)
     fieldsets = (
-        (None, {'fields': ('user', '_status',
+        (None, {'fields': ('user', '_status','status',
                            ('order_total', 'order_subtotal'),
                            ('created', 'modified')
                        )}),

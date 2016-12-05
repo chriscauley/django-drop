@@ -1,0 +1,1 @@
+Payment Confirmation for Your Order at {{ settings.SITE_NAME }}

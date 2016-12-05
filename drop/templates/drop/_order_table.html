@@ -1,0 +1,40 @@
+<table class="stripped responsive-table table">
+  <thead>
+    <tr>
+      <th class="name">Name</th>
+      <th class="quantity">Quantity</th>
+      <th class="unit_price">Unit Price</th>
+      <th class="line_subtotal">Subtotal</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in order.items.all %}
+    <tr>
+      <td class="name">{{ item.product }}</td>
+      <td class="quantity">{{ item.quantity }}</td>
+      <td class="unit_price">${{ item.unit_price }}</td>
+      <td class="line_subtotal">${{ item.line_subtotal }}</td>
+    </tr>
+    {% for description,amount in item.extra_price_fields %}
+    <tr>
+      <td colspan="3">{{ description }}</td>
+      <td>{{ amount }}</td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    {% if order.order_total != order.order_subtotal %}
+    <tr>
+      <th class="tworight">Subtotal:</th>
+      <th class="tworight">${{ order.order_subtotal }}</th>
+    </tr>
+    {% endif %}
+    <tr>
+      <th></th>
+      <th>Total:</th>
+      <th></th>
+      <th>${{ order.order_total }}</th>
+    </tr>
+  </tfoot>
+</table>

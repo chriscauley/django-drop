@@ -209,8 +209,11 @@
     self.error = undefined;
     self.root.querySelector("ur-form").setAttribute("data-loading","spinner");
     var data = ur_form.getData();
+    var expiry = data.expiry.replace(/ /g,"").split("/");
+    data.exp_month = expiry[0];
+    data.exp_year = expiry[1];
     self.email = data.email;
-    delete data.email;
+    delete data.email; delete data.expiry;
     Stripe.card.createToken(data,this.stripeResponseHandler)
   }
   setError(error) {

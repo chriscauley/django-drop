@@ -153,12 +153,14 @@ from drop.payment.api import PaymentAPI
   
 @receiver(djstripe.signals.WEBHOOK_SIGNALS['charge.succeeded'])
 def stripe_payment_successful(sender,**kwargs):
-  amount = kwargs['event'].webhook_message['object']['amount']
-  txn_id = kwargs['event'].webhook_message['object']['id']
-  metadata = kwargs['event'].webhook_message['object']['metadata']
+  obj = kwargs['event'].webhook_message['object']
+  amount = obj['amount']
+  txn_id = obj['id']
+  metadata = obj['metadata']
   if 'order_id' in metadata:
     order = Order.objects.get(pk=metadata['order_id'])
-    PaymentAPI().confirm_payment(order, Decimal(amount)/100, txn_id, 'stripe')
+    d = "Stripe Payment: {brand} card ending in {last4}".format(**obj['source'])
+    PaymentAPI().confirm_payment(order, Decimal(amount)/100, txn_id, 'stripe',d)
 
 # PAYPAL LISTENERS
 # Move these some place intelligent
@@ -190,7 +192,7 @@ def paypal_payment_successful(sender,**kwargs):
   if not "num_cart_items" in params:
     #! TODO this was a problem with the last ipn handler
     mail_admins("No cart items found for %s"%sender.txn_id,"")
-
+  d = "PayPal payment by account: %s"%params.get("payer_email",'UNKNOWN')
   PaymentAPI().confirm_payment(order, Decimal(params['mc_gross']), sender.txn_id, 'paypal')
 
 @receiver(payment_was_flagged, dispatch_uid='drop.listeners.paypal_payent_flagged')
