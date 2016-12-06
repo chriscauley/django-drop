@@ -34,7 +34,7 @@ gulp.task('build-tag', function() {
 gulp.task('build-css', function () {
   return gulp.src([WATCH_DIR + "less/base.less", ])
     .pipe(less({}))
-    .pipe(concat(PROJECT_NAME + '.css'))
+    .pipe(concat(PROJECT_NAME + '-built.css'))
     .pipe(gulp.dest(WATCH_DIR+".dist"));
 });
 
