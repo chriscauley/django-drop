@@ -21,3 +21,6 @@ database.db
 *coverage.xml
 .idea
 .ropeproject
+
+drop/node_modules/*
+drop/static/drop/.dist/*
