@@ -1,0 +1,3 @@
+<p>{{ user_display }} bought you a ${{ credit.amount }} gift card for {{ settings.SITE_NAME }}. Please follow the link below to use it. Gift cards can be used to buy anything on the site and they never expire.</p>
+
+<a href="{{ credit.get_absolute_url }}">Redeem ${{ credit.amount }} Gift Card</a>

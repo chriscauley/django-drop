@@ -1,0 +1,1 @@
+{{ user_display }} Sent You a Gift Card for {{ settings.SITE_NAME }}
