@@ -1,11 +1,15 @@
-(function() {
+uR.ready(function() {
   uR.schema.fields.amount = { type: 'number', extra_attrs: { step: 1 } };
   uR.schema.fields.delivery_date = { type: 'date' };
   uR.schema.fields.recipient_email = { type: 'email' };
   uR.drop._addToCart['giftcard.giftcardproduct'] = function(data) {
     uR.alertElement('purchase-giftcard',data);
   }
-})();
+  var o = {
+    tagname: 'giftcard-checkout', copy: 'Pay with Gift Card Balance', className: uR.config.btn_primary,
+  }
+  uR.drop.payment_backends.push(o);
+});
 
 <purchase-giftcard>
   <div class={ theme.outer }>

@@ -90,11 +90,12 @@
     cart_tag: 'shopping-cart',
     prefix: "",
     ready: function(f) { _ready.push(f) },
-    login_required: true
+    login_required: true,
+    payment_backends: [],
   };
   uR.theme.checkout_button = uR.config.btn_primary;
   uR.ready(function() {
     uR.drop.updateProducts();
     uR.drop.updateCart();
   });
-})()
+})();
