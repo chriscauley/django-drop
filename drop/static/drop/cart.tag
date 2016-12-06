@@ -84,7 +84,7 @@
             </div>
           </div>
         </div>
-        <div class="checkout-box">
+        <div class="totals-box">
           <div class="subtotals"></div>
           Order Total: <b>${ uR.drop.cart.total_price }</b>
         </div>

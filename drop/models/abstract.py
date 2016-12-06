@@ -91,7 +91,6 @@ class BaseProduct(PolymorphicModel,JsonMixin):
         app_label = 'drop'
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
-        ordering = ("date_added",)
 
     __unicode__ = lambda self: self.name
     get_absolute_url = lambda self: reverse('product_detail', args=[self.id,self.slug])

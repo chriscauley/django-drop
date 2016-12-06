@@ -1,7 +1,13 @@
 shopping-cart,checkout-modal{
   display: block;
-  a { cursor: pointer; }
-  .item { position: relative; }
+  background: pink;
+  a { cursor: pointer; color: var(--link-color); }
+  .item {
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+  }
   .valign-wrapper {
     justify-content: space-between;
     /* this class isn't in bootstrap so I need these, they can be removed when TXRX goes materialize */
@@ -9,6 +15,7 @@ shopping-cart,checkout-modal{
     align-items: center;
     a { line-height: 1em; }
   }
+  .totals-box { text-align: right; }
   .payment_buttons {
     text-align: center;
     a { margin-right: 0 !important; }
