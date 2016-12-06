@@ -108,7 +108,7 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     get_product_reference = lambda self: unicode(self.pk)
 
     # this hook is used to update the quantity of a product, is such a thing exists
-    purchase = lambda self,user,quantity: None
+    purchase = lambda self,cart_item: None
 
     # hook to reverse the effects of purchase
     refund = lambda self,user,quantity: None

@@ -8,7 +8,7 @@ from drop.util.fields import CurrencyField
 from lablackey.decorators import cached_property
 from lablackey.mail import send_template_email
 
-import datetime, random, jsonfield
+import datetime, random, jsonfield, arrow
 
 class GiftCardProduct(Product):
   has_quantity = False
@@ -16,13 +16,16 @@ class GiftCardProduct(Product):
   extra_fields = ['recipient_name','recipient_email','delivery_date','amount']
   class Meta:
     app_label = "giftcard"
-  def purchase(self,user,quantity):
+  def purchase(self,cart_item):
+    user = cart_item.order.user
+    quantity = cart_item.quantity
     credit = Credit.objects.create(
       code=''.join([random.choice("0123456789ABCDEF") for i in range(16)]),
       purchased_by=user,
       amount=quantity,
       product=self,
-      recipient_email=self.data['recipient_email']
+      extra=cart_item.extra,
+      delivery_date=arrow.get(cart_item.extra['delivery_date'],'MM/DD/YYYY'),
     )
     if credit.delivery_date <= datetime.date.today():
       credit.send()
@@ -32,11 +35,11 @@ class Credit(models.Model):
   created = models.DateTimeField(auto_now_add=True)
   purchased_by = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="+")
   owner = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)
-  delivery_date = models.DateField(default=datetime.date.today)
+  delivery_date = models.DateField()
   delivered = models.DateTimeField(null=True,blank=True)
   product = models.ForeignKey(GiftCardProduct)
   amount = CurrencyField()
-  data = jsonfield.JSONField(default=dict,null=True,blank=True)
+  extra = jsonfield.JSONField(default=dict,null=True,blank=True)
   @cached_property
   def remaining(self):
     return self.amount - sum(self.giftcardpurchase_set.all().values_list('amount',flat=True))

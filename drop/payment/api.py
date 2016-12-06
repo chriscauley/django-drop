@@ -76,7 +76,7 @@ class PaymentAPI(DropAPI):
             if order.status < Order.PAID:
                 # first time completing order. fire the purchase method for products to update inventory or whatever
                 for item in order.items.all():
-                    item.product.purchase(order.user,item.quantity)
+                    item.product.purchase(item)
                 self.send_payment_confirmation_email(order)
             # Set the order status:
             order.status = Order.PAID
