@@ -83,7 +83,7 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     extra_fields = []
     def get_purchase_error(self,quantity,cart):
         # Overwrite this to check quantity or other availability
-        if self.has_quantity and self.in_stock < quantity:
+        if self.has_quantity and self.in_stock != None and self.in_stock < quantity:
             s = "Sorry, we only have %s in stock of the following item: %s"
             return s%(self.in_stock,self)
     class Meta(object):

@@ -26,14 +26,16 @@
   <tfoot>
     {% if order.order_total != order.order_subtotal %}
     <tr>
-      <th class="tworight">Subtotal:</th>
-      <th class="tworight">${{ order.order_subtotal }}</th>
+      <th></th>
+      <th></th>
+      <th>Subtotal:</th>
+      <th>${{ order.order_subtotal }}</th>
     </tr>
     {% endif %}
     <tr>
       <th></th>
-      <th>Total:</th>
       <th></th>
+      <th>Total:</th>
       <th>${{ order.order_total }}</th>
     </tr>
   </tfoot>

@@ -13,8 +13,9 @@ urlpatterns = [
   url(r'^orders/', include('drop.urls.order')),
   url(r'^checkout/', include('drop.urls.checkout')),
   url(r'^cart/', include('drop.urls.cart')),
-  url(r'^(stripe)/payment/$',views.ajax.payment,name="drop_payment"),
+  url(r'^(stripe|giftcard)/payment/$',views.ajax.payment,name="drop_payment"),
 ]
 
-if 'drop.address' in settings.INSTALLED_APPS:
-  urlpatterns.append(url(r'^address/',include('drop.address.urls')))
+for app in ['address','giftcard']:
+  if 'drop.%s'%app in settings.INSTALLED_APPS:
+    urlpatterns.append(url(r'^%s/'%app,include('drop.%s.urls'%app)))

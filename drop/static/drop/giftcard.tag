@@ -6,14 +6,24 @@ uR.ready(function() {
       if (!value.match(/[10]?\d\/[0123]?\d\/\d\d\d\d/)) { riot_tag.data_error = e; }
     }
   };
+  uR.drop.updateGiftcard = function() { uR.drop.ajax({
+    url: "/giftcard/user.json",
+    success: function(data) { uR.drop.giftcard_balance = parseFloat(data.amount); }
+  }); }
+  uR.drop.updateGiftcard();
   uR.schema.fields.recipient_email = { type: 'email' };
-  uR.drop._addToCart['giftcard.giftcardproduct'] = function(data) {
-    uR.alertElement('purchase-giftcard',data);
-  }
+  uR.drop._addToCart['giftcard.giftcardproduct'] = function(data) { uR.alertElement('purchase-giftcard',data); }
   var o = {
     tagname: 'giftcard-checkout', copy: 'Pay with Gift Card Balance', className: uR.config.btn_primary,
+    test: function() { return !!uR.drop.giftcard_balance }
   }
   uR.drop.payment_backends.push(o);
+  var prefix = uR.drop.prefix+"/giftcard";
+  var _routes = {};
+  _routes[prefix+"/redeem/"] = uR.auth.loginRequired(function(path,data) {
+    uR.alertElement("giftcard-redeem",data);
+  });
+  uR.addRoutes(_routes);
 });
 
 <purchase-giftcard>
@@ -47,3 +57,35 @@ uR.ready(function() {
     uR.drop.openCart();
   }
 </purchase-giftcard>
+
+<giftcard-redeem>
+  <div class={ theme.outer }>
+    <div class={ theme.header }><h3>Redeem a Gift Card</h3></div>
+    <div class={ theme.content }>
+      <ur-form action={ post_url } method="POST" cancel_function={ close }></ur-form>
+    </div>
+  </div>
+
+  this.schema = [{name: "code", label: "Redemption Code"}];
+  post_url = uR.drop.prefix+"/giftcard/redeem_ajax/";
+</giftcard-redeem>
+
+<giftcard-checkout>
+  <div class={ theme.outer }>
+    <div class={ theme.header }><h3>Pay with Gift Card</h3></div>
+    <div class={ theme.content }>
+      <ul>
+        <li><b>Gift Card Balance:</b> ${ uR.drop.giftcard_balance }</li>
+        <li><b>Card Total:</b> ${ uR.drop.cart.total_price }</li>
+      <ur-form action={ post_url } method="POST" initial={ initial } success_text="Use Gift Card Balance"
+               cancel_text="Back to Cart" cancel_function={ uR.drop.openCart }></ur-form>
+    </div>
+  </div>
+
+  this.schema = [{name: "total", label: "Amount to apply", max: uR.drop.giftcard_balance }];
+  post_url = uR.drop.prefix+"/giftcard/payment/";
+  this.initial = { total: Math.min(uR.drop.giftcard_balance,parseFloat(uR.drop.cart.total_price)) };
+  ajax_success(data) {
+    window.location = data.next;
+  }
+</giftcard-checkout>

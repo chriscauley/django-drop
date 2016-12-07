@@ -121,7 +121,7 @@
   var self = this;
   this.backends = [];
   uR.forEach(uR.drop.payment_backends, function(backend) {
-    if (backend.test && !backend.test()) { return }
+    if (backend.test && !backend.test()) { return; }
     self.backends.push(backend);
   });
   this.on("update",function() {
