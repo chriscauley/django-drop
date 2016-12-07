@@ -11,10 +11,22 @@ from drop.models.ordermodel import (Order, OrderItem,
         OrderExtraInfo, ExtraOrderPriceField, OrderPayment)
 from drop.payment.api import PaymentAPI
 
+from drop.models import Cart, CartItem
+
+class CartItemInline(admin.TabularInline):
+    readonly_fields = ('product','extra','quantity')
+    model = CartItem
+    has_add_permission = lambda *args,**kwargs: False
+    extra = 0
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    readonly_fields = ('user',)
+    inlines = [CartItemInline]
+
 class OrderExtraInfoInline(admin.TabularInline):
     model = OrderExtraInfo
     extra = 0
-
 
 class OrderPaymentInline(LocalizeDecimalFieldsMixin, admin.TabularInline):
     model = OrderPayment
@@ -29,7 +41,7 @@ class ExtraOrderPriceFieldInline(LocalizeDecimalFieldsMixin, admin.TabularInline
 class OrderItemInline(LocalizeDecimalFieldsMixin, admin.TabularInline):
     model = OrderItem
     extra = 0
-    exclude = ("extra",)
+    readonly_fields = ("extra",)
     raw_id_fields = ('product',)
 
 #TODO: add ExtraOrderItemPriceField inline, ideas?

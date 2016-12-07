@@ -1,6 +1,11 @@
 uR.ready(function() {
   uR.schema.fields.amount = { type: 'number', extra_attrs: { step: 1 } };
-  uR.schema.fields.delivery_date = { type: 'date' };
+  uR.schema.fields.delivery_date = {
+    placeholder: "MM/DD/YYYY", validate: function(value,riot_tag) {
+      e = "Please enter a date matching MM/DD/YYYY";
+      if (!value.match(/[10]?\d\/[0123]?\d\/\d\d\d\d/)) { riot_tag.data_error = e; }
+    }
+  };
   uR.schema.fields.recipient_email = { type: 'email' };
   uR.drop._addToCart['giftcard.giftcardproduct'] = function(data) {
     uR.alertElement('purchase-giftcard',data);

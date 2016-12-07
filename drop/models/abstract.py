@@ -143,6 +143,7 @@ class BaseCart(models.Model,JsonMixin):
     last_updated = models.DateTimeField(auto_now=True)
     json_fields = ['user_id','session_id','total_price','all_items']
     all_items = property(lambda self:[c.as_json for c in self._updated_cart_items])
+    __unicode__ = lambda self: "%s's cart"%self.user
 
     def get_json(self,request):
         self.update(request)
