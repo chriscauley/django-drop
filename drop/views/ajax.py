@@ -63,10 +63,7 @@ def cart_edit(request):
 def start_checkout(request):
   cart = get_or_create_cart(request,save=True)
   cart.update(request)
-  try:
-    order = Order.objects.filter(cart_pk=cart.pk,status__lt=Order.PAID)[0]
-  except IndexError:
-    order = Order.objects.create_from_cart(cart,request)
+  order = Order.objects.create_from_cart(cart,request)
   order.status = Order.CONFIRMED
   order.save()
   out = {

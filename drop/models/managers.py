@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import AnonymousUser
 from django.db import models
 from django.db.models.aggregates import Count
 from polymorphic.manager import PolymorphicManager
@@ -58,16 +57,6 @@ class ProductManager(PolymorphicManager):
 #==============================================================================
 
 class OrderManager(models.Manager):
-
-    def get_latest_for_user(self, user):
-        """
-        Returns the last Order (from a time perspective) a given user has
-        placed.
-        """
-        if user and not isinstance(user, AnonymousUser):
-            return self.filter(user=user).order_by('-modified')[0]
-        else:
-            return None
 
     def get_unconfirmed_for_cart(self, cart):
         return self.filter(cart_pk=cart.pk, status__lt=self.model.CONFIRMED)
@@ -147,6 +136,7 @@ class OrderManager(models.Manager):
             order_item.quantity = item.quantity
             order_item.line_total = item.line_total
             order_item.line_subtotal = item.line_subtotal
+            order_item.extra = item.extra
             order_item.save()
             # For each order item, we save the extra_price_fields to DB
             for field in item.extra_price_fields:
