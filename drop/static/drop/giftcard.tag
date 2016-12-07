@@ -28,6 +28,10 @@ uR.ready(function() {
   this.product = this.opts.product;
   this.initial = { };
   if (window.moment) { this.initial.delivery_date = window.moment().format("YYYY-MM-DD"); }
+  else {
+    var d = new Date();
+    this.initial.delivery_date = [d.getMonth(),d.getDate(),d.getFullYear()].join("/");
+  }
   if (uR.auth.user) {
     this.initial.recipient_name = uR.auth.user.username;
     this.initial.recipient_email = uR.auth.user.email;

@@ -25,7 +25,7 @@ class GiftCardProduct(Product):
       amount=quantity,
       product=self,
       extra=cart_item.extra,
-      delivery_date=arrow.get(cart_item.extra['delivery_date'],'MM/DD/YYYY'),
+      delivery_date=arrow.get(cart_item.extra['delivery_date'],'M/D/YYYY').date(),
     )
     if credit.delivery_date <= datetime.date.today():
       credit.send()
@@ -47,8 +47,9 @@ class Credit(models.Model):
   def send(self):
     if self.delivered:
       return
-    to = [self.recipient_email or self.purchased_by.email]
-    send_tempalte_email("email/send_giftcard",to,context={'credit': self})
+    to = [self.extra.get('recipient_email',self.purchased_by.email)]
+    context = {'credit': self, 'user_display': self.owner.get_full_name() or self.owner.username}
+    send_template_email("email/send_giftcard",to,context=context)
     self.delivered  = timezone.now()
     self.save()
 
