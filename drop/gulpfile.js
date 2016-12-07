@@ -16,7 +16,7 @@ var js_files = [
   WATCH_DIR + ".dist/_tags.js"
 ]
 
-gulp.task('build-js', function () {
+gulp.task('build-js', ['build-tag'], function () {
   return gulp.src(js_files)
     .pipe(sourcemaps.init())
     .pipe(concat(PROJECT_NAME + '-built.js'))
@@ -38,11 +38,11 @@ gulp.task('build-css', function () {
     .pipe(gulp.dest(WATCH_DIR+".dist"));
 });
 
-var build_tasks = ['build-tag', 'build-js', 'build-css'];
+var build_tasks = ['build-js', 'build-css'];
 
 gulp.task('watch', build_tasks, function () {
-  gulp.watch(WATCH_DIR+"*.js", ['build-tag','build-js']);
-  gulp.watch(WATCH_DIR+"*.tag", ['build-tag','build-js']);
+  gulp.watch(WATCH_DIR+"*.js", ['build-js']);
+  gulp.watch(WATCH_DIR+"*.tag", ['build-js']);
   gulp.watch(WATCH_DIR+"less/*.less", ['build-css']);
 });
 
