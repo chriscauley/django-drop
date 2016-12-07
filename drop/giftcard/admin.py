@@ -6,10 +6,10 @@ from models import GiftCardProduct, Credit, Debit
 class GiftCardProductAdmin(admin.ModelAdmin):
   pass
 
-class DebitInline(admin.TabularInline):
-  model = Debit
-  extra = 0
+@admin.register(Debit)
+class DebitAdmin(admin.ModelAdmin):
+  raw_id_fields = ['order','user']
 
 @admin.register(Credit)
 class CreditAdmin(admin.ModelAdmin):
-  inlines = [DebitInline]
+  raw_id_fields = ['purchased_by','user','product']

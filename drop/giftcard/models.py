@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from drop.models import Product, Order
+from drop.models import Product, Order, JsonMixin
 from drop.util.fields import CurrencyField
 
 from lablackey.decorators import cached_property
@@ -30,16 +30,17 @@ class GiftCardProduct(Product):
     if credit.delivery_date <= datetime.date.today():
       credit.send()
 
-class Credit(models.Model):
+class Credit(models.Model,JsonMixin):
   code = models.CharField(max_length=16)
   created = models.DateTimeField(auto_now_add=True)
   purchased_by = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="+")
-  owner = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)
+  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)
   delivery_date = models.DateField()
   delivered = models.DateTimeField(null=True,blank=True)
   product = models.ForeignKey(GiftCardProduct)
   amount = CurrencyField()
   extra = jsonfield.JSONField(default=dict,null=True,blank=True)
+  json_fields = ['created']
   @cached_property
   def remaining(self):
     return self.amount - sum(self.giftcardpurchase_set.all().values_list('amount',flat=True))
@@ -48,15 +49,17 @@ class Credit(models.Model):
     if self.delivered:
       return
     to = [self.extra.get('recipient_email',self.purchased_by.email)]
-    context = {'credit': self, 'user_display': self.owner.get_full_name() or self.owner.username}
+    context = {'credit': self, 'user_display': self.user.get_full_name() or self.user.username}
     send_template_email("email/send_giftcard",to,context=context)
     self.delivered  = timezone.now()
     self.save()
 
-class Debit(models.Model):
-  credit = models.ForeignKey(Credit)
-  date_used = models.DateTimeField(auto_now_add=True)
+class Debit(models.Model,JsonMixin):
+  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)
+  order = models.ForeignKey(Order)
+  created = models.DateTimeField(auto_now_add=True)
   amount = CurrencyField()
+  json_fields = ['created']
 
   # cache the order, but if it gets deleted don't delete this!
   order = models.ForeignKey(Order,null=True,blank=True,on_delete=models.SET_NULL)
