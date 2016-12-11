@@ -46,7 +46,8 @@ class Credit(models.Model,JsonMixin):
     return self.amount - sum(self.giftcardpurchase_set.all().values_list('amount',flat=True))
   __unicode__ = lambda self: self.code
   def send(self):
-    if self.delivered:
+    # Don't resend or send if already redeemed
+    if self.delivered or self.user:
       return
     to = [self.extra.get('recipient_email',self.purchased_by.email)]
     context = {'credit': self, 'user_display': self.user.get_full_name() or self.user.username}

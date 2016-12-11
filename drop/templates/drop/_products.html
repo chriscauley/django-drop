@@ -6,7 +6,7 @@
     <a href="{{ object.get_absolute_url }}" class="card product-card">
       <div class="card-image">
         {% thumbnail object.first_photo.file "350x440" crop="center" as im %}
-        <img src="{{ im.url }}" />
+        <img src="{{ im.url }}" alt="{{ object.get_name }}" title="{{ object.get_name }}"/>
         {% endthumbnail %}
       </div>
       <div class="card-content">

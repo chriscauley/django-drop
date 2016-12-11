@@ -1,5 +1,6 @@
 uR.ready(function() {
-  var o = { tagname: 'paypal-checkout', copy: "Pay with Paypal", className: "paypal_button or" };
+  var o = { tagname: 'paypal-checkout', copy: " Paypal", className: uR.config.btn_primary,
+            icon: "fa fa-cc-paypal" };
   uR.drop.payment_backends.push(o);
 });
 

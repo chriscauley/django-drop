@@ -112,7 +112,9 @@
         </div>
       </div>
       <div class="payment_buttons" if={ checkoutReady }>
-        <button each={ backends } onclick={ parent.checkout } class={ className } alt={ copy }>{ copy }</button>
+        <b>Select Payment Method</b>
+        <button each={ backends } onclick={ parent.checkout } class={ className } alt={ copy }>
+          <i class={ icon }></i> { copy }</button>
         <a onclick={ close }>&laquo; Keep Shopping</a>
       </div>
     </div>

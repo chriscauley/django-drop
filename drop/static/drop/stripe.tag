@@ -1,5 +1,5 @@
 uR.ready(function() {
-  var o = {tagname:'stripe-checkout',copy:"Pay with Credit Card",className:uR.config.btn_primary};
+  var o = {tagname:'stripe-checkout',copy:"Credit Card",className:uR.config.btn_primary,icon: "fa fa-cc-stripe"};
   uR.drop.payment_backends.push(o);
 });
 
