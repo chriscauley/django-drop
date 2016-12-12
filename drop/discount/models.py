@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from drop.models import Product, JsonMixin
+from drop.models import Product
+
+from lablackey.unrest import JsonMixin
 
 class ProductDiscount(models.Model,JsonMixin):
   """

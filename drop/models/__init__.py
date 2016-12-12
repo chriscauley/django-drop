@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from abstract import JsonMixin, Category
+from abstract import Category
 from cartmodel import *  # NOQA
 from ordermodel import *  # NOQA
 from productmodel import *  # NOQA

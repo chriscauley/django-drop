@@ -2,11 +2,12 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from drop.models import Product, Order, JsonMixin
+from drop.models import Product, Order
 from drop.util.fields import CurrencyField
 
 from lablackey.decorators import cached_property
 from lablackey.mail import send_template_email
+from lablackey.unrest import JsonMixin
 
 import datetime, random, jsonfield, arrow
 
