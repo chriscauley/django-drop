@@ -1,5 +1,6 @@
 stripe-checkout {
   .card, .modal-content { max-width: 320px; }
+  a { cursor: pointer; }
   ur-form {
     display: block;
     form {
@@ -11,11 +12,13 @@ stripe-checkout {
       ur-input.cvc { flex-basis: 40%; }
     }
     .button_div {
-      background: url(/static/drop/powered_by_stripe2x.png) no-repeat bottom left;
+      background: url(/static/drop/powered_by_stripe2x.png) no-repeat left center;
       background-size: auto 26px;
+      margin-bottom: 10px;
       min-height: 0;
       overflow: hidden;
       padding-left: 130px;
+      width: 100%;
       .btn { float: right; margin-bottom: 0; }
       @media (max-width: 400px) {
         background-size: auto 20px;
