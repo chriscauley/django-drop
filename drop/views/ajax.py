@@ -74,7 +74,7 @@ def start_checkout(request):
     restriction = item.product.get_purchase_error(item.quantity,cart)
     if restriction:
       out['errors'].append(restriction)
-  return HttpResponse(json.dumps(out))
+  return JsonResponse(out)
 
 @staff_member_required
 @csrf_exempt

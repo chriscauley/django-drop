@@ -37,7 +37,7 @@ uR.ready(function() {
   var self = this;
   this.product = this.opts.product;
   this.initial = { };
-  if (window.moment) { this.initial.delivery_date = window.moment().format("YYYY-MM-DD"); }
+  if (window.moment) { this.initial.delivery_date = window.moment().format("M/D/YYYY"); }
   else {
     var d = new Date();
     this.initial.delivery_date = [d.getMonth(),d.getDate(),d.getFullYear()].join("/");
@@ -62,11 +62,12 @@ uR.ready(function() {
   <div class={ theme.outer }>
     <div class={ theme.header }><h3>Redeem a Gift Card</h3></div>
     <div class={ theme.content }>
-      <ur-form action={ post_url } method="POST" cancel_function={ close }></ur-form>
+      <ur-form action={ post_url } method="POST" cancel_function={ close } initial={ initial }></ur-form>
     </div>
   </div>
 
   this.schema = [{name: "code", label: "Redemption Code"}];
+  this.initial = {code: uR.getQueryParameter("code") };
   post_url = uR.drop.prefix+"/giftcard/redeem_ajax/";
 </giftcard-redeem>
 

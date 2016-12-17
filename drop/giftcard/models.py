@@ -42,6 +42,7 @@ class Credit(models.Model,JsonMixin):
   amount = CurrencyField()
   extra = jsonfield.JSONField(default=dict,null=True,blank=True)
   json_fields = ['created']
+
   @cached_property
   def remaining(self):
     return self.amount - sum(self.giftcardpurchase_set.all().values_list('amount',flat=True))
@@ -51,7 +52,7 @@ class Credit(models.Model,JsonMixin):
     if self.delivered or self.user:
       return
     to = [self.extra.get('recipient_email',self.purchased_by.email)]
-    context = {'credit': self, 'user_display': self.user.get_full_name() or self.user.username}
+    context = {'credit': self, 'user_display': self.purchased_by.get_full_name() or self.purchased_by.username}
     send_template_email("email/send_giftcard",to,context=context)
     self.delivered  = timezone.now()
     self.save()

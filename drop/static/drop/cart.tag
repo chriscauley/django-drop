@@ -127,7 +127,7 @@
     self.backends.push(backend);
   });
   this.on("update",function() {
-    self.target = self.root.querySelector(".card");
+    self.target = self.root.querySelector("."+self.theme.outer);
     uR.forEach(uR.drop.cart.all_items,function(item) {
       var product = uR.drop.products[item.product_id];
       item.display_name = product.display_name;
