@@ -190,7 +190,7 @@ def paypal_payment_successful(sender,**kwargs):
     #! TODO this was a problem with the last ipn handler
     mail_admins("No cart items found for %s"%sender.txn_id,"")
   d = "PayPal payment by account: %s"%params.get("payer_email",'UNKNOWN')
-  PaymentAPI().confirm_payment(order, Decimal(params['mc_gross']), sender.txn_id, 'paypal')
+  PaymentAPI().confirm_payment(order, Decimal(params['mc_gross']), sender.txn_id, 'paypal',d)
 
 @receiver(payment_was_flagged, dispatch_uid='drop.listeners.paypal_payent_flagged')
 def paypal_payment_flagged(sender,**kwargs):
