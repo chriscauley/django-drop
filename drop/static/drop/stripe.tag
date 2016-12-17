@@ -9,11 +9,10 @@ uR.ready(function() {
       <h3>Checkout with Stripe</h3>
     </div>
     <div class={ theme.content }>
-      <ur-form schema={ schema } initial={ initial } success_text="Pay ${ uR.drop.cart.total_price }">
-        <yield to="button_div">
-          <div class="stripe_logo"></div>
-        </yield>
-      </ur-form>
+      <ur-form schema={ schema } initial={ initial } success_text="Pay ${ uR.drop.cart.total_price }"></ur-form>
+      <center>
+        <a onclick={ uR.drop.openCart }>&laquo; Back to cart</a>
+      </center>
     </div>
   </div>
 
@@ -33,14 +32,16 @@ uR.ready(function() {
   ];
   if (!uR.auth.user) {
     // stripe doesn't give us email, so we need it
-    this.schema.push({'name': 'email', type: 'email', label: 'Email Address'})
+    this.schema.push({'name': 'email', type: 'email', label: 'Email Address',
+                     help_text: "Since you are not logged in, we'll look up or create an account using this email address. We promise to only use this for comminication about your purchase."})
   }
   if (uR.DEBUG && window.location.search.indexOf("cheat") != -1) {
     this.initial = {number: "4111 1111 1111 1111", cvc: '123', exp_month: "01", exp_year: "2019" }
   }
   submit(ur_form) {
+    self.ajax_target = self.root.querySelector("."+self.theme.outer);
     self.error = undefined;
-    self.root.querySelector("ur-form").setAttribute("data-loading","spinner");
+    self.ajax_target.setAttribute("data-loading","spinner");
     var data = ur_form.getData();
     var expiry = data.expiry.replace(/ /g,"").split("/");
     data.exp_month = expiry[0];
@@ -56,9 +57,8 @@ uR.ready(function() {
     ur_form.update();
   }
   this.stripeResponseHandler = function(status,response) {
-    var target = self.root.querySelector("ur-form");
     if (response.error) {
-      target.removeAttribute('data-loading');
+      self.ajax_target.removeAttribute('data-loading');
       self.setError(response.error.message);
       return;
     }
@@ -66,9 +66,9 @@ uR.ready(function() {
       method: "POST",
       url: "/stripe/payment/",
       data: {token: response.id,total:uR.drop.cart.total_price,email: self.email},
-      target: target,
+      target: self.ajax_target,
       success: function(data) {
-        target.setAttribute("data-loading","spinner");
+        self.ajax_target.setAttribute("data-loading","spinner");
         window.location = data.next;
       },
       error: function(data) { self.setError(data.error); }
