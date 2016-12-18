@@ -182,8 +182,10 @@ def paypal_payment_successful(sender,**kwargs):
   user.save()
   order = Order.objects.get(pk=params['invoice'])
   if order.user != user:
-    #! TODO: not sure when this will happen so let's keep an eye on this
-    mail_admins("Paypal order jumping users!","%s %s %s %s"%(user,order.user,order,sender))
+    if order.user:
+      # If it had no user then we're fine, otherwise...
+      #! TODO: not sure when this will happen so let's keep an eye on this
+      mail_admins("Paypal order jumping users!","%s %s %s %s"%(user,order.user,order,sender))
     order.user = user
     order.save()
   if not "num_cart_items" in params:
@@ -194,5 +196,14 @@ def paypal_payment_successful(sender,**kwargs):
 
 @receiver(payment_was_flagged, dispatch_uid='drop.listeners.paypal_payent_flagged')
 def paypal_payment_flagged(sender,**kwargs):
-  mail_admins("paypal flag","%s was flagged and I'd like to know why"%sender)
+  import sys
+  TESTING = sys.argv[1:2] == ['test']
+
+  #sometimes I send bad postbacks in tests that I wish to avoid.
+  if not (TESTING and "Invalid postback" in sender.flag_info):
+    lines = [
+      "%s was flagged and I'd like to know why"%sender,
+      'flag: %s'%sender.flag_info
+    ]
+    mail_admins("paypal flag",'\n'.join(lines))
   paypal_payment_successful(sender,**kwargs)
