@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 from drop.exceptions import PaymentError
 from drop.payment.api import PaymentAPI
@@ -13,9 +14,8 @@ import decimal
 class GiftCard(PaymentBackend):
   name = "giftcard"
   def charge(self,order,request):
-    credit = sum(Credit.objects.filter(user=request.user).values_list("amount",flat=True) or [0])
-    debit = sum(Debit.objects.filter(user=request.user).values_list("amount",flat=True) or [0])
-    balance = credit - debit
+    credit = get_object_or_404(Credit,code=request.POST['code'])
+    balance = credit.remaining
     total = decimal.Decimal(request.POST['total'])
     if total > balance:
       raise PaymentError('Your gift card balance is $%s, please select a value equal to or less than that.'%balance)
@@ -24,6 +24,7 @@ class GiftCard(PaymentBackend):
       raise PaymentError("Please select an amount less than or equal to your cart total, $%s."%cart_total)
     debit = Debit.objects.create(
       user=order.user,
+      credit=credit,
       order=order,
       amount=total,
     )
