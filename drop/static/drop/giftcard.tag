@@ -71,13 +71,24 @@ uR.ready(function() {
   <div class={ theme.outer }>
     <div class={ theme.header }><h3>Redeem a Gift Card</h3></div>
     <div class={ theme.content }>
-      <ur-form action={ post_url } method="POST" cancel_function={ close } initial={ initial }></ur-form>
+      <ur-form action={ post_url } method="POST" cancel_function={ close } initial={ initial }
+               ajax_success={ ajax_success } if={ !success_message }></ur-form>
+      <div if={ success_message }>
+        <p class={ uR.config.alert_success }>{ success_message }</p>
+        <button class={ uR.config.btn_primary } onclick={ uR.drop.openCart }>Back to Cart</button>
+      </div>
     </div>
   </div>
 
+  var self = this;
   this.schema = [{name: "code", label: "Redemption Code"}];
   this.initial = {code: uR.storage.get("giftcode") };
   post_url = uR.drop.prefix+"/giftcard/redeem_ajax/";
+  this.ajax_success = function(data) {
+    uR.storage.set("giftcard",data.giftcard);
+    self.success_message = "You giftcard is worth $" + data.giftcard.remaining + ". You can apply this value to your purchase at checkout.";
+    self.update()
+  }
 </giftcard-redeem>
 
 <giftcard-checkout>
@@ -100,14 +111,15 @@ uR.ready(function() {
   if (!uR.auth.user) { this.schema.push(uR.schema.fields.no_email) }
   if (!uR.storage.get("giftcard")) {
     uR.alertElement("giftcard-redeem");
+  } else {
+    this.giftcard = uR.storage.get("giftcard");
+    post_url = uR.drop.prefix+"/giftcard/payment/";
+    this.initial = {
+      total: Math.min(this.giftcard.remaining,parseFloat(uR.drop.cart.total_price)),
+      code: this.giftcard.code,
+      email: this.giftcard.extra.recipient_email,
+    };
   }
-  this.giftcard = uR.storage.get("giftcard");
-  post_url = uR.drop.prefix+"/giftcard/payment/";
-  this.initial = {
-    total: Math.min(this.giftcard.remaining,parseFloat(uR.drop.cart.total_price)),
-    code: this.giftcard.code,
-    email: this.giftcard.extra.recipient_email,
-  };
   ajax_success(data) {
     window.location = data.next;
   }

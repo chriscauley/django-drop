@@ -15,18 +15,12 @@ def user_json(request):
   debit = sum(Debit.objects.filter(user=request.user).values_list("amount",flat=True) or [0])
   return JsonResponse({'amount': credit - debit})
 
-@auth_required
 def redeem_ajax(request):
   credit = Credit.objects.get(code=request.POST.get('code',None))
   error = None
-  if credit.user == request.user:
-    error = "You have already redeemed this gift card."
-  elif credit.user:
-    error = "This gift card has already been redeemed. If you believe this is a mistake, please contact us."
-  else:
-    credit.user = request.user
-    credit.save()
-  return JsonResponse({'error': error})
+  if credit.remaining <= 0:
+    return JsonResponse({'error': "This gift card has already been redeemed."})
+  return JsonResponse({'giftcard': credit.as_json})
 
 def arst(request):
   records = [c.as_json for c in Credit.objects.filter(user=request.user)]
