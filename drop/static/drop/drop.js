@@ -93,6 +93,10 @@
     login_required: true,
     payment_backends: [],
   };
+  uR.schema.fields.no_email = {
+    name: 'email', type: 'email', label: 'Email Address',
+    help_text: "Since you are not logged in, we'll look up or create an account using this email address. We promise to only use this for comminication about your purchase."
+  }
   uR.theme.checkout_button = uR.config.btn_primary;
   uR.ready(function() {
     uR.drop.updateProducts();

@@ -32,8 +32,7 @@ uR.ready(function() {
   ];
   if (!uR.auth.user) {
     // stripe doesn't give us email, so we need it
-    this.schema.push({'name': 'email', type: 'email', label: 'Email Address',
-                     help_text: "Since you are not logged in, we'll look up or create an account using this email address. We promise to only use this for comminication about your purchase."})
+    this.schema.push(uR.schema.fields.no_email);
   }
   if (uR.DEBUG && window.location.search.indexOf("cheat") != -1) {
     this.initial = {number: "4111 1111 1111 1111", cvc: '123', exp_month: "01", exp_year: "2019" }
