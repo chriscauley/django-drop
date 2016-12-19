@@ -13,6 +13,7 @@ from drop.discount.models import ProductDiscount
 from drop.exceptions import PaymentError
 from drop.models import CartItem, Order, Product, Cart
 from drop.util.cart import get_or_create_cart
+from drop.util.loader import load_class
 
 import json, datetime
 from decimal import Decimal
@@ -125,6 +126,11 @@ def payment(request,_backend):
   cart = get_or_create_cart(request,save=True)
   cart.update(request)
   order = Order.objects.get_or_create_from_cart(cart,request)
+  if not order.user and request.POST.get('email',None):
+    f = load_class(getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER','err'))
+    user,_new = f({'email': request.POST['email']})
+    order.user = user
+    order.save()
   try:
     charge = backend.charge(order,request)
   except ImportError,e:
