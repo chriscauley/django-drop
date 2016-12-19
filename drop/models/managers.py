@@ -68,18 +68,6 @@ class OrderManager(models.Manager):
         old_orders = self.get_unconfirmed_for_cart(cart)
         old_orders.delete()
 
-    def create_order_object(self, cart, request):
-        """
-        Create an empty order object and fill it with the given cart data.
-        """
-        order = self.model()
-        order.cart_pk = cart.pk
-        order.user = cart.user
-        order.status = self.model.PROCESSING  # Processing
-        order.order_subtotal = cart.subtotal_price
-        order.order_total = cart.total_price
-        return order
-
     @atomic
     def get_or_create_from_cart(self, cart, request):
         """
@@ -109,12 +97,19 @@ class OrderManager(models.Manager):
             order = self.model.objects.get(cart_pk=cart.pk)
         except self.model.DoesNotExist:
             # Create an empty order object
-            order = self.create_order_object(cart, request)
+            order = self.model()
             order.save()
         except self.model.MultipleObjectsReturned:
             # just get rid of the rest
             order = self.model.objects.filter(cart_pk=cart.pk)[0]
             self.model.objects.exclude(pk=order.pk).filter(cart_pk=cart.pk).delete()
+
+        order.cart_pk = cart.pk
+        order.user = cart.user
+        order.status = self.model.PROCESSING  # Processing
+        order.order_subtotal = cart.subtotal_price
+        order.order_total = cart.total_price
+        order.save()
 
         # Let's serialize all the extra price arguments in DB
         #! TODO This is not idempotent... may duplicate a field if there are subtle changes.
@@ -128,13 +123,11 @@ class OrderManager(models.Manager):
 
         # There, now move on to the order items.
         cart_items = CartItem.objects.filter(cart=cart)
+        order.items.all().delete()
         for item in cart_items:
             item.update(request)
-            try:
-                order_item = order.items.get(product_reference=item.product.get_product_reference())
-            except OrderItem.DoesNotExist:
-                order_item = OrderItem()
-                order_item.order = order
+            order_item = OrderItem()
+            order_item.order = order
             order_item.product_reference = item.product.get_product_reference()
             order_item.product_name = item.product.get_name()
             order_item.product = item.product
