@@ -1,7 +1,5 @@
 from django.conf import settings
 
-from drop.util.loader import load_class
-
 from djstripe.models import Customer, StripeCard
 import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -22,11 +20,6 @@ class Stripe(PaymentBackend):
     customer = None
     card = None
     user = order.user
-    if not user and request.POST.get('email',None):
-      f = load_class(getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER','err'))
-      user,_new = f({'email': request.POST['email']})
-      order.user = user
-      order.save()
     if user:
       kwargs['customer'] = customer = Customer.get_or_create(user)[0]
       token = kwargs.pop('source')
