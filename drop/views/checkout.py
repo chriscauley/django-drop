@@ -54,7 +54,7 @@ class CheckoutSelectionView(LoginMixin, DropTemplateView):
         """
         cart = get_or_create_cart(self.request)
         cart.update(self.request)
-        order = Order.objects.create_from_cart(cart, self.request)
+        order = Order.objects.create_or_create_from_cart(cart, self.request)
         request = self.request
         add_order_to_request(request, order)
         return order

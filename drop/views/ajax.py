@@ -63,7 +63,7 @@ def cart_edit(request):
 def start_checkout(request):
   cart = get_or_create_cart(request,save=True)
   cart.update(request)
-  order = Order.objects.create_from_cart(cart,request)
+  order = Order.objects.get_or_create_from_cart(cart,request)
   order.status = Order.CONFIRMED
   order.save()
   out = {
@@ -124,21 +124,25 @@ def payment(request,_backend):
   # everything until the try/except should be abstracted elsewhere
   cart = get_or_create_cart(request,save=True)
   cart.update(request)
-  order = Order.objects.create_from_cart(cart,request)
-  if order.order_total != Decimal(request.POST['total']):
-    e = "Front end and back end order totals do not match (%s != %s)"
-    raise NotImplementedError(e%(order.order_total, Decimal(request.POST['total'])))
+  order = Order.objects.get_or_create_from_cart(cart,request)
   try:
     charge = backend.charge(order,request)
-  except Exception,e:
+  except ImportError,e:
     return JsonResponse({'error': str(e)},status=400)
-  # empty the related cart                                                                                   
-  try:
-    Cart.objects.get(pk=order.cart_pk).empty()
-  except Cart.DoesNotExist:
-    pass
-  url = reverse('checkout-thank_you',args=[order.pk])+"?token="+order.make_token()
-  return JsonResponse({'next': url})
+
+  # right now only giftcard supports partial payment
+  if _backend != 'giftcard' or order.is_paid():
+    # empty the related cart
+    try:
+      Cart.objects.get(pk=order.cart_pk).empty()
+    except Cart.DoesNotExist:
+      pass
+    order.cart_pk = None
+    order.save()
+    url = reverse('checkout-thank_you',args=[order.pk])+"?token="+order.make_token()
+    return JsonResponse({'next': url})
+  else:
+    return cart_json(request)
 
 # STRIPE LISTENERS
 # Move these some place intelligent
@@ -147,7 +151,7 @@ from django.dispatch import receiver
 import djstripe.signals
 
 from drop.payment.api import PaymentAPI
-  
+
 @receiver(djstripe.signals.WEBHOOK_SIGNALS['charge.succeeded'])
 def stripe_payment_successful(sender,**kwargs):
   obj = kwargs['event'].webhook_message['object']

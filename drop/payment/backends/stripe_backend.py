@@ -13,7 +13,7 @@ class Stripe(PaymentBackend):
   name = "stripe"
   def charge(self,order,request):
     kwargs = {
-      'amount': int(order.order_total*100), # Amount in cents
+      'amount': int(float(request.POST['total'])*100), # Amount in cents
       'source': request.POST['token'],
       'currency': "usd",
       'description': "Payment for order #%s"%order.id,

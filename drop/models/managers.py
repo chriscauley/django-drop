@@ -81,10 +81,9 @@ class OrderManager(models.Manager):
         return order
 
     @atomic
-    def create_from_cart(self, cart, request):
+    def get_or_create_from_cart(self, cart, request):
         """
-        This creates a new Order object (and all the rest) from a passed Cart
-        object.
+        return a unique order for a given cart.
 
         Specifically, it creates an Order with corresponding OrderItems and
         eventually corresponding ExtraPriceFields
@@ -106,29 +105,36 @@ class OrderManager(models.Manager):
         )
         from drop.models.cartmodel import CartItem
 
-        # First, let's remove old orders
-        self.remove_old_orders(cart)
-
-        # Create an empty order object
-        order = self.create_order_object(cart, request)
-        order.save()
+        try:
+            order = self.model.objects.get(cart_pk=cart.pk)
+        except self.model.DoesNotExist:
+            # Create an empty order object
+            order = self.create_order_object(cart, request)
+            order.save()
+        except self.model.MultipleObjectsReturned:
+            # just get rid of the rest
+            order = self.model.objects.filter(cart_pk=cart.pk)[0]
+            self.model.objects.exclude(pk=order.pk).filter(cart_pk=cart.pk).delete()
 
         # Let's serialize all the extra price arguments in DB
+        #! TODO This is not idempotent... may duplicate a field if there are subtle changes.
         for field in cart.extra_price_fields:
-            eoi = ExtraOrderPriceField()
-            eoi.order = order
-            eoi.label = unicode(field[0])
-            eoi.value = field[1]
-            if len(field) == 3:
-                eoi.data = field[2]
-            eoi.save()
+            ExtraOrderPriceField.objects.get_or_create(
+                order=order,
+                label=unicode(field[0]),
+                value=field[1],
+                data=field[2] if len(field) == 3 else None
+            )
 
         # There, now move on to the order items.
         cart_items = CartItem.objects.filter(cart=cart)
         for item in cart_items:
             item.update(request)
-            order_item = OrderItem()
-            order_item.order = order
+            try:
+                order_item = order.items.get(product_reference=item.product.get_product_reference())
+            except OrderItem.DoesNotExist:
+                order_item = OrderItem()
+                order_item.order = order
             order_item.product_reference = item.product.get_product_reference()
             order_item.product_name = item.product.get_name()
             order_item.product = item.product
@@ -139,15 +145,16 @@ class OrderManager(models.Manager):
             order_item.extra = item.extra
             order_item.save()
             # For each order item, we save the extra_price_fields to DB
+            #! TODO This is not idempotent... may duplicate a field if there are subtle changes.
             for field in item.extra_price_fields:
-                eoi = ExtraOrderItemPriceField()
-                eoi.order_item = order_item
-                # Force unicode, in case it has àö...
-                eoi.label = unicode(field[0])
-                eoi.value = field[1]
+                kwargs = dict(
+                    order_item=order_item,
+                    label = unicode(field[0]),
+                    value = field[1]
+                )
                 if len(field) == 3:
-                    eoi.data = field[2]
-                eoi.save()
+                    kwargs['data'] = field[2]
+                ExtraOrderItemPriceField.objects.get_or_create(**kwargs)
 
         processing.send(self.model, order=order, cart=cart)
         return order

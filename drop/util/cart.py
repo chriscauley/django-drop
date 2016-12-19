@@ -33,49 +33,41 @@ def get_or_create_cart(request, save=False):
 
     If ``save`` is True, cart object will be explicitly saved.
     """
-    cart = None
-    if not hasattr(request, '_cart'):
-        is_logged_in = request.user and not isinstance(request.user, AnonymousUser)
+    if hasattr(request, '_cart'):
+        return request._cart
+    cart = get_cart_from_session(request)
 
-        if is_logged_in:
-            # if we are authenticated
-            session_cart = get_cart_from_session(request)
-            if session_cart and session_cart.user == request.user:
-                # and the session cart already belongs to us, we are done
-                cart = session_cart
-            elif session_cart and not session_cart.is_empty and session_cart.user != request.user:
-                # if it does not belong to us yet
-                database_cart = get_cart_from_database(request)
-                if database_cart:
-                    # and there already is a cart that belongs to us in the database
-                    # delete the old database cart
-                    database_cart.delete()
-                # save the user to the new one from the session
-                session_cart.user = request.user
-                session_cart.save()
-                cart = session_cart
-            else:
-                # if there is no session_cart, or it's empty, use the database cart
-                cart = get_cart_from_database(request)
-                if cart:
-                    # and save it to the session
-                    request.session['cart_id'] = cart.pk
-        else:
-            # not authenticated? cart might be in session
-            cart = get_cart_from_session(request)
-
-        if not cart:
-            # in case it's our first visit and no cart was created yet
-            if is_logged_in:
-                cart = Cart(user=request.user)
-            elif getattr(request, 'session', None) is not None:
-                cart = Cart()
-
-        if save and not cart.pk:
+    if request.user.is_authenticated():
+        # if we are authenticated
+        if cart and cart.user == request.user:
+            # and the session cart already belongs to us, we are done
+            pass
+        elif cart and not cart.is_empty and cart.user != request.user:
+            # if it does not belong to us yet
+            database_cart = get_cart_from_database(request)
+            if database_cart:
+                # and there already is a cart that belongs to us in the database
+                # delete the old database cart
+                database_cart.delete()
+            # save the user to the new one from the session
+            cart.user = request.user
             cart.save()
-            request.session['cart_id'] = cart.pk
+        else:
+            # if there is no cart, or it's empty, use the database cart
+            cart = get_cart_from_database(request)
 
-        setattr(request, '_cart', cart)
+    if not cart:
+        # in case it's our first visit and no cart was created yet
+        if request.user.is_authenticated():
+            cart = Cart(user=request.user)
+        else:
+            cart = Cart()
 
-    cart = getattr(request, '_cart')  # There we *must* have a cart
-    return cart
+    if save and not cart.pk:
+        cart.save()
+    if cart.pk:
+        request.session['cart_id'] = cart.pk
+
+    setattr(request, '_cart', cart)
+
+    return request._cart
