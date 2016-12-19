@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
 from .models import Credit, Debit
 
@@ -31,3 +32,7 @@ def arst(request):
   records = [c.as_json for c in Credit.objects.filter(user=request.user)]
   records += [d.as_json for d in Debit.objects.filter(user=request.user)]
   records.sort(key=lambda o:o['created'])
+
+def validate(request):
+  credit = get_object_or_404(Credit,code=request.GET.get('code',None))
+  return JsonResponse({'giftcard': credit.as_json})
