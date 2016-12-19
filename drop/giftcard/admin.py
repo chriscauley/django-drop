@@ -13,3 +13,4 @@ class DebitAdmin(admin.ModelAdmin):
 @admin.register(Credit)
 class CreditAdmin(admin.ModelAdmin):
   raw_id_fields = ['purchased_by','user','product']
+  list_display = ['__unicode__','purchased_by','user','remaining']

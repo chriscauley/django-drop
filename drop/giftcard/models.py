@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 
@@ -41,11 +42,14 @@ class Credit(models.Model,JsonMixin):
   product = models.ForeignKey(GiftCardProduct)
   amount = CurrencyField()
   extra = jsonfield.JSONField(default=dict,null=True,blank=True)
-  json_fields = ['created']
+  json_fields = ['created','remaining','code','extra']
 
+  def get_absolute_url(self):
+    url = getattr(settings,"DROP_GIFTCARD_LANDING",None) or reverse("giftcard_redeem")
+    return "%s?giftcode=%s"%(url,self.code)
   @cached_property
   def remaining(self):
-    return self.amount - sum(self.giftcardpurchase_set.all().values_list('amount',flat=True))
+    return self.amount - sum(self.debit_set.all().values_list('amount',flat=True))
   __unicode__ = lambda self: self.code
   def send(self):
     # Don't resend or send if already redeemed
@@ -59,6 +63,7 @@ class Credit(models.Model,JsonMixin):
 
 class Debit(models.Model,JsonMixin):
   user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)
+  credit = models.ForeignKey(Credit)
   order = models.ForeignKey(Order)
   created = models.DateTimeField(auto_now_add=True)
   amount = CurrencyField()
