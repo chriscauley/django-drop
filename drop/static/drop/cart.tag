@@ -174,7 +174,7 @@
       url: "/ajax/start_checkout/",
       that: this,
       success: function(data) { uR.alertElement(e.item.tagname,data); },
-      error: function(data) { self.errors = data.errors },
+      error: function(data) { self.errors = data.errors || ["An unknown error has occurred"] },
     });
   }
   if (uR.drop.login_required) {

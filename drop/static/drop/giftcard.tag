@@ -22,6 +22,10 @@ uR.ready(function() {
             uR.alert("You have activated a gift card worth $"+data.giftcard.remaining+". You can apply this towards the purchase of any item on the site at checkout.");
           }
         }
+      },
+      error: function(data) {
+        uR.storage.set("giftcard",null);
+        uR.storage.set("giftcode",null);
       }
     });
   }
@@ -33,7 +37,8 @@ uR.ready(function() {
   uR.schema.fields.recipient_email = { type: 'email' };
   uR.drop._addToCart['giftcard.giftcardproduct'] = function(data) { uR.alertElement('purchase-giftcard',data); }
   var o = {
-    tagname: 'giftcard-checkout', copy: 'Pay With A Gift Card', className: uR.config.btn_primary, icon: 'fa fa-gift'
+    tagname: 'giftcard-checkout', copy: 'Pay With A Gift Card', className: uR.config.btn_primary, icon: 'fa fa-gift',
+    test: function() { return uR.storage.get("giftcard"); }
   }
   uR.drop.payment_backends.push(o);
   var prefix = uR.drop.prefix+"/giftcard";
