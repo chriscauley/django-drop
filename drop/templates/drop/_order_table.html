@@ -32,6 +32,12 @@
       <th>${{ order.order_subtotal }}</th>
     </tr>
     {% endif %}
+    {% for extra in order.extraorderpricefield_set.all %}
+    <tr>
+      <th colspan="3">{{ extra.label }}</th>
+      <th>{{ extra.value }}</th>
+    </tr>
+    {% endfor %}
     <tr>
       <th></th>
       <th></th>
