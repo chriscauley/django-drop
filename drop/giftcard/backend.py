@@ -29,7 +29,7 @@ class GiftCard(PaymentBackend):
       amount=total,
     )
     t = "gc__%s"%debit.id
-    d = "Gift Card Debit #%s"%debit.id
+    d = "Gift Card Debit #%s-%s"%(debit.credit.code,debit.id)
     PaymentAPI().confirm_payment(order,total, t, 'giftcard',d)
   def refund(self,transaction_id):
     raise NotImplementedError()

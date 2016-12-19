@@ -8,11 +8,20 @@ uR.ready(function() {
   };
   var code_to_check = uR.getQueryParameter("giftcode") || (uR.storage.get("giftcard") || {}).code;
   if (code_to_check) {
+    var has_giftcard = uR.storage.get("giftcard");
     uR.drop.ajax({
       url: "/giftcard/validate/",
       data: { code: code_to_check},
       success: function(data) {
-        uR.storage.set("giftcard",data.giftcard);
+        if (!data.giftcard || !parseFloat(data.giftcard.remaining)) {
+          uR.storage.set("giftcard",null);
+          uR.storage.set("giftcode",null);
+        } else {
+          uR.storage.set("giftcard",data.giftcard);
+          if (!has_giftcard) {
+            uR.alert("You have activated a gift card worth $"+data.giftcard.remaining+". You can apply this towards the purchase of any item on the site at checkout.");
+          }
+        }
       }
     });
   }
@@ -89,6 +98,9 @@ uR.ready(function() {
     self.success_message = "You giftcard is worth $" + data.giftcard.remaining + ". You can apply this value to your purchase at checkout.";
     self.update()
   }
+  close(e) {
+    uR.drop.openCart();
+  }
 </giftcard-redeem>
 
 <giftcard-checkout>
@@ -121,6 +133,11 @@ uR.ready(function() {
     };
   }
   ajax_success(data) {
-    window.location = data.next;
+    if (data.next) {
+      window.location = data.next;
+    } else {
+      uR.drop.cart = data;
+      uR.drop.openCart();
+    }
   }
 </giftcard-checkout>
