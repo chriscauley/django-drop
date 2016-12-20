@@ -84,8 +84,8 @@
             </div>
           </div>
           <div class="extra_price_field item" each={ field in uR.drop.cart.extra_price_fields }>
-            <div class="description"><b>Partial Payment:</b> { field[0] }</div>
-            <div class="amount">${ field[1] }</div>
+            <div class="description"><b>{ field[0] }</b></div>
+            <div class="amount">{ field[1] }</div>
           </div>
         </div>
         <div class="totals-box">
