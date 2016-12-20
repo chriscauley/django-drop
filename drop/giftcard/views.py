@@ -16,7 +16,7 @@ def user_json(request):
   return JsonResponse({'amount': credit - debit})
 
 def redeem_ajax(request):
-  credit = Credit.objects.get(code=request.POST.get('code',None))
+  credit = Credit.objects.get(code__iexact=request.POST.get('code',None))
   error = None
   if credit.remaining <= 0:
     return JsonResponse({'error': "This gift card has already been redeemed."})

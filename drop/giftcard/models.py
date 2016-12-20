@@ -23,7 +23,7 @@ class GiftCardProduct(Product,PhotosMixin):
     user = cart_item.order.user
     quantity = cart_item.quantity
     credit = Credit.objects.create(
-      code=''.join([random.choice("0123456789ABCDEF") for i in range(16)]),
+      code=''.join([random.choice("0123456789ABCDEF") for i in range(8)]),
       purchased_by=user,
       amount=quantity,
       product=self,
