@@ -24,3 +24,13 @@ class UserDiscountCartModifier(BaseCartModifier):
     if isinstance(f,six.string_types):
       f = load_class(f)
     return f(cart,request.user)
+
+class UserDiscountCartItemModifier(BaseCartModifier):
+  def get_extra_cart_item_price_field(self,cart_item,request):
+    f = getattr(settings,"DROP_USER_DISCOUNT_ITEM_FUNCTION",None)
+    if not (f and request.user.is_authenticated()):
+      return
+
+    if isinstance(f,six.string_types):
+      f = load_class(f)
+    return f(cart_item,request.user)

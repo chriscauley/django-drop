@@ -34,7 +34,7 @@ uR.ready(function() {
     success: function(data) { uR.drop.giftcard_balance = parseFloat(data.amount); }
   }); }
   uR.drop.updateGiftcard();
-  uR.schema.fields.recipient_email = { type: 'email' };
+  uR.schema.fields.recipient_email = { type: 'email', help_text: "If you wish to print this gift, enter your own email and we will send you a printable image." };
   uR.drop._addToCart['giftcard.giftcardproduct'] = function(data) { uR.alertElement('purchase-giftcard',data); }
   var o = {
     tagname: 'giftcard-checkout', copy: 'Pay With A Gift Card', className: uR.config.btn_primary, icon: 'fa fa-gift',
@@ -43,9 +43,7 @@ uR.ready(function() {
   uR.drop.payment_backends.push(o);
   var prefix = uR.drop.prefix+"/giftcard";
   var _routes = {};
-  _routes[prefix+"/redeem/"] = uR.auth.loginRequired(function(path,data) {
-    uR.alertElement("giftcard-redeem",data);
-  });
+  _routes[prefix+"/redeem/"] = function(path,data) { uR.alertElement("giftcard-redeem",data) }
   uR.addRoutes(_routes);
 });
 
@@ -89,7 +87,7 @@ uR.ready(function() {
                ajax_success={ ajax_success } if={ !success_message }></ur-form>
       <div if={ success_message }>
         <p class={ uR.config.alert_success }>{ success_message }</p>
-        <button class={ uR.config.btn_primary } onclick={ uR.drop.openCart }>Back to Cart</button>
+        <button class={ uR.config.btn_primary } onclick={ close }>{ close_text }</button>
       </div>
     </div>
   </div>
@@ -98,13 +96,16 @@ uR.ready(function() {
   this.schema = [{name: "code", label: "Redemption Code"}];
   this.initial = {code: uR.storage.get("giftcode") };
   post_url = uR.drop.prefix+"/giftcard/redeem_ajax/";
+  var has_cart = uR.drop.cart && uR.drop.all_items && uR.drop.all_items.length;
+  this.close_text = has_cart?"Back to Cart":"Close";
   this.ajax_success = function(data) {
     uR.storage.set("giftcard",data.giftcard);
     self.success_message = "You giftcard is worth $" + data.giftcard.remaining + ". You can apply this value to your purchase at checkout.";
-    self.update()
+    self.update();
   }
   close(e) {
-    uR.drop.openCart();
+    has_cart && uR.drop.openCart();
+    this.unmount();
   }
 </giftcard-redeem>
 
