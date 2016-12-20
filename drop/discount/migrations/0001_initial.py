@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('drop', '0004_auto_20160908_1023'),
+        ('drop', '0001_initial'),
     ]
 
     operations = [
