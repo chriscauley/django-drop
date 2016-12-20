@@ -9,10 +9,11 @@ from drop.util.fields import CurrencyField
 from lablackey.decorators import cached_property
 from lablackey.mail import send_template_email
 from lablackey.unrest import JsonMixin
+from media.models import PhotosMixin
 
 import datetime, random, jsonfield, arrow
 
-class GiftCardProduct(Product):
+class GiftCardProduct(Product,PhotosMixin):
   has_quantity = False
   in_stock = 1e6
   extra_fields = ['recipient_name','recipient_email','delivery_date','amount']

@@ -1,5 +1,5 @@
 uR.ready(function() {
-  uR.schema.fields.amount = { type: 'number', extra_attrs: { step: 1 } };
+  uR.schema.fields.amount = { type: 'number', extra_attrs: { step: 1 }, label: "Amount (USD)" };
   uR.schema.fields.delivery_date = {
     placeholder: "MM/DD/YYYY", validate: function(value,riot_tag) {
       e = "Please enter a date matching MM/DD/YYYY";

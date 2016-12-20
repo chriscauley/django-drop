@@ -1,2 +1,3 @@
 <add-to-cart product_id="{{ object.id }}" btn_class="{ uR.theme.checkout_button }"
-             add_text="{{ button_text|default_if_none:"Add to Cart" }}">${{ object.unit_price }}</add-to-cart>
+             add_text="{{ button_text|default_if_none:"Add to Cart" }}">
+  <div class="price">${{ object.unit_price }}</div></add-to-cart>

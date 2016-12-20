@@ -1,9 +1,10 @@
 from django.contrib import admin
 
 from models import GiftCardProduct, Credit, Debit
+from media.admin import TaggedPhotoAdmin
 
 @admin.register(GiftCardProduct)
-class GiftCardProductAdmin(admin.ModelAdmin):
+class GiftCardProductAdmin(TaggedPhotoAdmin):
   pass
 
 @admin.register(Debit)
