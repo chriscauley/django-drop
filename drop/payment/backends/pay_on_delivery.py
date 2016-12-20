@@ -1,7 +1,7 @@
 #! TODO Depracated. From django-shop, not used in drop ccc 11/16
 
 # -*- coding: utf-8 -*-
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from drop.util.decorators import on_method, drop_login_required, order_required
@@ -37,7 +37,7 @@ class PayOnDeliveryBackend(object):
         return HttpResponseRedirect(self.drop.get_finished_url())
 
     def get_urls(self):
-        urlpatterns = patterns('',
+        urlpatterns = [
             url(r'^$', self.simple_view, name='pay-on-delivery'),
-        )
+        ]
         return urlpatterns

@@ -1,0 +1,13 @@
+Django>=1.10.4
+Markdown>=2.6.7
+Pillow>=3.4.2
+South>=1.0.2
+argparse>=1.2.1
+arrow>=0.10.0
+django-classy-tags>=0.8.0
+django-polymorphic>=1.0.2
+jsonfield>=1.0.3
+python-dateutil>=2.6.0
+six>=1.10.0
+sorl-thumbnail>=12.3
+wsgiref>=0.1.2

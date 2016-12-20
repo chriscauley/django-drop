@@ -15,12 +15,14 @@ include/
 lib/
 distribute*
 share/
-*.sqlite
+*.sqlite3
 database.db
 *.swp
 *coverage.xml
 .idea
 .ropeproject
+testapp/.e/*
+testapp/.dev
 
 drop/node_modules/*
 drop/static/drop/.dist/*
