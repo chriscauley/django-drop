@@ -1,7 +1,7 @@
 #!/bin/bash
 
 pushd .
-cd tests/testapp
+cd testapp
 python manage.py $@
 popd
 

@@ -28,14 +28,14 @@ let "index = $index + 1"
 done
 if [ $ci == true ]; then
 	pushd .
-	cd tests/testapp
+	cd testapp
 	coverage run manage.py test $suite
 	coverage xml
 	popd
 
 elif [ $coverage == true ]; then
 	pushd .
-	cd tests/testapp
+	cd testapp
 	coverage run manage.py test $suite
 	coverage html
 	#x-www-browser htmlcov/index.html
@@ -45,7 +45,7 @@ else
 
 	# the default case...
 	pushd .
-	cd tests/testapp
+	cd testapp
 	python manage.py test $suite
 	popd
 
