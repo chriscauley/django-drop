@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.contrib.auth import urls as auth_urls
 from django.views.static import serve
 from main import views as main_views
+import drop.urls
 
 admin.autodiscover()
 
@@ -15,6 +16,7 @@ urlpatterns = [
   url(r'^$', main_views.home,name='home'),
   url(r'favicon.ico$', main_views.redirect,
       {'url': getattr(settings,'FAVICON','/static/favicon.png')}),
+  url(r'',include(drop.urls)),
 ]
 
 if settings.DEBUG:
