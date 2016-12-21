@@ -40,11 +40,16 @@ def image(request,code):
 
   img = Image.open(settings.DROP_GIFTCARD_IMG)
   draw = ImageDraw.Draw(img)
-  font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 16)
+  font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 29)
 
-  draw.text((125, 185),credit.extra['to'],(10,10,10),font=font)
-  draw.text((125, 225),credit.extra['from'],(10,10,10),font=font)
-  draw.text((200,325),code,(10,10,10),font=font)
-  response = HttpResponse(content_type="image/jpeg")
-  img.save(response, "JPEG")
+  draw.text((225, 333),credit.extra['to'],(10,10,10),font=font)
+  draw.text((225, 405),credit.extra['from'],(10,10,10),font=font)
+  font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 32)
+  draw.text((360,581),code,(10,10,10),font=font)
+  font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 25)
+  draw.text((720,580),"$%s"%credit.amount,(10,10,10),font=font)
+  #font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 10)
+  #draw.text((300,324),"Amount:",(10,10,10),font=font)
+  response = HttpResponse(content_type="image/png")
+  img.save(response, "PNG")
   return response
