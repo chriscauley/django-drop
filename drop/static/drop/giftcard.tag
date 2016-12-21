@@ -1,11 +1,5 @@
 uR.ready(function() {
   uR.schema.fields.amount = { type: 'number', extra_attrs: { step: 1 }, label: "Amount (USD)" };
-  uR.schema.fields.delivery_date = {
-    placeholder: "MM/DD/YYYY", validate: function(value,riot_tag) {
-      e = "Please enter a date matching MM/DD/YYYY";
-      if (!value.match(/[10]?\d\/[0123]?\d\/\d\d\d\d/)) { riot_tag.data_error = e; }
-    }
-  };
   var code_to_check = uR.getQueryParameter("giftcode") || (uR.storage.get("giftcard") || {}).code;
   if (code_to_check) {
     var has_giftcard = uR.storage.get("giftcard");
@@ -34,11 +28,9 @@ uR.ready(function() {
     success: function(data) { uR.drop.giftcard_balance = parseFloat(data.amount); }
   }); }
   uR.drop.updateGiftcard();
-  uR.schema.fields.recipient_email = { type: 'email', help_text: "If you wish to print this gift, enter your own email and we will send you a printable image." };
   uR.drop._addToCart['giftcard.giftcardproduct'] = function(data) { uR.alertElement('purchase-giftcard',data); }
   var o = {
     tagname: 'giftcard-checkout', copy: 'Pay With A Gift Card', className: uR.config.btn_primary, icon: 'fa fa-gift',
-    test: function() { return uR.storage.get("giftcard"); }
   }
   uR.drop.payment_backends.push(o);
   var prefix = uR.drop.prefix+"/giftcard";
@@ -58,15 +50,6 @@ uR.ready(function() {
   var self = this;
   this.product = this.opts.product;
   this.initial = { };
-  if (window.moment) { this.initial.delivery_date = window.moment().format("M/D/YYYY"); }
-  else {
-    var d = new Date();
-    this.initial.delivery_date = [d.getMonth(),d.getDate(),d.getFullYear()].join("/");
-  }
-  if (uR.auth.user) {
-    this.initial.recipient_name = uR.auth.user.username;
-    this.initial.recipient_email = uR.auth.user.email;
-  };
   if (uR.drop.product_on_page) { this.initial.amount = parseInt(uR.drop.product_on_page.unit_price); }
   if (this.opts.initial) { this.initial = this.opts.initial; }
   this.submit = function(ur_form) {
@@ -100,8 +83,12 @@ uR.ready(function() {
   this.close_text = has_cart?"Back to Cart":"Close";
   this.ajax_success = function(data) {
     uR.storage.set("giftcard",data.giftcard);
-    self.success_message = "You giftcard is worth $" + data.giftcard.remaining + ". You can apply this value to your purchase at checkout.";
-    self.update();
+    if (self.opts.in_checkout) {
+      uR.alertElement("giftcard-checkout");
+    } else {
+      self.success_message = "You giftcard is worth $" + data.giftcard.remaining + ". You can apply this value to your purchase at checkout.";
+      self.update();
+    }
   }
   close(e) {
     has_cart && uR.drop.openCart();
@@ -128,7 +115,7 @@ uR.ready(function() {
   ];
   if (!uR.auth.user) { this.schema.push(uR.schema.fields.no_email) }
   if (!uR.storage.get("giftcard")) {
-    uR.alertElement("giftcard-redeem");
+    uR.alertElement("giftcard-redeem",{in_checkout: true});
   } else {
     this.giftcard = uR.storage.get("giftcard");
     post_url = uR.drop.prefix+"/giftcard/payment/";
