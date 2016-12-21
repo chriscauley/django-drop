@@ -9,4 +9,5 @@ urlpatterns = [
   url(r'^redeem_ajax/$',views.redeem_ajax),
   url(r'^validate/$',views.validate),
   url(r'^([\d\w]+).png$',views.image,name="giftcard_image"),
+  url(r'^([\d\w]+).jpg$',views.image), #just in case
 ]

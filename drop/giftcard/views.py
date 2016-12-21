@@ -45,7 +45,7 @@ def image(request,code):
   draw.text((225, 333),credit.extra['to'],(10,10,10),font=font)
   draw.text((225, 405),credit.extra['from'],(10,10,10),font=font)
   font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 32)
-  draw.text((360,581),code,(10,10,10),font=font)
+  draw.text((360,578),code,(10,10,10),font=font)
   font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 25)
   draw.text((720,580),"$%s"%credit.amount,(10,10,10),font=font)
   #font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 10)
