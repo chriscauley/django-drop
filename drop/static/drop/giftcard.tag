@@ -23,11 +23,6 @@ uR.ready(function() {
       }
     });
   }
-  uR.drop.updateGiftcard = function() { uR.drop.ajax({
-    url: "/giftcard/user.json",
-    success: function(data) { uR.drop.giftcard_balance = parseFloat(data.amount); }
-  }); }
-  uR.drop.updateGiftcard();
   uR.drop._addToCart['giftcard.giftcardproduct'] = function(data) { uR.alertElement('purchase-giftcard',data); }
   var o = {
     tagname: 'giftcard-checkout', copy: 'Pay With A Gift Card', className: uR.config.btn_primary, icon: 'fa fa-gift',
@@ -109,10 +104,6 @@ uR.ready(function() {
     </div>
   </div>
 
-  this.schema = [
-    {name: "total", label: "Amount to apply", max: uR.drop.giftcard_balance },
-    {name: "code", type: "hidden"},
-  ];
   if (!uR.auth.user) { this.schema.push(uR.schema.fields.no_email) }
   if (!uR.storage.get("giftcard")) {
     uR.alertElement("giftcard-redeem",{in_checkout: true});
@@ -125,6 +116,10 @@ uR.ready(function() {
       email: this.giftcard.extra.recipient_email,
     };
   }
+  this.schema = [
+    {name: "total", label: "Amount to apply", max: this.giftcard.remaining },
+    {name: "code", type: "hidden"},
+  ];
   ajax_success(data) {
     if (data.next) {
       window.location = data.next;

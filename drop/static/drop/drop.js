@@ -54,6 +54,7 @@
         riot_tag && riot_tag.update();
         riot_tag && riot_tag.add_successful && riot_tag.add_successful();
         uR.drop.openCart();
+        riot.update(uR.drop.store_tags);
       },
       error: function(data) {
         console.log(data);

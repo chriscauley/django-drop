@@ -23,6 +23,7 @@
   });
   this.on("update",function() {
     this.in_cart = false;
+    if (!(uR.drop.cart && uR.drop.cart.all_items)) { return; }
     uR.forEach(uR.drop.cart.all_items,function(item) {
       if (self.opts.product_id == item.product_id) { self.in_cart = true }
     })
