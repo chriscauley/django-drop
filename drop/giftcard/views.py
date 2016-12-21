@@ -1,5 +1,6 @@
+
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 
 from .models import Credit, Debit
@@ -30,3 +31,20 @@ def arst(request):
 def validate(request):
   credit = get_object_or_404(Credit,code=request.GET.get('code',None))
   return JsonResponse({'giftcard': credit.as_json})
+
+def image(request,code):
+  from PIL import Image
+  from PIL import ImageFont
+  from PIL import ImageDraw
+  credit = get_object_or_404(Credit,code=code)
+
+  img = Image.open(settings.DROP_GIFTCARD_IMG)
+  draw = ImageDraw.Draw(img)
+  font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 16)
+
+  draw.text((125, 185),credit.extra['to'],(10,10,10),font=font)
+  draw.text((125, 225),credit.extra['from'],(10,10,10),font=font)
+  draw.text((200,325),code,(10,10,10),font=font)
+  response = HttpResponse(content_type="image/jpeg")
+  img.save(response, "JPEG")
+  return response
