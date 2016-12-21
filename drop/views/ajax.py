@@ -46,7 +46,7 @@ def cart_json(request):
 @csrf_exempt
 def cart_edit(request):
   cart = get_or_create_cart(request,save=True)
-  quantity =  int(request.POST['quantity'])
+  quantity =  int(float(request.POST['quantity']))
   product = get_object_or_404(Product,id=request.POST['id'])
   defaults = {'quantity': 0}
   cart_item,new = CartItem.objects.get_or_create(product=product,cart=cart,defaults=defaults)
