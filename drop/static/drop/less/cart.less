@@ -6,6 +6,7 @@ shopping-cart,checkout-modal{
   .item {
     border-bottom: 1px solid var(--border-color);
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: 0.5em;
   }
@@ -30,7 +31,9 @@ shopping-cart,checkout-modal{
     }
   }
   .extra_price_field {
+    border-top: 1px solid #bbb;
     display: flex;
+    flex-basis: 100%;
     justify-content: space-between;
   }
 }

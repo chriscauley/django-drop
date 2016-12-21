@@ -12,7 +12,7 @@ uR.ready(function() {
         <input name="item_name_{ i+1 }" type="hidden" value="{ n.display_name }">
         <input name="item_number_{ i+1 }" type="hidden" value="{ n.product_id }">
         <input name="quantity_{ i+1 }" type="hidden" value="{ n.quantity }">
-        <input name="amount_{ i+1 }" type="hidden" value="{ n.line_total }">
+        <input name="amount_{ i+1 }" type="hidden" value="{ n.unit_price }">
       </span>
       <input name="notify_url" type="hidden" value="{ SHOP.base_url}/tx/rx/ipn/handler/">
       <input name="cancel_return" type="hidden" value="{ SHOP.base_url }/shop/">
