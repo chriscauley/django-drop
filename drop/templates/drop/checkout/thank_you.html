@@ -5,5 +5,12 @@
   <h1>Thank you for your order!</h1>
   <h2>Summary for Order #{{ order.id }}</h2>
   {% include "drop/_order_table.html" %}
+  {% for order_item in order.items.all %}
+  {% ifchanged order_item.product %}
+  {% if order_item.product.purchase_message %}
+  {{ order_item.product.purchase_message|safe }}
+  {% endif %}
+  {% endifchanged %}
+  {% endfor %}
 </div>
 {% endblock %}
