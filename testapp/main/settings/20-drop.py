@@ -6,4 +6,5 @@ DROP_USER_DISCOUNT_FUNCTION = _discount
 DROP_CART_MODIFIERS = [
   'drop.cart.modifiers.partial_payment.PartialPaymentModifier',
   'drop.discount.modifier.UserDiscountCartModifier',
+  'drop.discount.modifier.ProductDiscountCartModifier',
 ]
