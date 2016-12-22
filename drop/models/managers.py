@@ -123,10 +123,12 @@ class OrderManager(models.Manager):
 
         # There, now move on to the order items.
         cart_items = CartItem.objects.filter(cart=cart)
-        order.items.all().delete()
         for item in cart_items:
             item.update(request)
-            order_item = OrderItem()
+            try:
+                order_item = order.items.get(product=item.product)
+            except OrderItem.DoesNotExist:
+                order_item = OrderItem()
             order_item.order = order
             order_item.product_reference = item.product.get_product_reference()
             order_item.product_name = item.product.get_name()
