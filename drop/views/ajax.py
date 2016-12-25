@@ -183,7 +183,7 @@ def paypal_payment_successful(sender,**kwargs):
   params = QueryDict(sender.query)
 
   # for now this is how we differentiate what came from drop
-  if not params.get("invoice",None):
+  if not params.get("invoice",None) or not params['invoice'].isdigit():
     return
 
   user,new_user = load_class(getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER','err'))(params)
