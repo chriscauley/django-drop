@@ -11,7 +11,7 @@ from lablackey.mail import send_template_email
 from lablackey.unrest import JsonMixin
 from media.models import PhotosMixin
 
-import datetime, random, jsonfield, arrow
+import datetime, random, jsonfield
 
 class GiftCardProduct(Product,PhotosMixin):
   has_quantity = False
