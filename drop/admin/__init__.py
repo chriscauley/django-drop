@@ -8,4 +8,6 @@ from lablackey.db.admin import NamedTreeModelAdmin
 
 @admin.register(Category)
 class CategoryAdmin(NamedTreeModelAdmin):
-  pass
+  list_filter = ("level",)
+  list_display = ("__unicode__","featured")
+  list_editable = ("featured",)

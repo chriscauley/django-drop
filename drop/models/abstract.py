@@ -21,8 +21,10 @@ from lablackey.unrest import JsonMixin
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 class Category(NamedTreeModel,JsonMixin):
+    featured = models.BooleanField(default=False)
     json_fields = ['id','name']
     slug = property(lambda self: slugify(self.name))
+    get_absolute_url = lambda self: reverse("category_detail",kwargs={'slug':self.slug,'category_id': self.id})
     def get_ancestors(self):
         out = []
         category = self.parent
@@ -30,10 +32,8 @@ class Category(NamedTreeModel,JsonMixin):
             out.append(category)
             category = category.parent
         return out
-    def get_absolute_url(self):
-        if self.parent:
-            return "/search/%s_%s/%s_%s/"%(self.parent.id,self.parent.slug,self.id,self.slug)
-        return "/search/%s_%s/"%(self.id,self.slug)
+    class Meta:
+        ordering = ('order',)
 
 #==============================================================================
 # Product

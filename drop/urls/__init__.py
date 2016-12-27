@@ -14,6 +14,9 @@ urlpatterns = [
   url(r'^checkout/', include('drop.urls.checkout')),
   url(r'^cart/', include('drop.urls.cart')),
   url(r'^(stripe|giftcard)/payment/$',views.ajax.payment,name="drop_payment"),
+
+  #! TODO: currently does nothing
+  url(r'^category/(?P<category_id>\d+)/(?P<slug>[0-9A-Za-z-_.//]+)/$', views.product.detail, name='category_detail'),
 ]
 
 for app in ['address','giftcard']:
