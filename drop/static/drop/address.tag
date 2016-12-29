@@ -35,7 +35,7 @@
         country,\
         zipCode,\
       }\
-    }\";
+    }";
     uR.ajax({
       url: "/graphql",
       data: {query: query},
