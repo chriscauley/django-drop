@@ -58,8 +58,7 @@ class Credit(models.Model,JsonMixin):
     context = {'credit': self, 'user_display': self.purchased_by.get_full_name() or self.purchased_by.username}
     attrs = ['DROP_GIFTCARD_IMG','DROP_GIFTCARD_FONT']
     context['GIFTCARD_IMAGE'] = all([getattr(settings,a,None) for a in attrs])
-    print all([getattr(settings,a,None) for a in attrs])
-    send_template_email("email/send_giftcard",to,context=context)
+    send_template_email("email/send_giftcard",to,context=context,bcc=['chris@lablackey.com'])
     self.save()
 
 class Debit(models.Model,JsonMixin):
