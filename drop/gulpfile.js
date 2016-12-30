@@ -7,6 +7,7 @@ var sourcemaps = require("gulp-sourcemaps");
 var through = require('through2');
 var uglify = require('gulp-uglify');
 var util = require('gulp-util');
+var babel = require('gulp-babel');
 
 var WATCH_DIR = "static/drop/";
 var PROJECT_NAME = "drop"
@@ -21,6 +22,7 @@ gulp.task('build-js', ['build-tag'], function () {
     .pipe(sourcemaps.init())
     .pipe(concat(PROJECT_NAME + '-built.js'))
     //.pipe(uglify({mangle: false, compress: false}))
+    .pipe(babel({ presets: ['es2015'] }))
     .pipe(sourcemaps.write("."))
     .pipe(gulp.dest(WATCH_DIR+".dist"));
 });

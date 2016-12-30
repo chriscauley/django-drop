@@ -23,19 +23,19 @@
 
   var self = this;
   this.on("mount", function() {
-    var query = "\
-    query {\
-      myAddresses {\
-        id,\
-        name,\
-        address,\
-        address2,\
-        city,\
-        state,\
-        country,\
-        zipCode,\
-      }\
-    }";
+    var query = `
+    query {
+      myAddresses {
+        id,
+        name,
+        address,
+        address2,
+        city,
+        state,
+        country,
+        zipCode,
+      }
+    }`;
     uR.ajax({
       url: "/graphql",
       data: {query: query},
@@ -59,5 +59,4 @@
   selectAddress(e) {
     this.ajax_success(e.item);
   }
-
 </select-address>
