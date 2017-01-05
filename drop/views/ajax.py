@@ -133,7 +133,7 @@ def payment(request,_backend):
     order.save()
   try:
     charge = backend.charge(order,request)
-  except ImportError,e:
+  except PaymentError,e:
     return JsonResponse({'error': str(e)},status=400)
 
   # right now only giftcard supports partial payment
