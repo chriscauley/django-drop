@@ -123,6 +123,7 @@ class OrderManager(models.Manager):
 
         # There, now move on to the order items.
         cart_items = CartItem.objects.filter(cart=cart)
+        order_item_ids = []
         for item in cart_items:
             item.update(request)
             try:
@@ -139,6 +140,7 @@ class OrderManager(models.Manager):
             order_item.line_subtotal = item.line_subtotal
             order_item.extra = item.extra
             order_item.save()
+            order_item_ids.append(order_item.id)
             # For each order item, we save the extra_price_fields to DB
             #! TODO This is not idempotent... may duplicate a field if there are subtle changes.
             for field in item.extra_price_fields:
@@ -150,6 +152,9 @@ class OrderManager(models.Manager):
                 if len(field) == 3:
                     kwargs['data'] = field[2]
                 ExtraOrderItemPriceField.objects.get_or_create(**kwargs)
+
+        # remove items that were removed from cart
+        order.items.exclude(id__in=order_item_ids).delete()
 
         processing.send(self.model, order=order, cart=cart)
         return order
