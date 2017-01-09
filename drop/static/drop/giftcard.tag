@@ -48,7 +48,7 @@ uR.ready(function() {
   if (uR.drop.product_on_page) { this.initial.amount = parseInt(uR.drop.product_on_page.unit_price); }
   if (this.opts.initial) { this.initial = this.opts.initial; }
   this.submit = function(ur_form) {
-    data = ur_form.getData();
+    var data = ur_form.getData();
     uR.drop.saveCartItem(self.product.id,data.amount,self,data);
   }
   this.add_successful = function() {
