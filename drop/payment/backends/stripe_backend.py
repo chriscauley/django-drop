@@ -2,7 +2,7 @@ from django.conf import settings
 
 from djstripe.models import Customer, StripeCard
 import stripe
-stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_key = getattr(settings,"STRIPE_SECRET_KEY",None)
 
 from drop.exceptions import PaymentError
 from .abstract import PaymentBackend
