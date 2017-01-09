@@ -10,9 +10,12 @@ from drop.models.ordermodel import OrderPayment
 from drop.models.ordermodel import Order
 from drop.drop_api import DropAPI
 from drop.order_signals import paid, refunded
+from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
+from django.core.mail import mail_admins
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import escape
 
 from lablackey.mail import send_template_email
 
@@ -77,6 +80,7 @@ class PaymentAPI(DropAPI):
                 # first time completing order. fire the purchase method for products to update inventory or whatever
                 for item in order.items.all():
                     item.product.purchase(item)
+                    item.save()
                 self.send_payment_confirmation_email(order)
             # Set the order status:
             order.status = Order.PAID
@@ -92,29 +96,51 @@ class PaymentAPI(DropAPI):
             paid.send(sender=self, order=order)
 
     def refund_order(self,order,request=None):
+        from drop.backends_pool import payment_backends
         if not order.status in [Order.PAID,Order.SHIPPED]:
             send_message(request,"Cannot refund this order because it was never paid.",messages.ERROR)
             return
 
         for item in order.items.all():
-            message = item.product.refund(order.user,item.quantity)
-            send_message(request,message)
+            purchased_model = item.extra.get("purchased_model",None)
+            if 'purchased_pk' in item.extra and purchased_model:
+                app_name,model = purchased_model.split(".")
+                obj = apps.get_app_config(app_name).get_model(model).objects.get(pk=item.extra['purchased_pk'])
+                old_q = obj.quantity
+                obj.quantity -= item.quantity
+                m = repr(obj)
+                if obj.quantity <= 0:
+                    m += " has been deleted"
+                    obj.delete()
+                else:
+                    new_q = obj.quantity
+                    m += " has had the quantity changed from %s to %s"%(old_q,new_q)
+                    obj.save()
+                send_message(request,escape(m)) # escape the <>
+            try:
+                message = item.product.refund(item)
+                send_message(request,message)
+            except Exception,e:
+                m = "An unknown error has occurred and the webmaster has been notified: %s"%e
+                body = "Order Number: %s\nError: %s"%(order.id,e)
+                mail_admins("Error occurred in refund",body)
+                send_message(request,m,messages.ERROR)
         order.status = Order.REFUNDED
         order.save()
 
         for payment in order.orderpayment_set.filter(refunded=False):
             backend = payment_backends.get(payment.backend.lower())
             if backend:
-                refund_id = backend.refund(payment.transaciton_id)
+                refund_id = backend.refund(payment.transaction_id)
                 order.orderpayment_set.create(
                     amount=-payment.amount,
                     transaction_id=refund_id,
-                    backend=order.backend,
-                    description = "%s payment requnded"%order.backend,
+                    backend=payment.backend.lower(),
+                    description = "%s payment requnded"%backend.name,
                 )
                 send_message(request,"%s refunded via %s"%(payment.amount,backend.name))
             else: # catch all
-                m = "%s was marked as refunded, but no refund could be issued for this payment method."%order
+                m = "%s was marked as refunded, but no refund could be issued for this payment method. Please manually issue a refund."%order
                 send_message(request,m,messages.WARNING)
             payment.refunded = True
             payment.save()

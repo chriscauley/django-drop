@@ -8,7 +8,7 @@
   {% for order_item in order.items.all %}
   {% ifchanged order_item.product %}
   {% if order_item.product.purchase_message %}
-  {{ order_item.product.purchase_message|safe }}
+  <p class="lead"{{ order_item.product.purchase_message|safe }}</p>
   {% endif %}
   {% endifchanged %}
   {% endfor %}

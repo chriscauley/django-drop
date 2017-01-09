@@ -41,7 +41,13 @@ class ExtraOrderPriceFieldInline(LocalizeDecimalFieldsMixin, admin.TabularInline
 class OrderItemInline(LocalizeDecimalFieldsMixin, admin.TabularInline):
     model = OrderItem
     extra = 0
-    readonly_fields = ("extra",)
+    readonly_fields = ("_purchased","product_reference","product_name","product","unit_price","quantity","line_subtotal","line_total","extra")
+    def _purchased(self,obj):
+        if not "purchased_pk" in obj.extra:
+            return
+        args = obj.extra['purchased_model'].split('.')+[obj.extra['purchased_pk']]
+        return ("<a href='/admin/%s/%s/%s/' class='fa fa-edit'></a>"%tuple(args)).lower()
+    _purchased.allow_tags = True
     raw_id_fields = ('product',)
 
 #TODO: add ExtraOrderItemPriceField inline, ideas?

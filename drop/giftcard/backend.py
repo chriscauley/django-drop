@@ -32,4 +32,5 @@ class GiftCard(PaymentBackend):
     d = "Gift Card Debit #%s-%s"%(debit.credit.code,debit.id)
     PaymentAPI().confirm_payment(order,total, t, 'giftcard',d)
   def refund(self,transaction_id):
-    raise NotImplementedError()
+    #! TODO
+    raise NotImplementedError("Refunding gift cards has not yet been set up. Please pester chris@lablackey.com")

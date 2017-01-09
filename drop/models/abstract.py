@@ -93,7 +93,7 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     purchase = lambda self,cart_item: None
 
     # hook to reverse the effects of purchase
-    refund = lambda self,user,quantity: None
+    refund = lambda self,order_item: None
 
     def get_breadcrumbs(self):
         out = []

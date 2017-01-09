@@ -21,19 +21,28 @@ class GiftCardProduct(Product,PhotosMixin):
     app_label = "giftcard"
   def purchase_message(self):
     return "Information on how to print and redeem your gift card will be sent to your email address. Be sure to check your spam folder if you do not see this email in the next 10 minutes."
-  def purchase(self,cart_item):
-    user = cart_item.order.user
-    quantity = cart_item.quantity
+  def purchase(self,order_item):
+    user = order_item.order.user
+    quantity = order_item.quantity
     credit = Credit.objects.create(
       code=''.join([random.choice("0123456789ABCDEF") for i in range(8)]),
       purchased_by=user,
       amount=quantity,
       product=self,
-      extra=cart_item.extra,
+      extra=order_item.extra,
     )
     credit.send()
+    order_item.extra['purchased_model'] = "giftcard.Credit"
+    order_item.extra['purchased_pk'] = credit.pk
+    order_item.save()
 
 class Credit(models.Model,JsonMixin):
+  def __init__(self,*args,**kwargs):
+    # necessary for refund api
+    #! TODO after test coverage is complete lets rename Credit.amount to credit.quantity
+    super(Credit,self).__init__(*args,**kwargs)
+    self.quantity = int(self.amount)
+
   code = models.CharField(max_length=16)
   created = models.DateTimeField(auto_now_add=True)
   purchased_by = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="+")
