@@ -332,13 +332,17 @@ class BaseCartItem(models.Model,JsonMixin):
 
     product = models.ForeignKey(get_model_string('Product'))
     extra = jsonfield.JSONField(default=dict)
-    json_fields = ['quantity','product_id','line_subtotal','line_total','extra_price_fields','extra']
+    json_fields = ['quantity','product_id','line_subtotal','line_total','extra_price_fields','extra','line_unit_price']
 
     class Meta(object):
         abstract = True
         app_label = 'drop'
         verbose_name = _('Cart item')
         verbose_name_plural = _('Cart items')
+
+    @property
+    def line_unit_price(self):
+        return self.line_total/self.quantity
 
     def __init__(self, *args, **kwargs):
         # That will hold extra fields to display to the user
