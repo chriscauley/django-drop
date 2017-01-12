@@ -73,7 +73,7 @@ uR.ready(function() {
   var self = this;
   this.schema = [{name: "code", label: "Redemption Code"}];
   this.initial = {code: uR.storage.get("giftcode") };
-  post_url = uR.drop.prefix+"/giftcard/redeem_ajax/";
+  this.post_url = uR.drop.prefix+"/giftcard/redeem_ajax/";
   var has_cart = uR.drop.cart && uR.drop.all_items && uR.drop.all_items.length;
   this.close_text = has_cart?"Back to Cart":"Close";
   this.ajax_success = function(data) {
@@ -109,7 +109,7 @@ uR.ready(function() {
     uR.alertElement("giftcard-redeem",{in_checkout: true});
   } else {
     this.giftcard = uR.storage.get("giftcard");
-    post_url = uR.drop.prefix+"/giftcard/payment/";
+    this.post_url = uR.drop.prefix+"/giftcard/payment/";
     this.initial = {
       total: Math.min(this.giftcard.remaining,parseFloat(uR.drop.cart.total_price)),
       code: this.giftcard.code,
