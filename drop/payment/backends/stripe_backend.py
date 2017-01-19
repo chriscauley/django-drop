@@ -1,10 +1,11 @@
 from django.conf import settings
 
 from djstripe.models import Customer, StripeCard
-import stripe
+import stripe, decimal
 stripe.api_key = getattr(settings,"STRIPE_SECRET_KEY",None)
 
 from drop.exceptions import PaymentError
+from drop.payment.api import PaymentAPI
 from .abstract import PaymentBackend
 
 class Stripe(PaymentBackend):
@@ -35,6 +36,8 @@ class Stripe(PaymentBackend):
       charge = stripe.Charge.create(**kwargs)
     except stripe.error.CardError,e:
       raise PaymentError(e)
+    d = "Stripe Payment: {brand} card ending in {last4}".format(**charge['source'])
+    PaymentAPI().confirm_payment(order, decimal.Decimal(charge['amount'])/100, charge['id'], 'stripe',d)
     if card:
       card.remove()
   def refund(self,transaction_id):

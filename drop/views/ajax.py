@@ -158,16 +158,16 @@ import djstripe.signals
 
 from drop.payment.api import PaymentAPI
 
-@receiver(djstripe.signals.WEBHOOK_SIGNALS['charge.succeeded'])
-def stripe_payment_successful(sender,**kwargs):
-  obj = kwargs['event'].webhook_message['object']
-  amount = obj['amount']
-  txn_id = obj['id']
-  metadata = obj['metadata']
-  if 'order_id' in metadata:
-    order = Order.objects.get(pk=metadata['order_id'])
-    d = "Stripe Payment: {brand} card ending in {last4}".format(**obj['source'])
-    PaymentAPI().confirm_payment(order, Decimal(amount)/100, txn_id, 'stripe',d)
+# @receiver(djstripe.signals.WEBHOOK_SIGNALS['charge.succeeded'])
+# def stripe_payment_successful(sender,**kwargs):
+#   obj = kwargs['event'].webhook_message['object']
+#   amount = obj['amount']
+#   txn_id = obj['id']
+#   metadata = obj['metadata']
+#   if 'order_id' in metadata:
+#     order = Order.objects.get(pk=metadata['order_id'])
+#     d = "Stripe Payment: {brand} card ending in {last4}".format(**obj['source'])
+#     PaymentAPI().confirm_payment(order, Decimal(amount)/100, txn_id, 'stripe',d)
 
 # PAYPAL LISTENERS
 # Move these some place intelligent
