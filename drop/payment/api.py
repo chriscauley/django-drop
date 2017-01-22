@@ -89,7 +89,8 @@ class PaymentAPI(DropAPI):
             # empty the related cart
             try:
                 cart = Cart.objects.get(pk=order.cart_pk)
-                cart.empty()
+                for item in order.items.all():
+                    cart.items.filter(product=item.product).delete()
             except Cart.DoesNotExist:
                 pass
 
