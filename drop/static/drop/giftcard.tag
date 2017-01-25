@@ -117,7 +117,7 @@ uR.ready(function() {
     };
   }
   this.schema = [
-    {name: "total", label: "Amount to apply", max: this.giftcard.remaining },
+    {name: "total", label: "Amount to apply", max: this.giftcard && this.giftcard.remaining },
     {name: "code", type: "hidden"},
   ];
   ajax_success(data) {
