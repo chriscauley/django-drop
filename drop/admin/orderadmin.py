@@ -21,8 +21,12 @@ class CartItemInline(admin.TabularInline):
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    readonly_fields = ('user',)
+    readonly_fields = ('user','extra_price_fields')
     inlines = [CartItemInline]
+    def has_change_permission(self,request,obj=None):
+        if obj:
+            obj.update(request)
+        return super(CartAdmin,self).has_change_permission(request,obj)
 
 class OrderExtraInfoInline(admin.TabularInline):
     model = OrderExtraInfo
@@ -55,7 +59,7 @@ class OrderItemInline(LocalizeDecimalFieldsMixin, admin.TabularInline):
 
 class OrderAdmin(LocalizeDecimalFieldsMixin, ModelAdmin):
     list_display = ('id', 'user', 'status', 'order_total', 'created')
-    list_filter = ('status', 'user')
+    list_filter = ('status',)
     search_fields = ('id', 'shipping_address_text', 'user__username')
     date_hierarchy = 'created'
     inlines = (OrderItemInline, OrderExtraInfoInline,

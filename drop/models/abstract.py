@@ -121,6 +121,7 @@ class BaseCart(models.Model,JsonMixin):
     # If the user is null, that means this is used for a session
     user = models.OneToOneField(USER_MODEL, null=True, blank=True)
     session_id = None
+    extra_price_fields = []
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     json_fields = ['user_id','session_id','total_price','all_items','extra_price_fields']
@@ -143,7 +144,6 @@ class BaseCart(models.Model,JsonMixin):
         self.subtotal_price = Decimal('0.0')
         self.total_price = Decimal('0.0')
         self.current_total = Decimal('0.0')  # used by cart modifiers
-        self.extra_price_fields = []  # List of tuples (label, value)
         self._updated_cart_items = None
 
     def add_product(self, product, quantity=1, merge=True, queryset=None):
