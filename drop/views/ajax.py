@@ -132,7 +132,7 @@ def payment(request,_backend):
     order.user = user
     order.save()
   try:
-    charge = backend.charge(order,request)
+    backend.charge(order,request)
   except PaymentError,e:
     return JsonResponse({'error': str(e)},status=400)
 

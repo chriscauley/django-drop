@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core.mail import mail_admins
 from django.db import models
 from django.db.models.aggregates import Count
 from polymorphic.manager import PolymorphicManager
@@ -57,17 +58,6 @@ class ProductManager(PolymorphicManager):
 #==============================================================================
 
 class OrderManager(models.Manager):
-
-    def get_unconfirmed_for_cart(self, cart):
-        return self.filter(cart_pk=cart.pk, status__lt=self.model.CONFIRMED)
-
-    def remove_old_orders(self, cart):
-        """
-        Removes all old unconfirmed order objects.
-        """
-        old_orders = self.get_unconfirmed_for_cart(cart)
-        old_orders.delete()
-
     @atomic
     def get_or_create_from_cart(self, cart, request):
         """
@@ -79,10 +69,6 @@ class OrderManager(models.Manager):
         This will only actually commit the transaction once the function exits
         to minimize useless database access.
 
-        The `state` parameter is further passed to process_cart_item,
-        process_cart, and post_process_cart, so it can be used as a way to
-        store per-request arbitrary information.
-
         Emits the ``processing`` signal.
         """
         # must be imported here!
@@ -93,18 +79,27 @@ class OrderManager(models.Manager):
         )
         from drop.models.cartmodel import CartItem
 
-        self.model.objects.filter(cart_pk=cart.pk).update(cart_pk=None)
-        """try:
+        try:
             order = self.model.objects.get(cart_pk=cart.pk)
         except self.model.DoesNotExist:
-            order = None
+            order = self.model()
         except self.model.MultipleObjectsReturned:
             # just get rid of the rest
             order = self.model.objects.filter(cart_pk=cart.pk)[0]
             self.model.objects.exclude(pk=order.pk).filter(cart_pk=cart.pk).delete()
 
-        order.save()"""
-        order = self.model()
+        # If the order and cart items to not match then they have most likely started a new cart
+        # and the old order payment hasn't come through yet
+        # dissociate the old cart and create a new order with the new cart
+        if order.items.all():
+            order_item_pks = sorted(order.items.all().values_list("product_id",flat=True))
+            cart_item_pks = sorted(cart.items.all().values_list("product_id",flat=True))
+            if cart_item_pks != order_item_pks:
+                mail_admins("dissociating %s from %s"%(order.pk,cart.pk),
+                            "This is a bit untested, go check in admin")
+                order.cart_pk=None
+                order.save()
+                order = self.model()
 
         order.cart_pk = cart.pk
         order.user = cart.user
