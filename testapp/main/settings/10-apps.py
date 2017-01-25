@@ -5,12 +5,14 @@ INSTALLED_APPS = (
   'django.contrib.auth',
   'django.contrib.contenttypes',
   'django.contrib.sessions',
+  'django.contrib.sites',
   'django.contrib.messages',
   'django.contrib.staticfiles',
 
   'sorl.thumbnail',
 
   # libraries to test
+  'djstripe',
   'drop',
   'drop.address',
   'drop.discount',

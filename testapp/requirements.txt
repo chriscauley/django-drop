@@ -11,3 +11,8 @@ python-dateutil>=2.6.0
 six>=1.10.0
 sorl-thumbnail>=12.3
 wsgiref>=0.1.2
+python-doc-inherit==0.3.0
+mock_django==0.6.10
+django-model-utils==2.6.1
+stripe
+tqdm

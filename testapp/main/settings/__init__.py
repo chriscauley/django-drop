@@ -7,7 +7,6 @@ BASE_DIR = os.path.join(SPATH,'../..')
 
 sys.path.append(os.path.join(BASE_DIR,'..'))
 sys.path.append(os.path.join(BASE_DIR,'.dev/'))
-print sys.path
 
 # Open and compile each file
 machine_name = re.sub('[^A-z0-9._]', '_', socket.gethostname())
