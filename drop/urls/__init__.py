@@ -3,6 +3,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 
 from drop import views
+from drop.views import checkout as checkout_views
 
 urlpatterns = [
   url(r'^$',views.product.index,name='product_list'),
@@ -11,8 +12,9 @@ urlpatterns = [
   url(r'^cart.js$',views.ajax.cart_json,name='cart_json'),
   url(r'^ajax/', include('drop.urls.ajax')),
   url(r'^orders/', include('drop.urls.order')),
-  url(r'^checkout/', include('drop.urls.checkout')),
-  url(r'^cart/', include('drop.urls.cart')),
+  url(r'^thank_you/(\d+)/$', checkout_views.thank_you, name='checkout-thank_you'),
+  #url(r'^checkout/', include('drop.urls.checkout')),
+  #url(r'^cart/', include('drop.urls.cart')),
   url(r'^(stripe|giftcard)/payment/$',views.ajax.payment,name="drop_payment"),
 
   #! TODO: currently does nothing
