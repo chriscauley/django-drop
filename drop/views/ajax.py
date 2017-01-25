@@ -125,7 +125,7 @@ def payment(request,_backend):
   # everything until the try/except should be abstracted elsewhere
   cart = get_or_create_cart(request,save=True)
   cart.update(request)
-  order = Order.objects.get_or_create_from_cart(cart,request)
+  order = Order.objects.get(cart_pk=cart.pk)
   if not order.user and request.POST.get('email',None):
     f = load_class(getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER','err'))
     user,_new = f({'email': request.POST['email']})

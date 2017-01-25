@@ -94,6 +94,8 @@ class PaymentAPI(DropAPI):
             except Cart.DoesNotExist:
                 pass
 
+            order.cart_pk = None
+            order.save()
             paid.send(sender=self, order=order)
 
     def refund_order(self,order,request=None):

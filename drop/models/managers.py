@@ -93,16 +93,18 @@ class OrderManager(models.Manager):
         )
         from drop.models.cartmodel import CartItem
 
-        try:
+        self.model.objects.filter(cart_pk=cart.pk).update(cart_pk=None)
+        """try:
             order = self.model.objects.get(cart_pk=cart.pk)
         except self.model.DoesNotExist:
-            # Create an empty order object
-            order = self.model()
-            order.save()
+            order = None
         except self.model.MultipleObjectsReturned:
             # just get rid of the rest
             order = self.model.objects.filter(cart_pk=cart.pk)[0]
             self.model.objects.exclude(pk=order.pk).filter(cart_pk=cart.pk).delete()
+
+        order.save()"""
+        order = self.model()
 
         order.cart_pk = cart.pk
         order.user = cart.user
