@@ -30,7 +30,12 @@ setup(
     'django-polymorphic>=0.2',
     'south>=0.7.2',
     'jsonfield>=0.9.6',
-    'lablackey'
+    'lablackey',
+    'python-doc-inherit==0.3.0',
+    'mock_django==0.6.10',
+    'django-model-utils==2.6.1',
+    'stripe',
+    'tqdm',
   ],
   packages=find_packages(exclude=["example", "example.*"]),
   include_package_data=True,
