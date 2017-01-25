@@ -24,6 +24,7 @@ class DiscountTestCase(DropTestCase):
     self.product2 = self.new_product(unit_price=2)
     self.product10 = self.new_product(unit_price=10)
     self.product20 = self.new_product(unit_price=20)
+
   def test_user_discount(self):
     """ testapp.main.settings.drop says this guy should get a dollar off """
     user = self.new_user("give_me_one_dollar_off")
@@ -32,6 +33,7 @@ class DiscountTestCase(DropTestCase):
     self.login(user)
     self.client.get(reverse('start_checkout'))
     self.assertEqual(Order.objects.get(id=order_id).order_total,self.product1.unit_price-1)
+
   def test_product_discount(self):
     """ create two products, one with a discount, make sure they have the right price in cart. """
     discount = ProductDiscount.objects.create(name="Test Discount",percentage=10)
