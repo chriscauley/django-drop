@@ -2,15 +2,28 @@ from django.core.urlresolvers import reverse
 
 from lablackey.tests import ClientTestCase
 
-from drop.models import Product
+from drop.models import Product, Order
 import random, decimal
 
+def print_order(order):
+  if type(order) == int:
+    order = Order.objects.get(pk=order)
+  print "\n-------------\nOrder#%s Cart#%s"%(order.id,order.cart_pk)
+  print "total: %s"%order.order_total
+  if order.is_paid():
+    print "PAID!"
+  for i in order.items.all():
+    print i,'  ',i.line_total
+  for op in order.orderpayment_set.all():
+    print "payment: %s"%op.amount
+
 class DropTestCase(ClientTestCase):
-  def add_to_cart(self,product,quantity=1,start_checkout=True):
-    self.client.post(reverse('cart_edit'),{
+  def add_to_cart(self,product,quantity=1,start_checkout=True,extra={}):
+    extra.update({
       'id': product.id,
       'quantity': quantity
     })
+    self.client.post(reverse('cart_edit'),extra)
     if start_checkout:
       return self.start_checkout()
   def start_checkout(self):
