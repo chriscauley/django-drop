@@ -126,12 +126,14 @@
   </div>
 
   var self = this;
-  this.backends = [];
-  uR.forEach(uR.drop.payment_backends, function(backend) {
-    if (backend.test && !backend.test()) { return; }
-    self.backends.push(backend);
-  });
+  uR.drop.payment_backends.sort(function(a,b) { return a.order||0 > b.order||0});
   this.on("update",function() {
+    this.backends = [];
+    uR.forEach(uR.drop.payment_backends, function(backend) {
+      if (backend.test && !backend.test()) { return; }
+      if (backend.get_copy) { backend.copy = backend.get_copy(); }
+      self.backends.push(backend);
+    });
     self.target = self.root.querySelector("."+self.theme.outer);
     uR.forEach(uR.drop.cart.all_items,function(item) {
       var product = uR.drop.products[item.product_id];

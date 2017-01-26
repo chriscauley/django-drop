@@ -24,10 +24,10 @@ uR.ready(function() {
     });
   }
   uR.drop._addToCart['giftcard.giftcardproduct'] = function(data) { uR.alertElement('purchase-giftcard',data); }
-  var o = {
-    tagname: 'giftcard-checkout', copy: 'Pay With A Gift Card', className: uR.config.btn_primary, icon: 'fa fa-gift',
-  }
-  uR.drop.payment_backends.push(o);
+  uR.drop.payment_backends.push({
+    tagname: 'giftcard-checkout', copy: 'Pay With A Gift Card', className: uR.config.btn_primary,
+    icon: 'fa fa-gift', order: 3,
+  });
   var prefix = uR.drop.prefix+"/giftcard";
   var _routes = {};
   _routes[prefix+"/redeem/"] = function(path,data) { uR.alertElement("giftcard-redeem",data) }

@@ -8,7 +8,7 @@ shopping-cart,checkout-modal{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: 0.5em;
+    .extra_price_field { border-top: 1px solid var(--border-color); }
   }
   .valign-wrapper {
     justify-content: space-between;
@@ -29,9 +29,11 @@ shopping-cart,checkout-modal{
       margin-right: 8px;
       vertical-align: middle;
     }
+    @media (max-width: 600px) {
+      button { display: block; margin: 10px auto !important; }
+    }
   }
   .extra_price_field {
-    border-top: 1px solid #bbb;
     display: flex;
     flex-basis: 100%;
     justify-content: space-between;
