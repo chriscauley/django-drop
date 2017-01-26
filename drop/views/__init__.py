@@ -1,6 +1,28 @@
-import ajax, product
 # -*- coding: utf-8 -*-
-from django import VERSION as django_version
+import ajax
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
+
+from drop.models.productmodel import Product
+
+# Use django next please to paginate this
+def index(request):
+    return TemplateResponse(request,"drop/product_list.html",
+                            {'object_list':Product.objects.filter(active=True)})
+
+def detail(request,object_id,slug=None):
+    obj = get_object_or_404(Product,id=object_id)
+    is_staff = request.user.is_authenticated() and request.user.is_staff
+    if not (obj.is_visible or is_staff):
+        raise Http404()
+    values = {'object': obj}
+    meta = obj._meta
+    templates = ["%s/%s_detail.html"%(meta.app_label,meta.model_name),'drop/product_detail.html']
+    return TemplateResponse(request,templates,values)
+
+#! TODO: everything below here should be removed
+
 from django.views.generic import (TemplateView, ListView, DetailView, View)
 from django.views.generic.base import TemplateResponseMixin
 
