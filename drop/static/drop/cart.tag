@@ -126,7 +126,7 @@
   </div>
 
   var self = this;
-  uR.drop.payment_backends.sort(function(a,b) { return a.order||0 > b.order||0});
+  uR.drop.payment_backends.sort(function(a,b) { return (a.order||0) > (b.order||0); });
   this.on("update",function() {
     this.backends = [];
     uR.forEach(uR.drop.payment_backends, function(backend) {
@@ -173,10 +173,12 @@
   }
   checkout(e) {
     this.errors = undefined;
+    function success(data) { uR.alertElement(e.item.tagname,data); };
+    if (e.item.skip_checkout) { return success(); } // currently only used for promocode
     uR.drop.ajax({
       url: "/ajax/start_checkout/",
       that: this,
-      success: function(data) { uR.alertElement(e.item.tagname,data); },
+      success: success,
       error: function(data) { self.errors = data.errors || ["An unknown error has occurred"] },
     });
   }

@@ -74,7 +74,7 @@ uR.ready(function() {
   this.schema = [{name: "code", label: "Redemption Code"}];
   this.initial = {code: uR.storage.get("giftcode") };
   this.post_url = uR.drop.prefix+"/giftcard/redeem_ajax/";
-  var has_cart = uR.drop.cart && uR.drop.all_items && uR.drop.all_items.length;
+  var has_cart = uR.drop.cart && uR.drop.cart.all_items && uR.drop.cart.all_items.length;
   this.close_text = has_cart?"Back to Cart":"Close";
   this.ajax_success = function(data) {
     uR.storage.set("giftcard",data.giftcard);
