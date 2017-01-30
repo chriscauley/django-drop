@@ -93,6 +93,12 @@
     ready: function(f) { _ready.push(f) },
     login_required: true,
     payment_backends: [],
+    currency: function(amount) {
+      amount = parseFloat(amount);
+      var start = "$";
+      if (amount < 0) { start = "- "+start }
+      return start+Math.abs(amount).toFixed(2);
+    },
   };
   uR.schema.fields.no_email = {
     name: 'email', type: 'email', label: 'Email Address',

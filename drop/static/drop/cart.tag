@@ -11,7 +11,7 @@
   <button class={ btn_class } onclick={ uR.drop.openCart } if={ in_cart }>{ show_text }</button>
 
   var self = this;
-  this.target = this.root;
+  this.ajax_target = this.root;
   this.on("mount",function() {
     this.add_text = this.opts.add_text || "Add to Cart";
     this.show_text = this.opts.show_text || "View in Cart";
@@ -81,12 +81,12 @@
             </div>
             <div class="extra_price_field" each={ field in extra_price_fields }>
               <div class="description">{ field[0] }</div>
-              <div class="amount">${ field[1] }</div>
+              <div class="amount">{ uR.drop.currency(field[1]) }</div>
             </div>
           </div>
           <div class="extra_price_field item" each={ field in uR.drop.cart.extra_price_fields }>
             <div class="description"><b>{ field[0] }</b></div>
-            <div class="amount">{ field[1] }</div>
+            <div class="amount">{ uR.drop.currency(field[1]) }</div>
           </div>
         </div>
         <div class="totals-box">
@@ -134,7 +134,7 @@
       if (backend.get_copy) { backend.copy = backend.get_copy(); }
       self.backends.push(backend);
     });
-    self.target = self.root.querySelector("."+self.theme.outer);
+    self.ajax_target = self.root.querySelector("."+self.theme.outer);
     uR.forEach(uR.drop.cart.all_items,function(item) {
       var product = uR.drop.products[item.product_id];
       item.display_name = product.display_name;
