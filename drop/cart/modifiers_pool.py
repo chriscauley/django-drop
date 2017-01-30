@@ -3,6 +3,12 @@ from django.conf import settings
 from django.core import exceptions
 from importlib import import_module
 
+DROP_CART_MODIFIERS = [
+  'drop.cart.modifiers.partial_payment.PartialPaymentModifier',
+  'drop.discount.modifier.UserDiscountCartModifier',
+  'drop.discount.modifier.PromocodeCartModifier',
+  'drop.discount.modifier.ProductDiscountCartModifier',
+]
 
 class CartModifiersPool(object):
 
@@ -22,7 +28,7 @@ class CartModifiersPool(object):
         """
         result = []
 
-        for modifier_path in getattr(settings, 'DROP_CART_MODIFIERS', []):
+        for modifier_path in getattr(settings, 'DROP_CART_MODIFIERS', DROP_CART_MODIFIERS):
             try:
                 mod_module, mod_classname = modifier_path.rsplit('.', 1)
             except ValueError:
