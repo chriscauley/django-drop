@@ -1,8 +1,7 @@
-from __future__ import unicode_literals
-
+from django.conf import settings
 from django.db import models
+from drop.models import Product, Order
 from django.utils import timezone
-from drop.models import Product
 
 from lablackey.unrest import JsonMixin
 
@@ -18,7 +17,7 @@ class ProductDiscount(models.Model,JsonMixin):
   __unicode__ = lambda self: self.name
   json_fields = ['name','percentage','product_ids']
 
-class PromocodeDiscount(models.Model,JsonMixin):
+class Promocode(models.Model,JsonMixin):
   name = models.CharField(max_length=32,blank=True)
   code = models.SlugField(max_length=32,unique=True)
   percentage = models.IntegerField(default=0)
@@ -26,4 +25,24 @@ class PromocodeDiscount(models.Model,JsonMixin):
   end_date = models.DateField(null=True,blank=True,help_text="Optional final day this promocode can be used")
   __unicode__ = lambda self: self.name
   json_fields = ['name','percentage','code']
-  product_types = models.ManyToManyField("contenttypes.ContentType")
+  _lct = lambda: { 'model__in': [s.__name__.lower() for s in Product.__subclasses__()] }
+  def _lct():
+    return { 'model__in': [s.__name__.lower() for s in Product.__subclasses__()] }
+  product_types = models.ManyToManyField("contenttypes.ContentType",limit_choices_to=_lct)
+  @property
+  def expired(self):
+    today = timezone.now().date()
+    return self.start_date > today or (self.end_date and self.end_date < today)
+  def matches_product(self,product):
+    for pt in self.product_types.all():
+      if isinstance(product,pt.model_class()):
+        return True
+
+class PromocodeUsage(models.Model):
+  promocode = models.ForeignKey(Promocode)
+  user = models.ForeignKey(settings.AUTH_USER_MODEL)
+  order = models.ForeignKey(Order)
+  created = models.DateTimeField(auto_now_add=True)
+  __unicode__ = lambda self: "%s used %s on %s"%(self.promocode,self.user,self.order)
+  class Meta:
+    ordering = ("-created",)
