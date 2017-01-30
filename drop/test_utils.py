@@ -14,6 +14,8 @@ def print_order(order):
     print "PAID!"
   for i in order.items.all():
     print i,'  ',i.line_total
+    for xpf in i.extra_price_fields:
+      print " - %s"%i
   for op in order.orderpayment_set.all():
     print "payment: %s"%op.amount
 

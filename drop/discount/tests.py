@@ -1,19 +1,57 @@
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import modify_settings, override_settings
 
-from drop.test_utils import DropTestCase
-from drop.models import Order
-from .models import ProductDiscount
+from drop.test_utils import DropTestCase, print_order
+from drop.models import Order, Cart
+from .models import ProductDiscount, Promocode
+
+import decimal
+
+class PromocodeTestCase(DropTestCase):
+  def test_promocode(self):
+    """ test that the basic promocode works. """
+    self.product1 = self.new_product()
+    self.product2 = self.new_product(unit_price=2)
+    promocode = Promocode.objects.create(
+      name="Test Promocode",
+      code="promocode",
+      percentage=11
+    )
+    user = self.new_user()
+    self.login(user)
+    self.add_to_cart(self.product1,quantity=3)
+    order_id = self.add_to_cart(self.product2)
+
+    # promocode does not yet have any product_types so it doesn't apply to these products
+    total = 3 + 2
+    self.assertEqual(Order.objects.get(id=order_id).order_total,total)
+
+    promocode.product_types.add(ContentType.objects.get_for_model(self.product1))
+    promocode.save()
+
+    # apply promocode and make sure the order total changes
+    response = self.client.get(reverse("promocode_redeem_ajax")+"?code=promocode")
+    response_code = response.json()['cart']['extra']['promocode']
+    self.assertEqual(sorted(response_code.items()),sorted(promocode.as_json.items()))
+    order_id = self.start_checkout()
+    total = decimal.Decimal(total)
+    total = total - (total*11/100)
+    self.assertEqual(Order.objects.get(id=order_id).order_total,total)
+
+    #! TODO test and make sure PromocodeUsage object is created after checkout
+
+  def test_promocode_dates(self):
+    pass
+    # Make sure that a promocode without an expiration is not expired
+    # Make sure that a promocode that expired yesterday is expired
+    # Make sure that a promocode that hasn't started gives the right error message
 
 def user_discount(cart,user):
   if user.username == "give_me_one_dollar_off":
-    return ("Dollar off for being a dude",-1)
+    return ("Dollar off for being a pal",-1)
 
 new_settings = dict(
-  DROP_CART_MODIFIERS=[
-    'drop.discount.modifier.UserDiscountCartModifier',
-    'drop.discount.modifier.ProductDiscountCartModifier'
-  ],
   DROP_USER_DISCOUNT_FUNCTION = user_discount,
 )
 

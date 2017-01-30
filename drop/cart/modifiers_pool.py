@@ -47,7 +47,6 @@ class CartModifiersPool(object):
                         (mod_module, mod_classname))
             mod_instance = mod_class()
             result.append(mod_instance)
-
         return result
 
 
