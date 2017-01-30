@@ -89,6 +89,13 @@ class PaymentAPI(DropAPI):
             # empty the related cart
             try:
                 cart = Cart.objects.get(pk=order.cart_pk)
+                if cart.extra.get("promocode",None):
+                    #! TODO: this is really inelegant maybe use a signal instead?
+                    from drop.discount.models import PromocodeUsage
+                    PromocodeUsage.objects.create(
+                        order=order,
+                        promocode_id=cart.extra["promocode"]['id']
+                    )
                 for item in order.items.all():
                     cart.items.filter(product=item.product).delete()
             except Cart.DoesNotExist:
