@@ -2,7 +2,7 @@ from django.conf import settings
 
 from drop.cart.cart_modifiers_base import BaseCartModifier
 from drop.util.loader import load_class
-from .models import ProductDiscount
+from .models import ProductDiscount, Promocode
 
 from decimal import Decimal, ROUND_DOWN
 import six
@@ -32,3 +32,16 @@ class UserDiscountCartModifier(BaseCartModifier):
     if isinstance(f,six.string_types):
       f = load_class(f)
     return f(cart_item,request.user)
+
+class PromocodeCartModifier(BaseCartModifier):
+  def get_extra_cart_item_price_field(self,cart_item,request):
+    cart = cart_item.cart
+    if cart.extra.get('promocode',None):
+      try:
+        promocode = Promocode.objects.get(pk=cart.extra['promocode']['id'])
+      except Promocode.DoesNotExist:
+        return
+      if promocode.expired or not promocode.matches_product(cart_item.product):
+        return
+      amount = Decimal(int(-cart_item.product.unit_price*cart_item.quantity*promocode.percentage))/100
+      return (promocode.name,amount)
