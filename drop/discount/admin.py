@@ -12,4 +12,5 @@ class PromocodeAdmin(admin.ModelAdmin):
 
 @admin.register(PromocodeUsage)
 class PromocodeUsageAdmin(admin.ModelAdmin):
-  pass
+  list_display = ['__unicode__','created']
+  readonly_fields = ['promocode','order','created']

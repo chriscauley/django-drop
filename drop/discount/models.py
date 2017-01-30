@@ -40,9 +40,8 @@ class Promocode(models.Model,JsonMixin):
 
 class PromocodeUsage(models.Model):
   promocode = models.ForeignKey(Promocode)
-  user = models.ForeignKey(settings.AUTH_USER_MODEL)
   order = models.ForeignKey(Order)
   created = models.DateTimeField(auto_now_add=True)
-  __unicode__ = lambda self: "%s used %s on %s"%(self.promocode,self.user,self.order)
+  __unicode__ = lambda self: "%s used on %s"%(self.promocode,self.order)
   class Meta:
     ordering = ("-created",)
