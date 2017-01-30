@@ -1,22 +1,29 @@
-uR.ready(function() {
-  var code_to_check = uR.getQueryParameter("promocode") || (uR.storage.get("promocode") || {}).code;
+uR.drop.ready(function() {
+  var code_to_check = uR.getQueryParameter("p");
   if (code_to_check) {
-    var has_promocode = uR.storage.get("promocode");
+    var has_promocode = uR.drop.cart.extra.promocode
     uR.drop.ajax({
-      url: "/promocode/validate/",
+      url: "/promocode/redeem_ajax/",
       data: { code: code_to_check},
       success: function(data) {
-        if (!data.promocode || !parseFloat(data.promocode.remaining)) {
-          uR.storage.set("promocode",null);
-        } else {
-          uR.storage.set("promocode",data.promocode);
-          if (!has_promocode) {
-            uR.alert("The following promocode will be applied at checkout: "+data.promocode.description);
-          }
-        }
+        uR.drop.cart = data.cart;
+        !has_promocode && uR.drop.notifyPromocode();
       },
-      error: function(data) { uR.storage.set("promocode",null); }
     });
+  }
+  uR.drop.notifyPromocode = function() {
+    var p = uR.drop.cart.extra.promocode;
+    var opts = {
+      close_text: "<< Continue Shopping",
+    }
+    if (uR.drop.cart.all_items && uR.drop.cart.all_items.length) {
+      opts.buttons = [{
+        _onclick: function() { uR.drop.openCart() },
+        text: "Checkout",
+        className: uR.config.btn_success,
+      }];
+    }
+    p && uR.alert("The following promocode will be applied at checkout:<br/><b>"+p.name+"</b>",opts);
   }
   uR.drop.payment_backends.push({
     tagname: 'promocode-redeem',
@@ -37,7 +44,7 @@ uR.ready(function() {
   <div class={ theme.outer }>
     <div class={ theme.header }><h3>Enter a Promocode</h3></div>
     <div class={ theme.content }>
-      <ur-form action={ post_url } method="POST" cancel_function={ close } initial={ initial }
+      <ur-form action={ url } method="GET" cancel_function={ close } initial={ initial }
                ajax_success={ ajax_success } if={ !success_message }></ur-form>
       <div if={ success_message }>
         <p class={ uR.config.alert_success }>{ success_message }</p>
@@ -48,11 +55,11 @@ uR.ready(function() {
   var self = this;
   this.schema = [{name: "code", label: "Promoode"}];
   this.initial = { code: uR.storage.get("promocode") };
-  this.post_url = uR.drop.prefix+"/promocode/redeem_ajax/";
+  this.url = uR.drop.prefix+"/promocode/redeem_ajax/";
   var has_cart = uR.drop.cart && uR.drop.cart.all_items && uR.drop.cart.all_items.length;
   this.ajax_success = function(data) {
-    uR.storage.set("promocode",data.promocode);
-    uR.alert("The following promocode will be applied at checkout: "+data.promocode.description);
+    uR.drop.cart = data.cart;
+    uR.drop.notifyPromocode();
     self.update();
   } 
   close(e) {

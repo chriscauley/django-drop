@@ -3,6 +3,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 
 from drop import views
+from drop.discount import urls as discount_urls
 from drop.views import checkout as checkout_views
 
 urlpatterns = [
@@ -16,6 +17,7 @@ urlpatterns = [
   #url(r'^checkout/', include('drop.urls.checkout')),
   #url(r'^cart/', include('drop.urls.cart')),
   url(r'^(stripe|giftcard)/payment/$',views.ajax.payment,name="drop_payment"),
+  url('',include(discount_urls)),
 
   #! TODO: currently does nothing
   url(r'^category/(?P<category_id>\d+)/(?P<slug>[0-9A-Za-z-_.//]+)/$',views.detail,name='category_detail'),
