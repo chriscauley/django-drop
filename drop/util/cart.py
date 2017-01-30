@@ -3,12 +3,10 @@ from drop.models.cartmodel import Cart
 from django.contrib.auth.models import AnonymousUser
 
 def get_cart_from_database(request):
-    database_cart = Cart.objects.filter(user=request.user)
-    if database_cart:
-        database_cart = database_cart[0]
-    else:
-        database_cart = None
-    return database_cart
+    try:
+        return Cart.objects.filter(user=request.user)[0]
+    except IndexError:
+        pass
 
 def get_cart_from_session(request):
     session_cart = None

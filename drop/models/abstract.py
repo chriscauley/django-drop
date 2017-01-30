@@ -124,7 +124,8 @@ class BaseCart(models.Model,JsonMixin):
     extra_price_fields = []
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    json_fields = ['user_id','session_id','total_price','all_items','extra_price_fields']
+    json_fields = ['user_id','session_id','total_price','all_items','extra_price_fields','extra']
+    extra = jsonfield.JSONField(default=dict,blank=True)
     all_items = property(lambda self:[c.as_json for c in self._updated_cart_items or []])
     __unicode__ = lambda self: "%s's cart"%self.user
 
@@ -365,6 +366,23 @@ class BaseCartItem(models.Model,JsonMixin):
             # most of them will simply add a field to extra_price_fields
             modifier.process_cart_item(self, request)
 
+        #! TODO: this needs documentation
+        # basically if this setting is true only allow the largest cart_item discount
+        # either the most negative (or the last if equal) modifier will be kept
+        if getattr(settings,"DROP_SINGLE_CART_ITEM_DISCOUNT",True):
+            costs = []
+            discount = None
+            for price_field in self.extra_price_fields:
+                if price_field[1] >= 0:
+                    costs.append(price_field)
+                else:
+                    if not discount or price_field[1] <= discount[1]:
+                        discount = price_field
+            self.extra_price_fields = costs
+            if discount:
+                self.extra_price_fields.append(discount)
+        for price_field in self.extra_price_fields:
+            self.current_total += price_field[1]
         self.line_total = self.current_total
         return self.line_total
 
