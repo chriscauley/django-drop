@@ -1,12 +1,13 @@
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import modify_settings, override_settings
+from django.utils import timezone
 
 from drop.test_utils import DropTestCase, print_order
 from drop.models import Order, Cart
 from .models import ProductDiscount, Promocode
 
-import decimal
+import decimal, datetime
 
 class PromocodeTestCase(DropTestCase):
   def test_promocode(self):
@@ -20,6 +21,9 @@ class PromocodeTestCase(DropTestCase):
     )
     user = self.new_user()
     self.login(user)
+    response = self.client.get(reverse("promocode_redeem_ajax")+"?code=promocode")
+    response_code = response.json()['cart']['extra']['promocode']
+    self.assertEqual(sorted(response_code.items()),sorted(promocode.as_json.items()))
     self.add_to_cart(self.product1,quantity=3)
     order_id = self.add_to_cart(self.product2)
 
@@ -27,13 +31,9 @@ class PromocodeTestCase(DropTestCase):
     total = 3 + 2
     self.assertEqual(Order.objects.get(id=order_id).order_total,total)
 
+    # apply promocode and make sure the order total changes
     promocode.product_types.add(ContentType.objects.get_for_model(self.product1))
     promocode.save()
-
-    # apply promocode and make sure the order total changes
-    response = self.client.get(reverse("promocode_redeem_ajax")+"?code=promocode")
-    response_code = response.json()['cart']['extra']['promocode']
-    self.assertEqual(sorted(response_code.items()),sorted(promocode.as_json.items()))
     order_id = self.start_checkout()
     total = decimal.Decimal(total)
     total = total - (total*11/100)
@@ -42,10 +42,24 @@ class PromocodeTestCase(DropTestCase):
     #! TODO test and make sure PromocodeUsage object is created after checkout
 
   def test_promocode_dates(self):
-    pass
-    # Make sure that a promocode without an expiration is not expired
     # Make sure that a promocode that expired yesterday is expired
+    promocode = Promocode.objects.create(
+      name="Test Promocode",
+      code="promocode",
+      percentage=11,
+      end_date=timezone.now().date()-datetime.timedelta(1)
+    )
+    response = self.client.get(reverse("promocode_redeem_ajax")+"?code=promocode")
+    self.assertTrue("This promocode expired on " in response.json()['error'])
     # Make sure that a promocode that hasn't started gives the right error message
+    promocode = Promocode.objects.create(
+      name="Test Promocode 2",
+      code="promocode2",
+      percentage=22,
+      start_date=timezone.now().date()+datetime.timedelta(1)
+    )
+    response = self.client.get(reverse("promocode_redeem_ajax")+"?code=promocode2")
+    self.assertTrue('Promocode "promocode2" not valid until' in response.json()['error'])
 
 def user_discount(cart,user):
   if user.username == "give_me_one_dollar_off":
