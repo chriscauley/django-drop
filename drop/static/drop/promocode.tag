@@ -18,7 +18,7 @@ uR.drop.ready(function() {
     }
     if (uR.drop.cart.all_items && uR.drop.cart.all_items.length) {
       opts.buttons = [{
-        _onclick: function() { uR.drop.openCart() },
+        onclick: function() { uR.drop.openCart() },
         text: "Checkout",
         className: uR.config.btn_success,
       }];

@@ -39,6 +39,8 @@ TEMPLATES = [
   },
 ]
 
+SITE_URL = "http://example.com"
+
 AUTHENTICATION_BACKENDS = (
   #'social.backends.google.GoogleOAuth2',
   #'social.backends.twitter.TwitterOAuth',
