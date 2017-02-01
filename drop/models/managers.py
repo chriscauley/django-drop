@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.core.mail import mail_admins
 from django.db import models
 from django.db.models.aggregates import Count
@@ -95,11 +96,18 @@ class OrderManager(models.Manager):
             order_item_pks = sorted(order.items.all().values_list("product_id",flat=True))
             cart_item_pks = sorted(cart.items.all().values_list("product_id",flat=True))
             if cart_item_pks != order_item_pks:
-                mail_admins("dissociating %s from %s"%(order.pk,cart.pk),
-                            "This is a bit untested, go check in admin")
+                old_pk = order.pk
                 order.cart_pk=None
                 order.save()
                 order = self.model()
+                order.save()
+                lines = [
+                    'old: %s/admin/drop/order/%s/change/'%(settings.SITE_URL,old_pk),
+                    'new: %s/admin/drop/order/%s/change/'%(settings.SITE_URL,order.pk),
+                    'cart: %s/admin/drop/cart/%s/change/'%(settings.SITE_URL,cart.pk),
+                ]
+                mail_admins("dissociating %s from %s"%(old_pk,cart.pk),'\n\n'.join(lines))
+                print '\n\n'.join(lines)
 
         order.cart_pk = cart.pk
         order.user = cart.user
