@@ -19,8 +19,8 @@
           uR.drop.products[product.id] = product;
           product.price = product.sale_price = parseFloat(product.unit_price);
         });
-        uR.drop.discounts = data.discounts;
-        uR.forEach(data.discounts,function(discount) {
+        uR.drop.discounts = data.discounts || [];
+        uR.forEach(uR.drop.discounts,function(discount) {
           uR.forEach(discount.product_ids, function(product_id) {
             var product = uR.drop.products[product_id];
             var discount_price = product.price*(1-discount.percentage/100)

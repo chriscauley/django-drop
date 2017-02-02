@@ -434,6 +434,7 @@ class BaseOrder(models.Model):
     modified = models.DateTimeField(auto_now=True,
             verbose_name=_('Updated'))
     cart_pk = models.PositiveIntegerField(_('Cart primary key'), blank=True, null=True)
+    get_admin_url = get_admin_url
 
     class Meta(object):
         abstract = True

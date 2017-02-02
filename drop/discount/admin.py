@@ -17,5 +17,15 @@ class PromocodeAdmin(admin.ModelAdmin):
 
 @admin.register(PromocodeUsage)
 class PromocodeUsageAdmin(admin.ModelAdmin):
-  list_display = ['__unicode__','created']
+  list_display = ['__unicode__','created','user','order_summary']
   readonly_fields = ['promocode','order','created']
+  def user(self,obj):
+    return obj.order.user
+  def order_summary(self,obj):
+    out = ""
+    order = obj.order
+    out += "<a href='%s'>Order #%s - $%s</a><br/>-----"%(order.get_admin_url(),order.id,order.order_total)
+    for item in order.items.all():
+      out += "<br/>%sx$%s %s"%(item.quantity,item.unit_price,item.product_name)
+    return out
+  order_summary.allow_tags = True
