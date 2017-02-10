@@ -36,11 +36,9 @@ class OrderPaymentInline(LocalizeDecimalFieldsMixin, admin.TabularInline):
     model = OrderPayment
     extra = 0
 
-
 class ExtraOrderPriceFieldInline(LocalizeDecimalFieldsMixin, admin.TabularInline):
     model = ExtraOrderPriceField
     extra = 0
-
 
 class OrderItemInline(LocalizeDecimalFieldsMixin, admin.TabularInline):
     model = OrderItem
@@ -58,18 +56,18 @@ class OrderItemInline(LocalizeDecimalFieldsMixin, admin.TabularInline):
 
 
 class OrderAdmin(LocalizeDecimalFieldsMixin, ModelAdmin):
-    list_display = ('id', 'user', 'status', 'order_total', 'created')
+    list_display = ('id', 'user', 'status', 'order_total', 'created', 'ctypes')
     list_filter = ('status',)
     search_fields = ('id', 'shipping_address_text', 'user__username')
     date_hierarchy = 'created'
     inlines = (OrderItemInline, OrderExtraInfoInline,
                ExtraOrderPriceFieldInline, OrderPaymentInline)
-    readonly_fields = ('created', 'modified', '_status', 'order_total', 'order_subtotal')
+    readonly_fields = ('created', 'updated', '_status', 'order_total', 'order_subtotal')
     raw_id_fields = ('user',)
     fieldsets = (
         (None, {'fields': ('user', '_status','status',
                            ('order_total', 'order_subtotal'),
-                           ('created', 'modified')
+                           ('created', 'updated')
                        )}),
         (_('Shipping'), {
             'fields': ('shipping_address_text',),
@@ -94,6 +92,9 @@ class OrderAdmin(LocalizeDecimalFieldsMixin, ModelAdmin):
         PaymentAPI().refund_order(model.objects.get(id=order_id),request)
         s = "admin:%s_%s_change"%(self.model._meta.app_label,self.model._meta.model_name)
         return HttpResponseRedirect(reverse(s,args=[order_id]))
+    def ctypes(self,obj):
+        return "<br/>".join([unicode(i.product.polymorphic_ctype_id) for i in obj.items.all()])
+    ctypes.allow_tags = True
 
 ORDER_MODEL = getattr(settings, 'DROP_ORDER_MODEL', None)
 if not ORDER_MODEL:

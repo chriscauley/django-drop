@@ -425,14 +425,10 @@ class BaseOrder(models.Model):
             verbose_name=_('Status'))
     order_subtotal = CurrencyField(verbose_name=_('Order subtotal'))
     order_total = CurrencyField(verbose_name=_('Order Total'))
-    shipping_address_text = models.TextField(_('Shipping address'), blank=True,
-        null=True)
-    billing_address_text = models.TextField(_('Billing address'), blank=True,
-        null=True)
-    created = models.DateTimeField(auto_now_add=True,
-            verbose_name=_('Created'))
-    modified = models.DateTimeField(auto_now=True,
-            verbose_name=_('Updated'))
+    shipping_address_text = models.TextField(_('Shipping address'), blank=True, null=True)
+    billing_address_text = models.TextField(_('Billing address'), blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True,verbose_name=_('Created'))
+    updated = models.DateTimeField(auto_now=True)
     cart_pk = models.PositiveIntegerField(_('Cart primary key'), blank=True, null=True)
     get_admin_url = get_admin_url
 
