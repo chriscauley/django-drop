@@ -39,6 +39,7 @@
     uR.drop.ajax({
       url: '/cart.js',
       success: function(data) { uR.drop.cart = data; },
+      error: function() {}
     });
   }
   function saveCartItem(product_id, quantity, riot_tag, data) {
