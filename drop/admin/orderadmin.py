@@ -93,7 +93,7 @@ class OrderAdmin(LocalizeDecimalFieldsMixin, ModelAdmin):
         s = "admin:%s_%s_change"%(self.model._meta.app_label,self.model._meta.model_name)
         return HttpResponseRedirect(reverse(s,args=[order_id]))
     def ctypes(self,obj):
-        return "<br/>".join([unicode(i.product.polymorphic_ctype_id) for i in obj.items.all()])
+        return "<br/>".join([unicode(i.product.polymorphic_ctype_id) for i in obj.items.all() if i.product])
     ctypes.allow_tags = True
 
 ORDER_MODEL = getattr(settings, 'DROP_ORDER_MODEL', None)

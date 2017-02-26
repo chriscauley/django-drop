@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from django.contrib import messages
 from decimal import Decimal
 from distutils.version import LooseVersion
 from django.core.urlresolvers import reverse
@@ -357,6 +358,11 @@ class BaseCartItem(models.Model,JsonMixin):
         self.current_total = Decimal('0.0')  # Used by cart modifiers
 
     def update(self, request):
+        if not self.product.active:
+            m = "The following product is no longer active and was removed from your cart: %s"%self.product
+            messages.warning(request,m)
+            self.delete()
+            return
         self.extra_price_fields = []  # Reset the price fields
         self.line_subtotal = self.product.get_price() * self.quantity
         self.current_total = self.line_subtotal
