@@ -14,8 +14,8 @@ class Stripe(PaymentBackend):
     metadata = {"order_id": order.id}
     for i,item in enumerate(order.items.all()):
       metadata['item_%s'%i] = str(item.product)
-      metadata['quantity_%s'%i] = item.quantity
-      metadata['price_%s'%i] = item.line_total
+      metadata['item_quantity_%s'%i] = item.quantity
+      metadata['item_price_%s'%i] = item.line_total
     kwargs = {
       'amount': int(float(request.POST['total'])*100), # Amount in cents
       'source': request.POST['token'],
