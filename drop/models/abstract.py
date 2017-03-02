@@ -362,7 +362,7 @@ class BaseCartItem(models.Model,JsonMixin):
             m = "The following product is no longer active and was removed from your cart: %s"%self.product
             messages.warning(request,m)
             self.delete()
-            return
+            return 0
         self.extra_price_fields = []  # Reset the price fields
         self.line_subtotal = self.product.get_price() * self.quantity
         self.current_total = self.line_subtotal
