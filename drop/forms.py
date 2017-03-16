@@ -8,7 +8,7 @@ from django.forms.models import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 
 from drop.models.cartmodel import CartItem
-from drop.util.loader import load_class
+from lablackey.loader import load_class
 
 
 def get_shipping_backends_choices():

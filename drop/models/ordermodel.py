@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from jsonfield.fields import JSONField
 from drop.models.productmodel import Product
 from drop.util.fields import CurrencyField
-from drop.util.loader import load_class
+from lablackey.loader import load_class
 import django
 
 

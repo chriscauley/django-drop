@@ -13,7 +13,7 @@ from drop.discount.models import ProductDiscount
 from drop.exceptions import PaymentError
 from drop.models import CartItem, Order, Product, Cart
 from drop.util.cart import get_or_create_cart
-from drop.util.loader import load_class
+from lablackey.loader import load_class
 
 import json, datetime
 from decimal import Decimal

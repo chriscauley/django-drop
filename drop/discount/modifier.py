@@ -1,7 +1,7 @@
 from django.conf import settings
 
 from drop.cart.cart_modifiers_base import BaseCartModifier
-from drop.util.loader import load_class
+from lablackey.loader import load_class
 from .models import ProductDiscount, Promocode
 
 from decimal import Decimal, ROUND_DOWN

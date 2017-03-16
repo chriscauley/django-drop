@@ -13,7 +13,7 @@ from drop.util.address import get_shipping_address_from_request, \
     assign_address_to_request, get_billing_address_from_request
 from drop.util.cart import get_or_create_cart
 from drop.util.fields import CurrencyField
-from drop.util.loader import load_class
+from lablackey.loader import load_class
 
 
 class Mock(object):

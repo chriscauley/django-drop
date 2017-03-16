@@ -1,6 +1,8 @@
 #-*- coding: utf-8 -*-
 from django.conf import settings
-from drop.util.loader import load_class
+
+from lablackey.loader import load_class
+
 from collections import OrderedDict
 
 def _load_backends_list(setting_name):

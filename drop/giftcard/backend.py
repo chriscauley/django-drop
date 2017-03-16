@@ -5,7 +5,7 @@ from drop.exceptions import PaymentError
 from drop.payment.api import PaymentAPI
 from drop.payment.backends.abstract import PaymentBackend
 from drop.util.cart import get_or_create_cart
-from drop.util.loader import load_class
+from lablackey.loader import load_class
 
 from .models import Credit, Debit
 

@@ -4,7 +4,7 @@ This overrides the various models with classes loaded from the corresponding
 setting if it exists.
 """
 from django.conf import settings
-from drop.util.loader import load_class
+from lablackey.loader import load_class
 
 
 #==============================================================================

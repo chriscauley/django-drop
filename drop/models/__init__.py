@@ -5,4 +5,4 @@ from cartmodel import *  # NOQA
 from ordermodel import *  # NOQA
 from productmodel import *  # NOQA
 from drop.order_signals import *  # NOQA
-from drop.util.loader import load_class
+from lablackey.loader import load_class

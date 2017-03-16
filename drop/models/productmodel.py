@@ -4,7 +4,7 @@ This overrides the Product model with the class loaded from the
 DROP_PRODUCT_MODEL setting if it exists.
 """
 from django.conf import settings
-from drop.util.loader import load_class
+from lablackey.loader import load_class
 
 
 #==============================================================================
