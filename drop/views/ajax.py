@@ -176,8 +176,6 @@ from paypal.standard.ipn.signals import payment_was_successful, payment_was_flag
 from django.core.mail import mail_admins
 from django.http import QueryDict
 
-from drop.util.loader import load_class
-
 @receiver(payment_was_successful, dispatch_uid='drop.listeners.paypal_payment_successful')
 def paypal_payment_successful(sender,**kwargs):
   params = QueryDict(sender.query)
