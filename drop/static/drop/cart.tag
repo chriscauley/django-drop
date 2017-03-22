@@ -177,7 +177,7 @@
     if (e.item.skip_checkout) { return success(); } // currently only used for promocode
     uR.drop.ajax({
       url: "/ajax/start_checkout/",
-      that: this,
+      tag: this,
       success: success,
       error: function(data) { self.errors = data.errors || ["An unknown error has occurred"] },
     });
