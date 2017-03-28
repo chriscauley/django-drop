@@ -5,7 +5,7 @@ from drop.models import Order
 
 def thank_you(request,order_pk):
     order = get_object_or_404(Order,pk=order_pk)
-    if request.user != order.user and not order.check_token(request.GET.get('token',None)):
+    if request.user != order.user and not order.check_token(request.GET.get('token',"")):
         raise NotImplementedError
     values = { 'order': order }
     return TemplateResponse(request,'drop/checkout/thank_you.html',values)
