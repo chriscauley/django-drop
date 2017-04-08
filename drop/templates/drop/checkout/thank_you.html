@@ -3,14 +3,18 @@
 {% block content %}
 <div id="checkout-thank_you">
   <h1>Thank you for your order!</h1>
+  {% if order %}
   <h2>Summary for Order #{{ order.id }}</h2>
   {% include "drop/_order_table.html" %}
   {% for order_item in order.items.all %}
   {% ifchanged order_item.product %}
   {% if order_item.product.purchase_message %}
-  <p class="lead"{{ order_item.product.purchase_message|safe }}</p>
+  <p class="lead">{{ order_item.product.purchase_message|safe }}</p>
   {% endif %}
   {% endifchanged %}
   {% endfor %}
+  {% else %}
+  <p class="lead"><br/>The order you are trying to view has expired. Please check your email for a detailed receipt.</p>
+  {% endif %}
 </div>
 {% endblock %}

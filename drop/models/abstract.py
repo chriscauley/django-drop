@@ -467,6 +467,8 @@ class BaseOrder(models.Model):
         value = "%s-%s"%(ts,unicode(self))
         return "%s-%s"%(ts,salted_hmac(settings.SECRET_KEY, value).hexdigest()[::2])
     def check_token(self,token):
+        if not token:
+            return
         ts_str, s = token.split("-")
         ts = datetime.datetime.strptime(ts_str,"%m/%d/%y").date()
         #if (datetime.date.today()-ts).days > 10:
