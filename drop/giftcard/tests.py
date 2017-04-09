@@ -9,7 +9,7 @@ from decimal import Decimal
 
 class GiftCardTestCase(DropTestCase):
   def test_giftcard_purchase(self):
-    gcp = GiftCardProduct.objects.create(name="gift card",unit_price=1)
+    gcp = GiftCardProduct.objects.create(name="gift card",unit_price=1,active=True)
     product40 = self.new_product(unit_price=40)
     product20 = self.new_product(unit_price=20)
     user1 = self.new_user()

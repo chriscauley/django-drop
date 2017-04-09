@@ -19,6 +19,8 @@ from lablackey.utils import get_admin_url
 from lablackey.db.models import NamedTreeModel
 from lablackey.unrest import JsonMixin
 
+import sys
+
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 class Category(NamedTreeModel,JsonMixin):
@@ -359,8 +361,11 @@ class BaseCartItem(models.Model,JsonMixin):
 
     def update(self, request):
         if not self.product.active:
-            m = "The following product is no longer active and was removed from your cart: %s"%self.product
-            messages.warning(request,m)
+            if sys.argv[1:2] == ['test']:
+                print self.product," is not active!"
+            else:
+                m = "The following product is no longer active and was removed from your cart: %s"%self.product
+                messages.warning(request,m)
             self.delete()
             return 0
         self.extra_price_fields = []  # Reset the price fields

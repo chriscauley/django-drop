@@ -31,8 +31,10 @@ class DropTestCase(ClientTestCase):
   def start_checkout(self):
     _r = self.client.get(reverse('start_checkout'))
     return _r.json()['order_id']
-  def new_product(self,name=None,unit_price=1):
-    return self._new_object(Product,
-                    name=name or "product%s"%random.random(),
-                    unit_price=decimal.Decimal(unit_price)
-                  )
+  def new_product(self,name=None,unit_price=1,active=True):
+    return self._new_object(
+      Product,
+      name=name or "product%s"%random.random(),
+      unit_price=decimal.Decimal(unit_price),
+      active=active
+    )
