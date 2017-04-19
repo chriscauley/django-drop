@@ -16,8 +16,7 @@ from drop.util.loader import get_model_string
 import django, datetime, jsonfield
 
 from lablackey.utils import get_admin_url
-from lablackey.db.models import NamedTreeModel
-from lablackey.unrest import JsonMixin
+from lablackey.db.models import NamedTreeModel, JsonMixin
 
 import sys
 

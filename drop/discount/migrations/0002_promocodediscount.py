@@ -4,8 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.utils.timezone
-import lablackey.unrest
-
+from lablackey.db.models import JsonMixin
 
 class Migration(migrations.Migration):
 
@@ -26,6 +25,6 @@ class Migration(migrations.Migration):
                 ('end_date', models.DateField(blank=True, help_text='Optional final day this promocode can be used', null=True)),
                 ('product_types', models.ManyToManyField(to='contenttypes.ContentType')),
             ],
-            bases=(models.Model, lablackey.unrest.JsonMixin),
+            bases=(models.Model, JsonMixin),
         ),
     ]

@@ -6,9 +6,9 @@ from django.utils import timezone
 from drop.models import Product, Order
 from drop.util.fields import CurrencyField
 
+from lablackey.db.models import JsonMixin
 from lablackey.decorators import cached_property
 from lablackey.mail import send_template_email
-from lablackey.unrest import JsonMixin
 from media.models import PhotosMixin
 
 import datetime, random, jsonfield

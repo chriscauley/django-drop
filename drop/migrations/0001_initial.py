@@ -8,7 +8,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 import drop.util.fields
 import jsonfield.fields
-import lablackey.unrest
+from lablackey.db.models import JsonMixin
 
 
 class Migration(migrations.Migration):
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Cart',
                 'verbose_name_plural': 'Carts',
             },
-            bases=(models.Model, lablackey.unrest.JsonMixin),
+            bases=(models.Model, JsonMixin),
         ),
         migrations.CreateModel(
             name='CartItem',
@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Cart item',
                 'verbose_name_plural': 'Cart items',
             },
-            bases=(models.Model, lablackey.unrest.JsonMixin),
+            bases=(models.Model, JsonMixin),
         ),
         migrations.CreateModel(
             name='Category',
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(models.Model, lablackey.unrest.JsonMixin),
+            bases=(models.Model, JsonMixin),
         ),
         migrations.CreateModel(
             name='ExtraOrderItemPriceField',
@@ -178,7 +178,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Product',
                 'verbose_name_plural': 'Products',
             },
-            bases=(models.Model, lablackey.unrest.JsonMixin),
+            bases=(models.Model, JsonMixin),
         ),
         migrations.AddField(
             model_name='orderitem',

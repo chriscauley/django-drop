@@ -3,7 +3,7 @@ from django.db import models
 from drop.models import Product, Order
 from django.utils import timezone
 
-from lablackey.unrest import JsonMixin
+from lablackey.db.models import JsonMixin
 
 class ProductDiscount(models.Model,JsonMixin):
   """
