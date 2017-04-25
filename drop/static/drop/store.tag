@@ -30,12 +30,11 @@
   var self = this;
   window.PRODUCTS.visible = 18;
   this.on("mount",function() {
-    uR.ajax({
+    this.ajax({
       url: '/drop/products.js',
       success: function(data) {
         self.all_products = data.products
       },
-      that: this
     });
     window.PRODUCT_LIST = this;
   });

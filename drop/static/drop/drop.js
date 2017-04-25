@@ -48,7 +48,7 @@
     data.quantity = quantity;
     uR.drop.ajax({
       url: "/ajax/edit/",
-      that: riot_tag,
+      tag: riot_tag,
       data: data,
       success: function(data) {
         uR.drop.cart = data.cart;

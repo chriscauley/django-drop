@@ -29,9 +29,9 @@
     })
   });
   addToCart() {
-    if (uR.drop._addToCart[this.product.model_slug]) {
-      uR.drop._addToCart[this.product.model_slug]({product: this.product});
-    } else { uR.drop.saveCartItem(this.opts.product_id,this.opts.quantity || 1,this) }
+    var widget = uR.drop._addToCart[this.product.model_slug] || uR.drop._addToCart[this.product.id]
+    if (widget) { widget({product: this.product}); }
+    else { uR.drop.saveCartItem(this.opts.product_id,this.opts.quantity || 1,this) }
   }
 </add-to-cart>
 
@@ -47,6 +47,31 @@
     else { this.root.style = "block"; }
   })
 </cart-button>
+
+<cart-quantity>
+  <div class={ theme.outer }>
+    <div class={ theme.header }><h3>{ product.display_name }</h3></div>
+    <div class={ theme.content }>
+      <ur-form submit={ updateAndClose } initial={ initial } cancel_function={ cancelFunction }><ur-form>
+    </div>
+  </div>
+
+  this.on("mount",function() {
+    this.product = this.opts.product;
+    this.initial = opts.initial;
+    this.initial.quantity = this.initial.quantity || 1;
+    this.update()
+  });
+
+  cancelFunction() {
+    if (this.opts.product.quantity) { uR.drop.saveCartItem(this.product.id,0,this); }
+    else { this.unmount() }
+  }
+
+  updateAndClose(e) {
+    uR.drop.saveCartItem(this.product.id,this.root.querySelector("input").value,this);
+  }
+</cart-quantity>
 
 <shopping-cart>
   <div class={ theme.outer } name="ajax_target">
@@ -64,7 +89,7 @@
               <b>{ display_name }</b> { after }<br/>
               <a class="remove" onclick={ parent.remove }>Remove</a>
             </div>
-            <div class="price-box" if={ has_quantity }>
+            <div class="price-box" if={ has_quantity && !widget }>
               <div class="unit-price"> ${ unit_price }</div>
               <div class="quantity">
                 <a class="fa fa-plus-circle increment" onclick={ parent.plusOne }></a>
@@ -73,9 +98,9 @@
               </div>
               <span class="total">${ line_subtotal }</span>
             </div>
-            <div if={ !has_quantity } class="price-box">
+            <div if={ !has_quantity || widget } class="price-box">
               <span class="total">${ line_subtotal }</span>
-              <div if={ has_widget }>
+              <div if={ widget }>
                 <a onclick={ parent.editCartItem }><i class="fa fa-edit"></i> edit</a>
               </div>
             </div>
@@ -141,7 +166,7 @@
       item.unit_price = product.unit_price;
       item.has_quantity = product.has_quantity;
       self.requires_shipping = self.requires_shipping || product.requires_shipping;
-      item.has_widget = uR.drop._addToCart[product.model_slug];
+      item.widget = uR.drop._addToCart[product.model_slug] || uR.drop._addToCart[item.product_id];
       item.model_slug = product.model_slug;
     });
     self.checkoutReady = true;
@@ -187,6 +212,6 @@
     this.selectShipping = uR.auth.loginRequired(this.selectShipping);
   }
   editCartItem(e) {
-    uR.drop._addToCart[e.item.model_slug]({product:uR.drop.products[e.item.product_id],initial:e.item.extra});
+    e.item.widget({product:uR.drop.products[e.item.product_id],initial:e.item.extra});
   }
 </shopping-cart>

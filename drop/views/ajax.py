@@ -32,7 +32,7 @@ if DROP.get('login_required',False):
 
 def products_json(request):
   return JsonResponse({
-    'products': [p.as_json for p in Product.objects.active()],
+    'products': [p.as_json for p in Product.objects.active().order_by("name")],
     'discounts': [d.as_json for d in ProductDiscount.objects.all()],
   })
 
