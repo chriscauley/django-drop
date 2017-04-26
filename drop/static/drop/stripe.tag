@@ -40,7 +40,7 @@ uR.ready(function() {
   submit(ur_form) {
     self.ajax_target = self.root.querySelector("."+self.theme.outer);
     self.error = undefined;
-    self.ajax_target.setAttribute("data-loading","spinner");
+    self.ajax_target.setAttribute("data-loading","fade");
     var data = ur_form.getData();
     var expiry = data.expiry.replace(/ /g,"").split("/");
     data.exp_month = expiry[0];
@@ -67,7 +67,7 @@ uR.ready(function() {
       data: {token: response.id,total:uR.drop.cart.total_price,email: self.email},
       target: self.ajax_target,
       success: function(data) {
-        self.ajax_target.setAttribute("data-loading","spinner");
+        self.ajax_target.setAttribute("data-loading","fade");
         window.location = data.next;
       },
       error: function(data) { self.setError(data.error); }
