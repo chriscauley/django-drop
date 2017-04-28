@@ -44,7 +44,7 @@
   this.on("update",function() {
     this.total_price = parseFloat(uR.drop && uR.drop.cart && uR.drop.cart.total_price);
     if (!this.total_price) { this.root.style.display = "none"; }
-    else { this.root.style = "block"; }
+    else { this.root.style.display = "block"; }
   })
 </cart-button>
 
