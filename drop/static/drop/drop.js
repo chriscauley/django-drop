@@ -54,7 +54,7 @@
         uR.drop.cart = data.cart;
         riot_tag && riot_tag.update();
         riot_tag && riot_tag.add_successful && riot_tag.add_successful();
-        uR.drop.openCart();
+        uR.drop.cart.all_items.length && uR.drop.openCart();
         riot.update(uR.drop.store_tags);
       },
       error: function(data) {
@@ -80,6 +80,11 @@
       riot.update(uR.drop.store_tags);
     }
   }
+  function emptyCart() {
+    uR.forEach(uR.drop.cart.all_items,function(item) {
+      uR.drop.saveCartItem(item.product_id,0)
+    })
+  }
   uR.drop = {
     saveCartItem: saveCartItem,
     updateProducts: updateProducts,
@@ -100,6 +105,7 @@
       if (amount < 0) { start = "- "+start }
       return start+Math.abs(amount).toFixed(2);
     },
+    emptyCart: emptyCart,
   };
   uR.schema.fields.no_email = {
     name: 'email', type: 'email', label: 'Email Address',
