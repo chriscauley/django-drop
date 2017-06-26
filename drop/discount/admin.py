@@ -10,6 +10,7 @@ class ProductDiscountAdmin(admin.ModelAdmin):
 @admin.register(Promocode)
 class PromocodeAdmin(admin.ModelAdmin):
   readonly_fields = ("direct_link",)
+  filter_horizontal = ['product_types','products']
   def direct_link(self,obj):
     url = "%s?p=%s"%(settings.SITE_URL,obj.code)
     return "<a href='%s'>%s</a><br/>%s"%(url,obj.name,url)

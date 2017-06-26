@@ -28,12 +28,17 @@ class Promocode(models.Model,JsonMixin):
   _lct = lambda: { 'model__in': [s.__name__.lower() for s in Product.__subclasses__()] }
   def _lct():
     return { 'model__in': [s.__name__.lower() for s in Product.__subclasses__()] }
-  product_types = models.ManyToManyField("contenttypes.ContentType",limit_choices_to=_lct)
+  product_types = models.ManyToManyField("contenttypes.ContentType",limit_choices_to=_lct,blank=True)
+  def _lct2():
+    return { 'active': True }
+  products = models.ManyToManyField(Product,limit_choices_to=_lct2,blank=True)
   @property
   def expired(self):
     today = timezone.now().date()
     return self.start_date > today or (self.end_date and self.end_date < today)
   def matches_product(self,product):
+    if product.id in self.products.all().values_list("id",flat=True):
+      return True
     for pt in self.product_types.all():
       if isinstance(product,pt.model_class()):
         return True
