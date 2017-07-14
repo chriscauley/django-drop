@@ -1,19 +1,26 @@
+uR.ready(function() {
+  uR.addRoutes({
+    "/categories/": uR.router.routeElement("category-list"),
+    "/products/": uR.router.routeElement("product-list"),
+  });
+});
+
 <category-list>
-  <button class="btn btn-default btn-block {active:!window.PRODUCTS.c}" onclick={ reset }>
+  <button class="btn btn-default btn-block {active:!uR.drop.active_category}" onclick={ reset }>
     Any Category</button>
-  <button class="btn btn-default btn-block {active:window.PRODUCTS.c==category.pk}"
+  <button class="btn btn-default btn-block {active:uR.drop.active_category==category.pk}"
           onclick={ parent.click } each={ category,i in categories }>
     { category.name }</button>
 
   this.categories = window.PRODUCTS.categories;
   this.active_category = undefined;
   click(e) {
-    window.PRODUCTS.c = e.item.category.pk; 
+    uR.drop.active_category = e.item.category.pk;
     window.PRODUCTS.visible = 18;
     resetProductList();
   }
   reset(e) {
-    window.PRODUCTS.c = undefined;
+    uR.drop.active_category = undefined;
     window.PRODUCTS.visible = 18;
     resetProductList();
   }
@@ -40,9 +47,9 @@
   });
   this.on("update",function() {
     this.products = window.PRODUCTS.list;
-    if (window.PRODUCTS.c) {
+    if (uR.drop.active_category) {
       this.products = this.products.filter(function(p){
-        return p.categories.indexOf(window.PRODUCTS.c) > -1;
+        return p.categories.indexOf(uR.drop.active_category) > -1;
       });
     }
     this.max_products = this.products.length
@@ -59,7 +66,7 @@
 </product-list>
 
 <product>
-  <div class="well {incart:product.quantity,out-of-stock:product.in_stock==0,hidden:data.categories.indexOf(window.PRODUCTS.c)==-1}">
+  <div class="well {incart:product.quantity,out-of-stock:product.in_stock==0,hidden:data.categories.indexOf(uR.drop.active_category)==-1}">
     <div class="img">
       <img src={ product.img.url } />
     </div>

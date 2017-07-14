@@ -42,19 +42,19 @@
       error: function() {}
     });
   }
-  function saveCartItem(product_id, quantity, riot_tag, data) {
-    data = data ||{};
-    data.id = product_id;
-    data.quantity = quantity;
+  function saveCartItem(product_id, quantity, riot_tag, options) {
+    options = options ||{};
+    options.id = product_id;
+    options.quantity = quantity;
     uR.drop.ajax({
       url: "/ajax/edit/",
       tag: riot_tag,
-      data: data,
+      data: options,
       success: function(data) {
         uR.drop.cart = data.cart;
         riot_tag && riot_tag.update();
         riot_tag && riot_tag.add_successful && riot_tag.add_successful();
-        uR.drop.cart.all_items.length && uR.drop.openCart();
+        !options.no_cart && uR.drop.cart.all_items.length && uR.drop.openCart();
         riot.update(uR.drop.store_tags);
       },
       error: function(data) {
@@ -69,6 +69,13 @@
   }
   function updateTags() {
     if (!uR.drop.products_list || !uR.drop.cart) { return }
+    uR.drop.checkoutReady = true;
+    uR.forEach(uR.drop.cart.all_items,function(item) {
+      var product = uR.drop.products[item.product_id];
+      uR.drop.requires_shipping = uR.drop.requires_shipping || product.requires_shipping;
+    });
+    if (uR.drop.requires_shipping && !uR.drop.shipping_address) { uR.drop.checkoutReady = false }
+
     uR.forEach(uR.drop.products_list,function (p) { p.quantity = 0; })
     uR.forEach(uR.drop.cart.all_items,function (item) {
       if (uR.drop.products[item.product_id]) { uR.drop.products[item.product_id].quantity = item.quantity; }
@@ -99,13 +106,21 @@
     ready: function(f) { _ready.push(f) },
     login_required: true,
     payment_backends: [],
-    currency: function(amount) {
-      amount = parseFloat(amount);
+    $: function(amount) {
       var start = "$";
-      if (amount < 0) { start = "- "+start }
-      return start+Math.abs(amount).toFixed(2);
+      if (amount < 0) {
+        start = "- "+start;
+        amount = Math.abs(amount);
+      }
+      amount = (amount == Math.floor(amount))?Math.floor(amount):parseFloat(amount).toFixed(2);
+      return start+Math.abs(amount);
     },
     emptyCart: emptyCart,
+    addRoutes: function addRoutes(_routes) {
+      var out = {}
+      for (var key in _routes) { out[uR.drop.prefix+key] = _routes[key] }
+      uR.addRoutes(out);
+    },
   };
   uR.schema.fields.no_email = {
     name: 'email', type: 'email', label: 'Email Address',

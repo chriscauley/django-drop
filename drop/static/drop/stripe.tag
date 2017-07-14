@@ -1,5 +1,11 @@
 uR.ready(function() {
-  var o = {tagname:'stripe-checkout',copy:"Credit Card",className:uR.config.btn_primary,icon: "fa fa-cc-stripe"};
+  var o = {
+    tagname: 'stripe-checkout',
+    copy: "Credit Card",
+    className: uR.config.btn_primary,
+    icon: "fa fa-cc-stripe",
+    name: 'stripe',
+  };
   uR.drop.payment_backends.push(o);
 });
 
@@ -38,6 +44,7 @@ uR.ready(function() {
     this.initial = {number: "4111 1111 1111 1111", cvc: '123', exp_month: "01", exp_year: "2019" }
   }
   submit(ur_form) {
+    console.log('oops')
     self.ajax_target = self.root.querySelector("."+self.theme.outer);
     self.error = undefined;
     self.ajax_target.setAttribute("data-loading","fade");

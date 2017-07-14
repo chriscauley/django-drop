@@ -31,8 +31,9 @@ if DROP.get('login_required',False):
   index = login_required(index)
 
 def products_json(request):
+  ordering = getattr(settings,"DROP_ORDERING","name")
   return JsonResponse({
-    'products': [p.as_json for p in Product.objects.active().order_by("name")],
+    'products': [p.as_json for p in Product.objects.active().order_by(ordering)],
     'discounts': [d.as_json for d in ProductDiscount.objects.all()],
   })
 
