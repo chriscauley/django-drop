@@ -58,7 +58,7 @@
 
   this.on("mount",function() {
     this.product = this.opts.product;
-    this.initial = opts.initial;
+    this.initial = opts.initial || {};
     this.initial.quantity = this.initial.quantity || 1;
     this.update()
   });
@@ -90,33 +90,34 @@
               <a class="remove" onclick={ parent.remove }>Remove</a>
             </div>
             <div class="price-box" if={ has_quantity && !widget }>
-              <div class="unit-price"> ${ unit_price }</div>
-              <div class="quantity">
+              <div class="has_quantity">
+                <span class="unit-price"> { uR.drop.$(unit_price) }</span>
+                <i class="fa fa-times"></i>
+                <span class="quantity">{ quantity }</span>
                 <a class="fa fa-plus-circle increment" onclick={ parent.plusOne }></a>
                 <a class="fa fa-minus-circle decrement" onclick={ parent.minusOne }></a>
-                <i class="fa fa-times"></i> { quantity }
               </div>
-              <span class="total">${ line_subtotal }</span>
+              <span class="total">{ uR.drop.$(line_subtotal) }</span>
             </div>
             <div if={ !has_quantity || widget } class="price-box">
-              <span class="total">${ line_subtotal }</span>
+              <span class="total">{ uR.drop.$(line_subtotal) }</span>
               <div if={ widget }>
                 <a onclick={ parent.editCartItem }><i class="fa fa-edit"></i> edit</a>
               </div>
             </div>
             <div class="extra_price_field" each={ field in extra_price_fields }>
               <div class="description">{ field[0] }</div>
-              <div class="amount">{ uR.drop.currency(field[1]) }</div>
+              <div class="amount">{ uR.drop.$(field[1]) }</div>
             </div>
           </div>
           <div class="extra_price_field item" each={ field in uR.drop.cart.extra_price_fields }>
             <div class="description"><b>{ field[0] }</b></div>
-            <div class="amount">{ uR.drop.currency(field[1]) }</div>
+            <div class="amount">{ uR.drop.$(field[1]) }</div>
           </div>
         </div>
         <div class="totals-box">
           <div class="subtotals"></div>
-          Order Total: <b>${ uR.drop.cart.total_price }</b>
+          Order Total: <b>{ uR.drop.$(uR.drop.cart.total_price) }</b>
         </div>
         <div class={ uR.theme.error_class } style="margin:10px 0 0" each={ n,i in errors }>{ n }</div>
       </div>
@@ -141,39 +142,13 @@
           </div>
         </div>
       </div>
-      <div class="payment_buttons" if={ checkoutReady }>
-        <b>Select Payment Method</b>
-        <button each={ backends } onclick={ parent.checkout } class={ className } alt={ copy }>
-          <i class={ icon }></i> { copy }</button>
-        <a onclick={ close }>&laquo; Keep Shopping</a>
-      </div>
+      <payment-buttons></payment-buttons>
+      <a onclick={ close }>&laquo; Keep Shopping</a>
     </div>
   </div>
 
   var self = this;
   uR.drop.payment_backends.sort(function(a,b) { return (a.order||0) > (b.order||0); });
-  this.on("update",function() {
-    this.backends = [];
-    uR.forEach(uR.drop.payment_backends, function(backend) {
-      if (backend.test && !backend.test()) { return; }
-      if (backend.get_copy) { backend.copy = backend.get_copy(); }
-      self.backends.push(backend);
-    });
-    self.ajax_target = self.root.querySelector("."+self.theme.outer);
-    uR.forEach(uR.drop.cart.all_items,function(item) {
-      var product = uR.drop.products[item.product_id];
-      item.display_name = product.display_name;
-      item.unit_price = product.unit_price;
-      item.has_quantity = product.has_quantity;
-      self.requires_shipping = self.requires_shipping || product.requires_shipping;
-      item.widget = uR.drop._addToCart[product.model_slug] || uR.drop._addToCart[item.product_id];
-      item.model_slug = product.model_slug;
-    });
-    self.checkoutReady = true;
-    this.shipping_address = this.opts.selected_address;
-    if (self.requires_shipping && !self.shipping_address) { self.checkoutReady = false }
-    riot.update("cart-button");
-  });
 
   close(e) {
     this.unmount();
@@ -196,17 +171,6 @@
   selectShipping(e) {
     uR.alertElement('select-address',{success: uR.drop.openCart});
   }
-  checkout(e) {
-    this.errors = undefined;
-    function success(data) { uR.alertElement(e.item.tagname,data); };
-    if (e.item.skip_checkout) { return success(); } // currently only used for promocode
-    uR.drop.ajax({
-      url: "/ajax/start_checkout/",
-      tag: this,
-      success: success,
-      error: function(data) { self.errors = data.errors || ["An unknown error has occurred"] },
-    });
-  }
   if (uR.drop.login_required) {
     this.checkout = uR.auth.loginRequired(this.checkout)
     this.selectShipping = uR.auth.loginRequired(this.selectShipping);
@@ -214,4 +178,46 @@
   editCartItem(e) {
     e.item.widget({product:uR.drop.products[e.item.product_id],initial:e.item.extra});
   }
+  this.on("update",function() {
+    uR.forEach(uR.drop.cart.all_items,function(item) {
+      var product = uR.drop.products[item.product_id];
+      item.display_name = product.display_name;
+      item.unit_price = product.unit_price;
+      item.has_quantity = product.has_quantity;
+      item.widget = uR.drop._addToCart[product.model_slug] || uR.drop._addToCart[item.product_id];
+      item.model_slug = product.model_slug;
+    }.bind(this));
+    uR.drop.shipping_address = this.opts.selected_address;
+    riot.update("cart-button");
+  });
 </shopping-cart>
+
+<payment-buttons>
+  <div class="payment_buttons" if={ uR.drop.checkoutReady }>
+    <b if={ backends.length != 1 }>Select Payment Method</b>
+    <b if={ backends.length == 1 }>Checkout</b>
+    <button each={ backends } onclick={ parent.checkout } class={ className } alt={ copy }>
+      <i class={ icon }></i> { copy }</button>
+  </div>
+
+  this.on("mount", function() {
+    this.backends = [];
+    uR.forEach(uR.drop.payment_backends, function(backend) {
+      if (uR.drop.allowed_backends && uR.drop.allowed_backends.indexOf(backend.name) == -1) { return }
+      if (backend.test && !backend.test()) { return; }
+      if (backend.get_copy) { backend.copy = backend.get_copy(); }
+      this.backends.push(backend);
+    }.bind(this));
+    this.update();
+  });
+  checkout(e) {
+    this.errors = undefined;
+    function success(data) { uR.alertElement(e.item.tagname,data); };
+    if (e.item.skip_checkout) { return success(); } // currently only used for promocode
+    this.ajax({
+      url: "/ajax/start_checkout/",
+      success: success,
+      error: function(data) { this.errors = data.errors || ["An unknown error has occurred"] },
+    });
+  }
+</payment-buttons>

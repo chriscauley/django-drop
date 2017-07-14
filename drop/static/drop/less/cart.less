@@ -14,30 +14,44 @@ shopping-cart,checkout-modal{
     justify-content: space-between;
     /* this class isn't in bootstrap so I need these, they can be removed when TXRX goes materialize */
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    a { line-height: 1em; }
+    a {
+      display: block;
+      line-height: 1em;
+      margin-top: 1rem;
+      text-align: center;
+      width: 100%;
+    }
   }
   .totals-box { text-align: right; }
-  .payment_buttons {
-    text-align: center;
-    a { margin-right: 0 !important; }
-    a,b { display: block; }
-    button { margin: 10px; }
-    .fa {
-      font-size: 2em;
-      line-height: 1;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-    @media (max-width: 600px) {
-      button { display: block; margin: 10px auto !important; }
-    }
-  }
   .extra_price_field {
     display: flex;
     flex-basis: 100%;
     justify-content: space-between;
   }
+}
+
+payment-buttons, .payment-buttons {
+  display: block;
+  text-align: center;
+  width: 100%;
+  a { margin-right: 0 !important; }
+  a,b { display: block; }
+  button { margin: 10px; }
+  .fa {
+    font-size: 2em;
+    line-height: 1;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  @media (max-width: 600px) {
+    button { display: block; margin: 10px auto !important; }
+  }
+}
+
+shopping-cart .has_quantity {
+  .quantity, .unit-price { font-size: 1.4em; }
 }
 ur-form { display: block; }
 cart-button { float: right; }

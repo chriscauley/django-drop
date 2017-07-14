@@ -25,8 +25,11 @@ uR.ready(function() {
   }
   uR.drop._addToCart['giftcard.giftcardproduct'] = function(data) { uR.alertElement('purchase-giftcard',data); }
   uR.drop.payment_backends.push({
-    tagname: 'giftcard-checkout', copy: 'Pay With A Gift Card', className: uR.config.btn_primary,
+    tagname: 'giftcard-checkout',
+    copy: 'Pay With A Gift Card',
+    className: uR.config.btn_primary,
     icon: 'fa fa-gift', order: 3,
+    name: 'giftcard',
   });
   var prefix = uR.drop.prefix+"/giftcard";
   var _routes = {};
