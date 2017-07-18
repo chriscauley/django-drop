@@ -2,6 +2,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -128,8 +129,7 @@ def payment(request,_backend):
   cart.update(request)
   order = Order.objects.get(cart_pk=cart.pk)
   if not order.user and request.POST.get('email',None):
-    f = load_class(getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER','err'))
-    user,_new = f({'email': request.POST['email']})
+    user,_new = get_or_create_user({'email': request.POST['email']})
     order.user = user
     order.save()
   try:
@@ -177,6 +177,12 @@ from paypal.standard.ipn.signals import payment_was_successful, payment_was_flag
 from django.core.mail import mail_admins
 from django.http import QueryDict
 
+def get_or_create_user(params):
+  if getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER',None):
+    return load_class(getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER','err'))(params)
+  else:
+    return get_user_model().objects.get_or_create(**params)
+
 @receiver(payment_was_successful, dispatch_uid='drop.listeners.paypal_payment_successful')
 def paypal_payment_successful(sender,**kwargs):
   params = QueryDict(sender.query)
@@ -185,7 +191,7 @@ def paypal_payment_successful(sender,**kwargs):
   if not params.get("invoice",None) or not params['invoice'].isdigit() or not params.get("mc_gross",None):
     return
 
-  user,new_user = load_class(getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER','err'))(params)
+  user,new_user = get_or_create_user(params)
   # If they're paying us, don't worry about the registration activation process.
   user.active = True
   user.save()
