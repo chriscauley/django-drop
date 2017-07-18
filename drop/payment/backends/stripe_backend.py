@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from djstripe.models import Customer, StripeCard
+from djstripe.models import Customer
 import stripe, decimal
 stripe.api_key = getattr(settings,"STRIPE_SECRET_KEY",None)
 
