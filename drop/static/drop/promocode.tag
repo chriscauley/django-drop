@@ -1,4 +1,4 @@
-uR.drop.ready(function() {
+uR.drop.ready(function initPromocode() {
   var code_to_check = uR.getQueryParameter("p");
   if (code_to_check) {
     var has_promocode = uR.drop.cart.extra.promocode

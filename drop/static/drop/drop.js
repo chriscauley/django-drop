@@ -1,5 +1,4 @@
 (function() {
-  var _ready = [];
   function ajax(options) {
     options.url = uR.drop.prefix + options.url;
     var _success = options.success || function() {};
@@ -30,15 +29,17 @@
             }
           });
         });
-        uR.drop.ready = function(f) { f(); }
-        uR.forEach(_ready, uR.drop.ready)
+        uR.drop.ready("Products loaded")
       }
     });
   }
   function updateCart() {
     uR.drop.ajax({
       url: '/cart.js',
-      success: function(data) { uR.drop.cart = data; },
+      success: function(data) {
+        uR.drop.cart = data;
+        uR.drop.ready("Cart loaded")
+      },
       error: function() {}
     });
   }
@@ -97,13 +98,14 @@
     updateProducts: updateProducts,
     updateCart: updateCart,
     updateTags: uR.debounce(updateTags,100),
+    emptyCart: emptyCart,
     store_tags: "cart-button,add-to-cart",
     openCart: openCart,
     modal_cart: true,
     ajax: ajax,
     cart_tag: 'shopping-cart',
     prefix: "",
-    ready: function(f) { _ready.push(f) },
+    ready: new uR.Ready(function dropReady() { return uR.drop.products && uR.drop.cart }),
     login_required: true,
     payment_backends: [],
     $: function(amount) {
@@ -115,7 +117,6 @@
       amount = (amount == Math.floor(amount))?Math.floor(amount):parseFloat(amount).toFixed(2);
       return start+Math.abs(amount);
     },
-    emptyCart: emptyCart,
     addRoutes: function addRoutes(_routes) {
       var out = {}
       for (var key in _routes) { out[uR.drop.prefix+key] = _routes[key] }
@@ -127,8 +128,5 @@
     help_text: "Since you are not logged in, we'll look up or create an account using this email address. We promise to only use this for comminication about your purchase."
   }
   uR.theme.checkout_button = uR.config.btn_primary;
-  uR.ready(function() {
-    uR.drop.updateProducts();
-    uR.drop.updateCart();
-  });
+  uR.ready(uR.drop.updateProducts,uR.drop.updateCart())
 })();
