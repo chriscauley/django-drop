@@ -55,6 +55,7 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     last_modified = models.DateTimeField(auto_now=True, verbose_name=_('Last modified'))
     unit_price = CurrencyField(verbose_name=_('Unit price'),default=0)
     categories = models.ManyToManyField(Category,blank=True)
+    extra = jsonfield.JSONField(default=dict,blank=True)
 
     json_fields = [
         'display_name','active','date_added','last_modified','unit_price','model_slug','has_quantity',
