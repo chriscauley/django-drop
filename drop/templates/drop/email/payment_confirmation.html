@@ -1,0 +1,11 @@
+<p>Dear {{ order.get_user_display }},</p>
+
+<p>Thank you for ordering with {{ settings.SITE_NAME }}. Full details of your order are attached below.</p>
+
+<h3>Order Details</h3>
+
+{% include "drop/_order_table.html" %}
+
+<h3>Payment Details</h3>
+
+{% include "drop/_payment_table.html" %}
