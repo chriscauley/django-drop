@@ -178,6 +178,9 @@ from django.core.mail import mail_admins
 from django.http import QueryDict
 
 def get_or_create_user(params):
+  if not 'username' in params:
+    params['defaults'] = params.get("defaults",None) or {}
+    params['defaults']['username'] = params['defaults'].get("username",None) or params['email']
   if getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER',None):
     return load_class(getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER','err'))(params)
   else:
