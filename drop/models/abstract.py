@@ -59,7 +59,7 @@ class BaseProduct(PolymorphicModel,JsonMixin):
 
     json_fields = [
         'display_name','active','date_added','last_modified','unit_price','model_slug','has_quantity',
-        'requires_shipping','extra_fields'
+        'requires_shipping','extra_fields','extra'
     ]
     model_slug = property(lambda self: '%s.%s'%(self._meta.app_label,self._meta.model_name))
     requires_shipping = False
