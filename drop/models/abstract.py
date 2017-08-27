@@ -348,7 +348,7 @@ class BaseCartItem(models.Model,JsonMixin):
 
     @property
     def line_unit_price(self):
-        return self.line_total/self.quantity
+        return self.line_total/(self.quantity or 1)
 
     def __init__(self, *args, **kwargs):
         # That will hold extra fields to display to the user
