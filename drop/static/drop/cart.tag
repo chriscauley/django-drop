@@ -203,11 +203,12 @@
 
   this.on("mount", function() {
     this.backends = [];
-    uR.forEach(uR.drop.payment_backends, function(backend) {
+  uR.forEach(uR.drop.payment_backends, function(backend) {
       if (uR.drop.allowed_backends && uR.drop.allowed_backends.indexOf(backend.name) == -1) { return }
       if (backend.test && !backend.test()) { return; }
       if (backend.get_copy) { backend.copy = backend.get_copy(); }
       this.backends.push(backend);
+      backend.className += " button_" + backend.name;
     }.bind(this));
     this.update();
   });

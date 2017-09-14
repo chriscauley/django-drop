@@ -24,5 +24,7 @@ database.db
 testapp/.e/*
 testapp/.dev
 
-drop/node_modules/*
+
+drop/node_modules
+drop/.dev
 drop/static/drop/.dist/*

@@ -32,9 +32,12 @@ if DROP.get('login_required',False):
   index = login_required(index)
 
 def products_json(request):
-  ordering = getattr(settings,"DROP_ORDERING","name")
+  ordering = getattr(settings,"DROP_ORDERING",None)
+  products = Product.objects.active()
+  if ordering:
+    products = products.order_by(ordering)
   return JsonResponse({
-    'products': [p.as_json for p in Product.objects.active().order_by(ordering)],
+    'products': [p.as_json for p in products],
     'discounts': [d.as_json for d in ProductDiscount.objects.all()],
   })
 
@@ -51,6 +54,8 @@ def cart_edit(request):
   quantity =  int(float(request.POST['quantity']))
   product = get_object_or_404(Product,id=request.POST['id'])
   defaults = {'quantity': 0}
+  if CartItem.objects.filter(product=product,cart=cart).count() > 1:
+    CartItem.objects.filter(product=product,cart=cart).delete()
   cart_item,new = CartItem.objects.get_or_create(product=product,cart=cart,defaults=defaults)
   for field in product.extra_fields:
     cart_item.extra[field] = request.POST.get(field,cart_item.extra.get(field,None))

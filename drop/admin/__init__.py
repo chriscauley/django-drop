@@ -14,4 +14,5 @@ class CategoryAdmin(NamedTreeModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-  pass
+  list_display = ("__unicode__","order")
+  list_editable = ("order",)

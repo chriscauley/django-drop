@@ -43,5 +43,7 @@ class PromocodeCartModifier(BaseCartModifier):
         return
       if promocode.expired or not promocode.matches_product(cart_item.product):
         return
-      amount = Decimal(int(-cart_item.product.unit_price*cart_item.quantity*promocode.percentage))/100
+      amount = Decimal(-cart_item.quantity*promocode.dollars)
+      if promocode.percentage:
+        amount = Decimal(int(-cart_item.product.unit_price*cart_item.quantity*promocode.percentage))/100
       return (promocode.name,amount)

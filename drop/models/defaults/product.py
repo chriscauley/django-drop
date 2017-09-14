@@ -16,4 +16,4 @@ class Product(BaseProduct):
         app_label = 'drop'
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
-        ordering = ('-date_added',)
+        ordering = ('order','-date_added',)

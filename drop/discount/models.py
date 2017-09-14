@@ -5,32 +5,32 @@ from django.utils import timezone
 
 from lablackey.db.models import JsonMixin
 
-class ProductDiscount(models.Model,JsonMixin):
+class DiscountModel(models.Model,JsonMixin):
+  name = models.CharField(max_length=32,unique=True)
+  percentage = models.IntegerField(default=0,null=True,blank=True)
+  dollars = models.FloatField(default=0,null=True,blank=True)
+  class Meta:
+    abstract = True
+
+class ProductDiscount(DiscountModel):
   """
   Line item discounts that are automatically applied. E.g. an item on a clearance rack.
   Can be used as many times as desired in a given cart.
   """
-  name = models.CharField(max_length=32,unique=True)
-  percentage = models.IntegerField(default=0)
   products = models.ManyToManyField(Product,limit_choices_to={'active': True})
   product_ids = property(lambda self: list(self.products.filter(active=True).values_list("id",flat=True)))
   __unicode__ = lambda self: self.name
-  json_fields = ['name','percentage','product_ids']
+  json_fields = ['name','percentage','dollars','product_ids']
 
-class Promocode(models.Model,JsonMixin):
-  name = models.CharField(max_length=32,blank=True)
+class Promocode(DiscountModel):
   code = models.SlugField(max_length=32,unique=True)
-  percentage = models.IntegerField(default=0)
   start_date = models.DateField(default=timezone.now,help_text="First date promocode becomes active.")
   end_date = models.DateField(null=True,blank=True,help_text="Optional final day this promocode can be used")
   __unicode__ = lambda self: self.name
-  json_fields = ['name','percentage','code']
+  json_fields = ['name','percentage','dollars','code']
   _lct = lambda: { 'model__in': [s.__name__.lower() for s in Product.__subclasses__()] }
-  def _lct():
-    return { 'model__in': [s.__name__.lower() for s in Product.__subclasses__()] }
   product_types = models.ManyToManyField("contenttypes.ContentType",limit_choices_to=_lct,blank=True)
-  def _lct2():
-    return { 'active': True }
+  _lct2 = lambda: { 'active': True }
   products = models.ManyToManyField(Product,limit_choices_to=_lct2,blank=True)
   @property
   def expired(self):

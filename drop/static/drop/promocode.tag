@@ -30,7 +30,7 @@ uR.drop.ready(function initPromocode() {
     get_copy: function() { return uR.drop.promocode?"Change Promocode":'Enter a Promocode'; },
     className: uR.config.btn_primary,
     icon: 'fa fa-tags',
-    test: function() { return uR.drop.promocode_active },
+    name: 'promocode',
     order: 4,
     skip_checkout: true,
   });

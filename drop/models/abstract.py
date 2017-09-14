@@ -54,12 +54,14 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     date_added = models.DateTimeField(auto_now_add=True, verbose_name=_('Date added'))
     last_modified = models.DateTimeField(auto_now=True, verbose_name=_('Last modified'))
     unit_price = CurrencyField(verbose_name=_('Unit price'),default=0)
+    order = models.IntegerField(default=0)
     categories = models.ManyToManyField(Category,blank=True)
     extra = jsonfield.JSONField(default=dict,blank=True)
 
+    category_ids = property(lambda self: list(self.categories.all().values_list("id",flat=True)))
     json_fields = [
         'display_name','active','date_added','last_modified','unit_price','model_slug','has_quantity',
-        'requires_shipping','extra_fields'
+        'requires_shipping','extra_fields','extra','category_ids'
     ]
     model_slug = property(lambda self: '%s.%s'%(self._meta.app_label,self._meta.model_name))
     requires_shipping = False
@@ -346,7 +348,7 @@ class BaseCartItem(models.Model,JsonMixin):
 
     @property
     def line_unit_price(self):
-        return self.line_total/self.quantity
+        return self.line_total/(self.quantity or 1)
 
     def __init__(self, *args, **kwargs):
         # That will hold extra fields to display to the user
