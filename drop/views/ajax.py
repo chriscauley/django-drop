@@ -176,11 +176,15 @@ from drop.payment.api import PaymentAPI
 from paypal.standard.ipn.signals import payment_was_successful, payment_was_flagged
 from django.core.mail import mail_admins
 from django.http import QueryDict
+from lablackey.utils import latin1_to_ascii
 
 def get_or_create_user(params):
+  params = params.copy()
   if not 'username' in params:
     params['defaults'] = params.get("defaults",None) or {}
-    params['defaults']['username'] = params['defaults'].get("username",None) or params['email']
+    # payer_email is for paypal
+    email = params.get("email",None) or params.get('email',None) or params['payer_email']
+    params['defaults']['username'] = params['defaults'].get("username",None) or email
   if getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER',None):
     return load_class(getattr(settings, 'DROP_GET_OR_CREATE_CUSTOMER','err'))(params)
   else:
@@ -188,7 +192,7 @@ def get_or_create_user(params):
 
 @receiver(payment_was_successful, dispatch_uid='drop.listeners.paypal_payment_successful')
 def paypal_payment_successful(sender,**kwargs):
-  params = QueryDict(sender.query)
+  params = QueryDict(latin1_to_ascii(sender.query).replace("%FC","u"))
 
   # for now this is how we differentiate what came from drop
   if not params.get("invoice",None) or not params['invoice'].isdigit() or not params.get("mc_gross",None):
