@@ -29,7 +29,7 @@
     })
   });
   addToCart() {
-    var widget = uR.drop._addToCart[this.product.model_slug] || uR.drop._addToCart[this.product.id]
+    var widget = uR.drop._addToCart[this.product.model_slug] || uR.drop._addToCart[this.product.id];
     if (widget) { widget({product: this.product}); }
     else { uR.drop.saveCartItem(this.opts.product_id,this.opts.quantity || 1,this) }
   }
@@ -86,7 +86,8 @@
         <div class={ uR.theme.cart_items }>
           <div class="item" each={ uR.drop.cart.all_items }>
             <div class="name">
-              <b>{ display_name }</b> { after }<br/>
+              <div><b>{ display_name }</b> { after }</div>
+              <div if={ extra.display }>{ extra.display }</div>
               <a class="remove" onclick={ parent.remove }>Remove</a>
             </div>
             <div class="price-box" if={ has_quantity && !widget }>
@@ -101,7 +102,7 @@
             </div>
             <div if={ !has_quantity || widget } class="price-box">
               <span class="total">{ uR.drop.$(line_subtotal) }</span>
-              <div if={ widget }>
+              <div if={ widget && !extra.no_edit }>
                 <a onclick={ parent.editCartItem }><i class="fa fa-edit"></i> edit</a>
               </div>
             </div>
@@ -214,10 +215,11 @@
     this.errors = undefined;
     function success(data) { uR.alertElement(e.item.tagname,data); };
     if (e.item.skip_checkout) { return success(); } // currently only used for promocode
-    this.ajax({
+    uR.drop.ajax({
       url: "/ajax/start_checkout/",
       success: success,
       error: function(data) { this.errors = data.errors || ["An unknown error has occurred"] },
+      self: this,
     });
   }
 </payment-buttons>
