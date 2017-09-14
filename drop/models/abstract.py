@@ -335,7 +335,7 @@ class BaseCartItem(models.Model,JsonMixin):
     quantity = models.IntegerField()
 
     product = models.ForeignKey(get_model_string('Product'))
-    extra = jsonfield.JSONField(default=dict)
+    extra = jsonfield.JSONField(default=dict,blank=True)
     json_fields = ['quantity','product_id','line_subtotal','line_total','extra_price_fields','extra','line_unit_price']
 
     class Meta(object):

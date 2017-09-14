@@ -14,7 +14,8 @@ from drop.payment.api import PaymentAPI
 from drop.models import Cart, CartItem
 
 class CartItemInline(admin.TabularInline):
-    readonly_fields = ('product','extra','quantity')
+    if not settings.DEBUG:
+        readonly_fields = ('product','extra','quantity')
     model = CartItem
     has_add_permission = lambda *args,**kwargs: False
     extra = 0
@@ -23,6 +24,7 @@ class CartItemInline(admin.TabularInline):
 class CartAdmin(admin.ModelAdmin):
     readonly_fields = ('user','extra_price_fields')
     inlines = [CartItemInline]
+    search_fields = getattr(settings,"USER_SEARCH_FIELDS",[])
     def has_change_permission(self,request,obj=None):
         if obj:
             obj.update(request)
