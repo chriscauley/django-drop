@@ -79,7 +79,7 @@ class BaseProduct(PolymorphicModel,JsonMixin):
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
 
-    __unicode__ = lambda self: self.name
+    __unicode__ = lambda self: self.get_name()
     get_absolute_url = lambda self: reverse('product_detail', args=[self.id,self.slug])
 
     # active controls when things are listed on homepage, the rest are useful to fine tune behavior

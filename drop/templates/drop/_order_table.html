@@ -10,7 +10,10 @@
   <tbody>
     {% for item in order.items.all %}
     <tr>
-      <td class="name">{{ item.product }}</td>
+      <td class="name">
+        {{ item.product.get_name }}
+        <br />{% if item.extra.display %}{{ item.extra.display }}{% endif %}
+      </td>
       <td class="quantity">{{ item.quantity }}</td>
       <td class="unit_price">${{ item.unit_price }}</td>
       <td class="line_subtotal">${{ item.line_subtotal }}</td>

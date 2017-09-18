@@ -128,5 +128,5 @@
     help_text: "Since you are not logged in, we'll look up or create an account using this email address. We promise to only use this for comminication about your purchase."
   }
   uR.theme.checkout_button = uR.config.btn_primary;
-  uR.ready(uR.drop.updateProducts,uR.drop.updateCart())
+  uR.ready(uR.drop.updateProducts,uR.drop.updateCart)
 })();
