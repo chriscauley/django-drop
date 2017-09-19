@@ -84,27 +84,25 @@
       </div>
       <div if={ uR.drop.cart.all_items.length }>
         <div class={ uR.theme.cart_items }>
-          <div class="item" each={ uR.drop.cart.all_items }>
+          <div class="item { uR.theme.cart_item }" each={ uR.drop.cart.all_items }>
             <div class="name">
               <div><b>{ display_name }</b> { after }</div>
               <div if={ extra.display }>{ extra.display }</div>
               <a class="remove" onclick={ parent.remove }>Remove</a>
             </div>
-            <div class="price-box" if={ has_quantity && !widget }>
-              <div class="has_quantity">
-                <span class="unit-price"> { uR.drop.$(unit_price) }</span>
-                <i class="fa fa-times"></i>
-                <span class="quantity">{ quantity }</span>
+            <div class="price-box has_quantity" if={ has_quantity && !widget }>
+              <span class="quantity">{ quantity }</span>
+              <i class="fa fa-times"></i>
+              <span class="unit-price"> { uR.drop.$(unit_price) }</span>
+              <div class="change">
                 <a class="fa fa-plus-circle increment" onclick={ parent.plusOne }></a>
                 <a class="fa fa-minus-circle decrement" onclick={ parent.minusOne }></a>
               </div>
-              <span class="total">{ uR.drop.$(line_subtotal) }</span>
             </div>
             <div if={ !has_quantity || widget } class="price-box">
-              <span class="total">{ uR.drop.$(line_subtotal) }</span>
-              <div if={ widget && !extra.no_edit }>
-                <a onclick={ parent.editCartItem }><i class="fa fa-edit"></i> edit</a>
-              </div>
+              <span class="unit-price">{ uR.drop.$(line_subtotal) }</span>
+              <a onclick={ parent.editCartItem } if={ widget && !extra.no_edit } class="edit">
+                <i class="fa fa-edit"></i> edit</a>
             </div>
             <div class="extra_price_field" each={ field in extra_price_fields }>
               <div class="description">{ field[0] }</div>
