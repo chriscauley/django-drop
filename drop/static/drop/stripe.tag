@@ -44,7 +44,6 @@ uR.ready(function() {
     this.initial = {number: "4111 1111 1111 1111", cvc: '123', exp_month: "01", exp_year: "2019" }
   }
   submit(ur_form) {
-    console.log('oops')
     self.ajax_target = self.root.querySelector("."+self.theme.outer);
     self.error = undefined;
     self.ajax_target.setAttribute("data-loading","fade");
