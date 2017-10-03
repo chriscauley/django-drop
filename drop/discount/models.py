@@ -26,6 +26,7 @@ class Promocode(DiscountModel):
   code = models.SlugField(max_length=32,unique=True)
   start_date = models.DateField(default=timezone.now,help_text="First date promocode becomes active.")
   end_date = models.DateField(null=True,blank=True,help_text="Optional final day this promocode can be used")
+  reuseable = models.BooleanField(default=False,help_text="Whether or not the same user can reuse this promocode.")
   __unicode__ = lambda self: self.name
   json_fields = ['name','percentage','dollars','code']
   _lct = lambda: { 'model__in': [s.__name__.lower() for s in Product.__subclasses__()] }

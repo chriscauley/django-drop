@@ -153,8 +153,7 @@ def payment(request,_backend):
     order.save()
     url = reverse('checkout-thank_you',args=[order.pk])+"?token="+order.make_token()
     return JsonResponse({'next': url})
-  else:
-    return cart_json(request)
+  return cart_json(request)
 
 # STRIPE LISTENERS
 # Move these some place intelligent

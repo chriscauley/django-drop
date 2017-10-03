@@ -96,8 +96,7 @@ class PaymentAPI(DropAPI):
                         order=order,
                         promocode_id=cart.extra["promocode"]['id']
                     )
-                for item in order.items.all():
-                    cart.items.filter(product=item.product).delete()
+                    cart.empty()
             except Cart.DoesNotExist:
                 pass
 

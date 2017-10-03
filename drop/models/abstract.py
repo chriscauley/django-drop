@@ -314,6 +314,8 @@ class BaseCart(models.Model,JsonMixin):
         if self.pk:
             self.items.all().delete()
             self.delete()
+        self.extra = {}
+        self.save()
 
     @property
     def total_quantity(self):
