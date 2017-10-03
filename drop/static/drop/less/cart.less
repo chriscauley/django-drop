@@ -5,10 +5,23 @@ shopping-cart,checkout-modal{
   a { cursor: pointer; color: #049cdb; color: var(--link-color); }
   .item {
     border-bottom: 1px solid var(--border-color);
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    min-height: 65px;
+    position: relative;
+    .left {
+      padding-right:80px;
+      .name { min-height: 2.4em; }
+    }
     .extra_price_field { border-top: 1px solid var(--border-color); }
+    .price-box {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      .change {
+        text-align: center;
+        font-size: 18px;
+        .fa { padding-right: 0 4px; }
+      }
+    }
   }
   .valign-wrapper {
     justify-content: space-between;
@@ -29,6 +42,7 @@ shopping-cart,checkout-modal{
     display: flex;
     flex-basis: 100%;
     justify-content: space-between;
+    .amount { white-space: pre; }
   }
 }
 

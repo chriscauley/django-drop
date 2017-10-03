@@ -85,8 +85,8 @@
       <div if={ uR.drop.cart.all_items.length }>
         <div class={ uR.theme.cart_items }>
           <div class="item { uR.theme.cart_item }" each={ uR.drop.cart.all_items }>
-            <div class="name">
-              <div><b>{ display_name }</b> { after }</div>
+            <div class="left">
+              <div class="name"><b>{ display_name }</b> { after }</div>
               <div if={ extra.display }>{ extra.display }</div>
               <a class="remove" onclick={ parent.remove }>Remove</a>
             </div>
