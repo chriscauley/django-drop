@@ -45,8 +45,8 @@ def image(request,code):
   draw = ImageDraw.Draw(img)
   font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 29)
 
-  draw.text((225, 333),credit.extra['to'],(10,10,10),font=font)
-  draw.text((225, 405),credit.extra['from'],(10,10,10),font=font)
+  draw.text((225, 333),credit.extra.get('to',""),(10,10,10),font=font)
+  draw.text((225, 405),credit.extra.get('from',""),(10,10,10),font=font)
   font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 32)
   draw.text((360,578),code,(10,10,10),font=font)
   font = ImageFont.truetype(settings.DROP_GIFTCARD_FONT, 25)
