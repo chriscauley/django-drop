@@ -1,7 +1,5 @@
-
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import get_object_or_404
 
 from .models import Credit, Debit
 
@@ -18,8 +16,8 @@ def user_json(request):
 
 def redeem_ajax(request):
   try:
-    credit = Credit.objects.get(code__iexact=request.POST.get('code',None))
-  except Credit.DoesNotExist:
+    credit = Credit.objects.get_or_404(request,code=code)
+  except:
     return JsonResponse({'error': "Unable to find gift card matching that code."})
   error = None
   if credit.remaining <= 0:
@@ -32,14 +30,14 @@ def arst(request):
   records.sort(key=lambda o:o['created'])
 
 def validate(request):
-  credit = get_object_or_404(Credit,code=request.GET.get('code',None))
+  credit = Credit.objects.get_or_404(request,code=code)
   return JsonResponse({'giftcard': credit.as_json})
 
 def image(request,code):
   from PIL import Image
   from PIL import ImageFont
   from PIL import ImageDraw
-  credit = get_object_or_404(Credit,code=code)
+  credit = Credit.objects.get_or_404(request,code=code)
 
   img = Image.open(settings.DROP_GIFTCARD_IMG)
   draw = ImageDraw.Draw(img)

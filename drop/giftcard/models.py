@@ -1,6 +1,8 @@
 from django.conf import settings
+from django.core.mail import mail_admins
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.http import Http404
 from django.utils import timezone
 
 from drop.models import Product, Order
@@ -24,7 +26,7 @@ class GiftCardProduct(Product,PhotosMixin):
   def purchase(self,order_item):
     user = order_item.order.user
     quantity = order_item.quantity
-    credit = Credit.make_random(
+    credit = Credit.objects.make_random(
       quantity,
       purchased_by=user,
       product=self,
@@ -34,6 +36,30 @@ class GiftCardProduct(Product,PhotosMixin):
     order_item.extra['purchased_model'] = "giftcard.Credit"
     order_item.extra['purchased_pk'] = credit.pk
     order_item.save()
+
+class CreditManager(models.Manager):
+  def get_or_404(self,request,*args,**kwargs):
+    try:
+      return self.get(*args,**kwargs)
+    except self.model.DoesNotExist:
+      t = (request.path,request.user,request.META['REMOTE_ADDR'],request.META['HTTP_X_REAL_IP'])
+      mail_admins(
+        "Failed attempt at looking for promocode",
+        "CODE: %s\nUSER: %s\nIP: %s\nREAL_IP: %s"%t
+      )
+      raise Http404("Unable to find promocode")
+  def make_random(self,amount,**kwargs):
+    count = 1
+    if not 'product' in kwargs:
+      kwargs['product'] = GiftCardProduct.objects.all()[0] # typically a site will only have one giftcard product
+    while count:
+      code = ''.join([random.choice("0123456789ABCDEF") for i in range(8)])
+      count = self.filter(code=code).count()
+    return self.create(
+      amount=amount,
+      code=code,
+      **kwargs
+    )
 
 class Credit(models.Model,JsonMixin):
   def __init__(self,*args,**kwargs):
@@ -50,10 +76,10 @@ class Credit(models.Model,JsonMixin):
   amount = CurrencyField()
   extra = jsonfield.JSONField(default=dict,null=True,blank=True)
   json_fields = ['created','remaining','code','extra']
+  objects = CreditManager()
 
   def get_image_url(self):
     return reverse("giftcard_image",args=[self.code])
-
   def get_absolute_url(self):
     url = getattr(settings,"DROP_GIFTCARD_LANDING",None) or reverse("giftcard_redeem")
     return "%s?giftcode=%s"%(url,self.code)
@@ -68,20 +94,6 @@ class Credit(models.Model,JsonMixin):
     context['GIFTCARD_IMAGE'] = all([getattr(settings,a,None) for a in attrs])
     send_template_email("email/send_giftcard",to,context=context,bcc=['cauley.chris@gmail.com'])
     self.save()
-
-  @classmethod
-  def make_random(clss,amount,**kwargs):
-    count = 1
-    if not 'product' in kwargs:
-      kwargs['product'] = GiftCardProduct.objects.all()[0] # typically a site will only have one giftcard product
-    while count:
-      code = ''.join([random.choice("0123456789ABCDEF") for i in range(8)])
-      count = clss.objects.filter(code=code).count()
-    return clss.objects.create(
-      amount=amount,
-      code=code,
-      **kwargs
-    )
 
 class Debit(models.Model,JsonMixin):
   user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)
