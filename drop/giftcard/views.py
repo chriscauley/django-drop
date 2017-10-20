@@ -16,7 +16,7 @@ def user_json(request):
 
 def redeem_ajax(request):
   try:
-    credit = Credit.objects.get_or_404(request,code=code)
+    credit = Credit.objects.get_or_404(request,code=request.GET.get('code',None))
   except:
     return JsonResponse({'error': "Unable to find gift card matching that code."})
   error = None
@@ -30,7 +30,7 @@ def arst(request):
   records.sort(key=lambda o:o['created'])
 
 def validate(request):
-  credit = Credit.objects.get_or_404(request,code=code)
+  credit = Credit.objects.get_or_404(request,code=request.GET.get('code',None))
   return JsonResponse({'giftcard': credit.as_json})
 
 def image(request,code):
