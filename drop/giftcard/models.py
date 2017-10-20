@@ -24,10 +24,9 @@ class GiftCardProduct(Product,PhotosMixin):
   def purchase(self,order_item):
     user = order_item.order.user
     quantity = order_item.quantity
-    credit = Credit.objects.create(
-      code=''.join([random.choice("0123456789ABCDEF") for i in range(8)]),
+    credit = Credit.make_random(
+      quantity,
       purchased_by=user,
-      amount=quantity,
       product=self,
       extra=order_item.extra,
     )
@@ -43,9 +42,9 @@ class Credit(models.Model,JsonMixin):
     super(Credit,self).__init__(*args,**kwargs)
     self.quantity = int(self.amount)
 
-  code = models.CharField(max_length=16)
+  code = models.CharField(max_length=16,unique=True)
   created = models.DateTimeField(auto_now_add=True)
-  purchased_by = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="+")
+  purchased_by = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="+",null=True,blank=True)
   user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)
   product = models.ForeignKey(GiftCardProduct)
   amount = CurrencyField()
@@ -69,6 +68,20 @@ class Credit(models.Model,JsonMixin):
     context['GIFTCARD_IMAGE'] = all([getattr(settings,a,None) for a in attrs])
     send_template_email("email/send_giftcard",to,context=context,bcc=['cauley.chris@gmail.com'])
     self.save()
+
+  @classmethod
+  def make_random(clss,amount,**kwargs):
+    count = 1
+    if not 'product' in kwargs:
+      kwargs['product'] = GiftCardProduct.objects.all()[0] # typically a site will only have one giftcard product
+    while count:
+      code = ''.join([random.choice("0123456789ABCDEF") for i in range(8)])
+      count = clss.objects.filter(code=code).count()
+    return clss.objects.create(
+      amount=amount,
+      code=code,
+      **kwargs
+    )
 
 class Debit(models.Model,JsonMixin):
   user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)

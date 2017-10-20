@@ -145,10 +145,7 @@ def payment(request,_backend):
   # right now only giftcard supports partial payment
   if _backend != 'giftcard' or order.is_paid():
     # empty the related cart
-    try:
-      Cart.objects.get(pk=order.cart_pk).empty()
-    except Cart.DoesNotExist:
-      pass
+    cart.empty()
     order.cart_pk = None
     order.save()
     url = reverse('checkout-thank_you',args=[order.pk])+"?token="+order.make_token()
