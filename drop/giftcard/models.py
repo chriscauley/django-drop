@@ -42,7 +42,7 @@ class CreditManager(models.Manager):
     try:
       return self.get(*args,**kwargs)
     except self.model.DoesNotExist:
-      t = (request.path,request.user,request.META['REMOTE_ADDR'],request.META['HTTP_X_REAL_IP'])
+      t = (request.path,request.user,request.META['REMOTE_ADDR'],request.META.get('HTTP_X_REAL_IP',None))
       mail_admins(
         "Failed attempt at looking for promocode",
         "CODE: %s\nUSER: %s\nIP: %s\nREAL_IP: %s"%t
