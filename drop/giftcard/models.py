@@ -39,6 +39,8 @@ class GiftCardProduct(Product,PhotosMixin):
 
 class CreditManager(models.Manager):
   def get_or_404(self,request,*args,**kwargs):
+    if 'code' in kwargs:
+      kwargs['code__iexact'] = kwargs.pop('code').replace(' ','')
     try:
       return self.get(*args,**kwargs)
     except self.model.DoesNotExist:

@@ -15,9 +15,10 @@ def user_json(request):
   return JsonResponse({'amount': credit - debit})
 
 def redeem_ajax(request):
+  data = request.POST or request.GET
   try:
-    credit = Credit.objects.get_or_404(request,code=request.GET.get('code',None))
-  except:
+    credit = Credit.objects.get_or_404(request,code=data.get('code',None))
+  except Exception,e:
     return JsonResponse({'error': "Unable to find gift card matching that code."})
   error = None
   if credit.remaining <= 0:
