@@ -201,7 +201,7 @@
 
   this.on("mount", function() {
     this.backends = [];
-  uR.forEach(uR.drop.payment_backends, function(backend) {
+    uR.forEach(uR.drop.payment_backends, function(backend) {
       if (uR.drop.allowed_backends && uR.drop.allowed_backends.indexOf(backend.name) == -1) { return }
       if (backend.test && !backend.test()) { return; }
       if (backend.get_copy) { backend.copy = backend.get_copy(); }
@@ -217,8 +217,11 @@
     uR.drop.ajax({
       url: "/ajax/start_checkout/",
       success: success,
-      error: function(data) { this.errors = data.errors || ["An unknown error has occurred"] },
-      self: this,
+      error: function(data) {
+        this.parent.errors = data.errors || ["An unknown error has occurred"];
+        this.parent.update();
+      },
+      tag: this,
     });
   }
 </payment-buttons>
