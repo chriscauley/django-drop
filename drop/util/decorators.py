@@ -3,7 +3,7 @@ from functools import wraps
 
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import user_passes_test
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from drop.util.cart import get_or_create_cart
 

@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-from distutils.version import LooseVersion
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import pre_delete
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from jsonfield.fields import JSONField
 from drop.models.productmodel import Product
 from drop.util.fields import CurrencyField
 from lablackey.loader import load_class
-import django
 
 
 #==============================================================================
@@ -34,16 +31,12 @@ def clear_products(sender, instance, using, **kwargs):
         oi.product = None
         oi.save()
 
-if LooseVersion(django.get_version()) < LooseVersion('1.3'):
-    pre_delete.connect(clear_products, sender=Product)
-
-
 class OrderExtraInfo(models.Model):
     """
     A holder for extra textual information to attach to this order.
     """
     order = models.ForeignKey(Order, related_name="extra_info",
-            verbose_name=_('Order'))
+            verbose_name=_('Order'), on_delete=models.CASCADE)
     text = models.TextField(verbose_name=_('Extra info'), blank=True)
 
     class Meta(object):
@@ -57,7 +50,7 @@ class ExtraOrderPriceField(models.Model):
     This will make Cart-provided extra price fields persistent since we want
     to "snapshot" their statuses at the time when the order was made
     """
-    order = models.ForeignKey(Order, verbose_name=_('Order'))
+    order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
     label = models.CharField(max_length=255, verbose_name=_('Label'))
     value = CurrencyField(verbose_name=_('Amount'))
     data = JSONField(null=True, blank=True, verbose_name=_('Serialized extra data'))
@@ -76,7 +69,7 @@ class ExtraOrderItemPriceField(models.Model):
     This will make Cart-provided extra price fields persistent since we want
     to "snapshot" their statuses at the time when the order was made
     """
-    order_item = models.ForeignKey(OrderItem, verbose_name=_('Order item'))
+    order_item = models.ForeignKey(OrderItem, verbose_name=_('Order item'), on_delete=models.CASCADE)
     label = models.CharField(max_length=255, verbose_name=_('Label'))
     value = CurrencyField(verbose_name=_('Amount'))
     data = JSONField(null=True, blank=True, verbose_name=_('Serialized extra data'))
@@ -92,7 +85,7 @@ class OrderPayment(models.Model):
     A class to hold basic payment information. Backends should define their own
     more complex payment types should they need to store more informtion
     """
-    order = models.ForeignKey(Order, verbose_name=_('Order'))
+    order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
     # How much was paid with this particular transfer
     amount = CurrencyField(verbose_name=_('Amount'))
     transaction_id = models.CharField(max_length=255,

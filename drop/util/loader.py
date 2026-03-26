@@ -19,11 +19,11 @@ def get_model_string(model_name):
 
     if not class_path:
         return 'drop.%s' % model_name
-    elif isinstance(class_path, basestring):
+    elif isinstance(class_path, str):
         parts = class_path.split('.')
         try:
             index = parts.index('models') - 1
-        except ValueError, e:
+        except ValueError as e:
             raise exceptions.ImproperlyConfigured(CLASS_PATH_ERROR % (
                 setting_name, setting_name))
         app_label, model_name = parts[index], parts[-1]

@@ -2,18 +2,17 @@
 from django.conf import settings
 from django.contrib import messages
 from decimal import Decimal
-from distutils.version import LooseVersion
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models.aggregates import Sum
 from django.template.defaultfilters import slugify
 from django.utils.crypto import salted_hmac
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from polymorphic.models import PolymorphicModel
 from drop.cart.modifiers_pool import cart_modifiers_pool
 from drop.util.fields import CurrencyField
 from drop.util.loader import get_model_string
-import django, datetime, jsonfield
+import datetime, jsonfield
 
 from lablackey.utils import get_admin_url
 from lablackey.db.models import NamedTreeModel, JsonMixin
@@ -79,7 +78,7 @@ class BaseProduct(PolymorphicModel,JsonMixin):
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
 
-    __unicode__ = lambda self: self.get_name()
+    __str__ = lambda self: self.get_name()
     get_absolute_url = lambda self: reverse('product_detail', args=[self.id,self.slug])
 
     # active controls when things are listed on homepage, the rest are useful to fine tune behavior
@@ -92,7 +91,7 @@ class BaseProduct(PolymorphicModel,JsonMixin):
     get_price = lambda self: self.unit_price
     get_name = lambda self: self.name
     display_name = property(lambda self: self.get_name())
-    get_product_reference = lambda self: unicode(self.pk)
+    get_product_reference = lambda self: str(self.pk)
 
     # this hook is used to update the quantity of a product, is such a thing exists
     purchase = lambda self,cart_item: None
@@ -124,7 +123,7 @@ class BaseCart(models.Model,JsonMixin):
     people buy from our drop without having to register with us.
     """
     # If the user is null, that means this is used for a session
-    user = models.OneToOneField(USER_MODEL, null=True, blank=True)
+    user = models.OneToOneField(USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     session_id = None
     extra_price_fields = []
     date_created = models.DateTimeField(auto_now_add=True)
@@ -132,7 +131,7 @@ class BaseCart(models.Model,JsonMixin):
     json_fields = ['user_id','session_id','total_price','all_items','extra_price_fields','extra']
     extra = jsonfield.JSONField(default=dict,blank=True)
     all_items = property(lambda self:[c.as_json for c in self._updated_cart_items or []])
-    __unicode__ = lambda self: "%s's cart"%self.user
+    __str__ = lambda self: "%s's cart"%self.user
 
     def get_json(self,request):
         self.update(request)
@@ -333,11 +332,11 @@ class BaseCartItem(models.Model,JsonMixin):
     This is a holder for the quantity of items in the cart and, obviously, a
     pointer to the actual Product being purchased :)
     """
-    cart = models.ForeignKey(get_model_string('Cart'), related_name="items")
+    cart = models.ForeignKey(get_model_string('Cart'), related_name="items", on_delete=models.CASCADE)
 
     quantity = models.IntegerField()
 
-    product = models.ForeignKey(get_model_string('Product'))
+    product = models.ForeignKey(get_model_string('Product'), on_delete=models.CASCADE)
     extra = jsonfield.JSONField(default=dict,blank=True)
     json_fields = ['quantity','product_id','line_subtotal','line_total','extra_price_fields','extra','line_unit_price']
 
@@ -365,7 +364,7 @@ class BaseCartItem(models.Model,JsonMixin):
     def update(self, request):
         if not self.product.active:
             if sys.argv[1:2] == ['test']:
-                print self.product," is not active!"
+                print(self.product, " is not active!")
             else:
                 m = "The following product is no longer active and was removed from your cart: %s"%self.product
                 messages.warning(request,m)
@@ -434,7 +433,7 @@ class BaseOrder(models.Model):
 
     # If the user is null, the order was created with a session
     user = models.ForeignKey(USER_MODEL, blank=True, null=True,
-            verbose_name=_('User'))
+            verbose_name=_('User'), on_delete=models.SET_NULL)
     status = models.IntegerField(choices=STATUS_CODES, default=PROCESSING,
             verbose_name=_('Status'))
     order_subtotal = CurrencyField(verbose_name=_('Order subtotal'))
@@ -456,7 +455,7 @@ class BaseOrder(models.Model):
         if self.user:
             return self.user.get_full_name() or self.user.username
 
-    def __unicode__(self):
+    def __str__(self):
         return _('Order ID: %(id)s') % {'id': self.pk}
 
     def get_absolute_url(self):
@@ -472,7 +471,7 @@ class BaseOrder(models.Model):
     # these two methods are used to allow non-logged in users to see checkout page
     def make_token(self,ts=None):
         ts = (ts or datetime.date.today()).strftime("%m/%d/%y")
-        value = "%s-%s"%(ts,unicode(self))
+        value = "%s-%s"%(ts,str(self))
         return "%s-%s"%(ts,salted_hmac(settings.SECRET_KEY, value).hexdigest()[::2])
     def check_token(self,token):
         if not token:
@@ -537,26 +536,19 @@ class BaseOrder(models.Model):
             self.save()
 
 
-# We need some magic to support django < 1.3 that has no support
-# models.on_delete option
-f_kwargs = {}
-if LooseVersion(django.get_version()) >= LooseVersion('1.3'):
-    f_kwargs['on_delete'] = models.SET_NULL
-
-
 class BaseOrderItem(models.Model):
     """
     A line Item for an order.
     """
 
     order = models.ForeignKey(get_model_string('Order'), related_name='items',
-            verbose_name=_('Order'))
+            verbose_name=_('Order'), on_delete=models.CASCADE)
     product_reference = models.CharField(max_length=255,
             verbose_name=_('Product reference'))
     product_name = models.CharField(max_length=255, null=True, blank=True,
             verbose_name=_('Product name'))
     product = models.ForeignKey(get_model_string('Product'),
-        verbose_name=_('Product'), null=True, blank=True, **f_kwargs)
+        verbose_name=_('Product'), null=True, blank=True, on_delete=models.SET_NULL)
     unit_price = CurrencyField(verbose_name=_('Unit price'))
     quantity = models.IntegerField(verbose_name=_('Quantity'))
     line_subtotal = CurrencyField(verbose_name=_('Line subtotal'))

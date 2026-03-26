@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import ajax
+from drop.views import ajax
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
@@ -13,7 +13,7 @@ def index(request):
 
 def detail(request,object_id,slug=None):
     obj = get_object_or_404(Product,id=object_id)
-    is_staff = request.user.is_authenticated() and request.user.is_staff
+    is_staff = request.user.is_authenticated and request.user.is_staff
     if not (obj.is_visible or is_staff):
         raise Http404()
     values = {'object': obj}

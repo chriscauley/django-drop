@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -139,7 +139,7 @@ def payment(request,_backend):
     order.save()
   try:
     backend.charge(order,request)
-  except PaymentError,e:
+  except PaymentError as e:
     return JsonResponse({'error': str(e)},status=400)
 
   # right now only giftcard supports partial payment

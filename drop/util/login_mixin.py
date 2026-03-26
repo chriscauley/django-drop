@@ -61,6 +61,6 @@ def get_test_func(test_func=None):
     if getattr(settings, 'SHOP_FORCE_LOGIN', False):
         if test_func:
             return test_func
-        return lambda u: u.is_authenticated()
+        return lambda u: u.is_authenticated
     else:
         return lambda u: True

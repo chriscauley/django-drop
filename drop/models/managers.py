@@ -107,7 +107,7 @@ class OrderManager(models.Manager):
                     'cart: %s/admin/drop/cart/%s/change/'%(settings.SITE_URL,cart.pk),
                 ]
                 mail_admins("dissociating %s from %s"%(old_pk,cart.pk),'\n\n'.join(lines))
-                print '\n\n'.join(lines)
+                print('\n\n'.join(lines))
 
         order.cart_pk = cart.pk
         order.user = cart.user
@@ -121,7 +121,7 @@ class OrderManager(models.Manager):
         for field in cart.extra_price_fields:
             ExtraOrderPriceField.objects.get_or_create(
                 order=order,
-                label=unicode(field[0]),
+                label=str(field[0]),
                 value=field[1],
                 data=field[2] if len(field) == 3 else None
             )
@@ -151,7 +151,7 @@ class OrderManager(models.Manager):
             for field in item.extra_price_fields:
                 kwargs = dict(
                     order_item=order_item,
-                    label = unicode(field[0]),
+                    label = str(field[0]),
                     value = field[1]
                 )
                 if len(field) == 3:
