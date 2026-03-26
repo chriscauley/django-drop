@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from drop.giftcard.models import GiftCardProduct, Credit
 from drop.models import Order, Product

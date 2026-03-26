@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.mail import mail_admins
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.http import Http404
 from django.utils import timezone
@@ -72,9 +72,9 @@ class Credit(models.Model,JsonMixin):
 
   code = models.CharField(max_length=16,unique=True)
   created = models.DateTimeField(auto_now_add=True)
-  purchased_by = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="+",null=True,blank=True)
-  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)
-  product = models.ForeignKey(GiftCardProduct)
+  purchased_by = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="+",null=True,blank=True,on_delete=models.SET_NULL)
+  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True,on_delete=models.SET_NULL)
+  product = models.ForeignKey(GiftCardProduct,on_delete=models.CASCADE)
   amount = CurrencyField()
   extra = jsonfield.JSONField(default=dict,null=True,blank=True)
   json_fields = ['created','remaining','code','extra']
@@ -88,7 +88,7 @@ class Credit(models.Model,JsonMixin):
   @cached_property
   def remaining(self):
     return self.amount - sum(self.debit_set.all().values_list('amount',flat=True))
-  __unicode__ = lambda self: self.code
+  __str__ = lambda self: self.code
   def send(self):
     to = [self.purchased_by.email]
     context = {'credit': self, 'user_display': self.purchased_by.get_full_name() or self.purchased_by.username}
@@ -98,13 +98,13 @@ class Credit(models.Model,JsonMixin):
     self.save()
 
 class Debit(models.Model,JsonMixin):
-  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)
-  credit = models.ForeignKey(Credit)
-  order = models.ForeignKey(Order)
+  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True,on_delete=models.SET_NULL)
+  credit = models.ForeignKey(Credit,on_delete=models.CASCADE)
+  order = models.ForeignKey(Order,on_delete=models.CASCADE)
   created = models.DateTimeField(auto_now_add=True)
   amount = CurrencyField()
   json_fields = ['created']
 
   # cache the order, but if it gets deleted don't delete this!
   order = models.ForeignKey(Order,null=True,blank=True,on_delete=models.SET_NULL)
-  __unicode__ = lambda self: "%s debited for %s"%(self.credit,self.amount)
+  __str__ = lambda self: "%s debited for %s"%(self.credit,self.amount)

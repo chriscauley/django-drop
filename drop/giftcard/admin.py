@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from models import GiftCardProduct, Credit, Debit
+from drop.giftcard.models import GiftCardProduct, Credit, Debit
 from media.admin import TaggedPhotoAdmin
 
 @admin.register(GiftCardProduct)
@@ -18,5 +18,5 @@ class DebitInline(admin.TabularInline):
 @admin.register(Credit)
 class CreditAdmin(admin.ModelAdmin):
   raw_id_fields = ['purchased_by','user','product']
-  list_display = ['__unicode__','purchased_by','user','remaining']
+  list_display = ['__str__','purchased_by','user','remaining']
   inlines = [DebitInline]

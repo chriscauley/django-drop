@@ -19,7 +19,7 @@ class ProductDiscount(DiscountModel):
   """
   products = models.ManyToManyField(Product,limit_choices_to={'active': True})
   product_ids = property(lambda self: list(self.products.filter(active=True).values_list("id",flat=True)))
-  __unicode__ = lambda self: self.name
+  __str__ = lambda self: self.name
   json_fields = ['name','percentage','dollars','product_ids']
 
 class Promocode(DiscountModel):
@@ -27,7 +27,7 @@ class Promocode(DiscountModel):
   start_date = models.DateField(default=timezone.now,help_text="First date promocode becomes active.")
   end_date = models.DateField(null=True,blank=True,help_text="Optional final day this promocode can be used")
   reuseable = models.BooleanField(default=False,help_text="Whether or not the same user can reuse this promocode.")
-  __unicode__ = lambda self: self.name
+  __str__ = lambda self: self.name
   json_fields = ['name','percentage','dollars','code']
   _lct = lambda: { 'model__in': [s.__name__.lower() for s in Product.__subclasses__()] }
   product_types = models.ManyToManyField("contenttypes.ContentType",limit_choices_to=_lct,blank=True)
@@ -45,9 +45,9 @@ class Promocode(DiscountModel):
         return True
 
 class PromocodeUsage(models.Model):
-  promocode = models.ForeignKey(Promocode)
-  order = models.ForeignKey(Order)
+  promocode = models.ForeignKey(Promocode, on_delete=models.CASCADE)
+  order = models.ForeignKey(Order, on_delete=models.CASCADE)
   created = models.DateTimeField(auto_now_add=True)
-  __unicode__ = lambda self: "%s used on %s"%(self.promocode,self.order)
+  __str__ = lambda self: "%s used on %s"%(self.promocode,self.order)
   class Meta:
     ordering = ("-created",)

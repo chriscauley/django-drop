@@ -10,6 +10,6 @@ class AddressNode(DjangoObjectType):
 class AddressQuery(graphene.AbstractType):
   my_addresses = graphene.List(AddressNode)
   def resolve_my_addresses(self, args, context, info):
-    if not context.user.is_authenticated():
+    if not context.user.is_authenticated:
       return Address.objects.none()
     return Address.objects.filter(user=context.user)

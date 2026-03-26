@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from lablackey.tests import ClientTestCase
 
@@ -8,16 +8,16 @@ import random, decimal
 def print_order(order):
   if type(order) == int:
     order = Order.objects.get(pk=order)
-  print "\n-------------\nOrder#%s Cart#%s"%(order.id,order.cart_pk)
-  print "total: %s"%order.order_total
+  print("\n-------------\nOrder#%s Cart#%s"%(order.id,order.cart_pk))
+  print("total: %s"%order.order_total)
   if order.is_paid():
-    print "PAID!"
+    print("PAID!")
   for i in order.items.all():
-    print i,'  ',i.line_total
+    print(i,'  ',i.line_total)
     for xpf in i.extra_price_fields:
-      print " - %s"%i
+      print(" - %s"%i)
   for op in order.orderpayment_set.all():
-    print "payment: %s"%op.amount
+    print("payment: %s"%op.amount)
 
 class DropTestCase(ClientTestCase):
   def add_to_cart(self,product,quantity=1,start_checkout=True,extra={}):

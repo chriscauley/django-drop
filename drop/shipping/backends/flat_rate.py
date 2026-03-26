@@ -2,10 +2,9 @@
 from decimal import Decimal
 
 from django.conf import settings
-from django.conf.urls import patterns, url
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.utils.translation import ugettext_lazy as _
+from django.urls import re_path
+from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 
 from drop.util.decorators import on_method, drop_login_required, order_required
 
@@ -51,15 +50,14 @@ class FlatRateShipping(object):
         """
         ctx = {}
         ctx.update({'shipping_costs': Decimal(self.rate)})
-        return render_to_response('drop/shipping/flat_rate/display_fees.html',
-            ctx, context_instance=RequestContext(request))
+        return render(request, 'drop/shipping/flat_rate/display_fees.html', ctx)
 
     def get_urls(self):
         """
         Return the list of URLs defined here.
         """
-        urlpatterns = patterns('',
-            url(r'^$', self.view_display_fees, name='flat'),
-            url(r'^process/$', self.view_process_order, name='flat_process'),
-        )
+        urlpatterns = [
+            re_path(r'^$', self.view_display_fees, name='flat'),
+            re_path(r'^process/$', self.view_process_order, name='flat_process'),
+        ]
         return urlpatterns

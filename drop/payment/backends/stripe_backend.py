@@ -34,7 +34,7 @@ class Stripe(PaymentBackend):
       if customer:
         card = customer.add_card(token)
       charge = stripe.Charge.create(**kwargs)
-    except stripe.error.CardError,e:
+    except stripe.error.CardError as e:
       raise PaymentError(e)
     d = "Stripe Payment: {brand} card ending in {last4}".format(**charge['source'])
     PaymentAPI().confirm_payment(order, decimal.Decimal(charge['amount'])/100, charge['id'], 'stripe',d)

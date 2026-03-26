@@ -5,7 +5,6 @@ from lablackey.loader import load_class
 from .models import ProductDiscount, Promocode
 
 from decimal import Decimal, ROUND_DOWN
-import six
 
 class ProductDiscountCartModifier(BaseCartModifier):
   def get_extra_cart_item_price_field(self, cart_item, request):
@@ -13,23 +12,23 @@ class ProductDiscountCartModifier(BaseCartModifier):
     if discounts:
       discount = discounts.order_by("-percentage")[0]
       amount = Decimal(int(-cart_item.product.unit_price*cart_item.quantity*discount.percentage))/100
-      return [unicode(discount),amount]
+      return [str(discount),amount]
 
 class UserDiscountCartModifier(BaseCartModifier):
   def get_extra_cart_price_field(self,cart,request):
     f = getattr(settings,"DROP_USER_DISCOUNT_FUNCTION",None)
-    if not (f and request.user.is_authenticated()):
+    if not (f and request.user.is_authenticated):
       return
 
-    if isinstance(f,six.string_types):
+    if isinstance(f,str):
       f = load_class(f)
     return f(cart,request.user)
   def get_extra_cart_item_price_field(self,cart_item,request):
     f = getattr(settings,"DROP_USER_DISCOUNT_ITEM_FUNCTION",None)
-    if not (f and request.user.is_authenticated()):
+    if not (f and request.user.is_authenticated):
       return
 
-    if isinstance(f,six.string_types):
+    if isinstance(f,str):
       f = load_class(f)
     return f(cart_item,request.user)
 

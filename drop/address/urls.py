@@ -1,8 +1,8 @@
-from django.conf.urls import include, url
+from django.urls import re_path
 
-import views
+from drop.address import views
 
 urlpatterns = [
-  url(r'^add/$',views.add),
-  url(r'^select/$',views.select),
+  re_path(r'^add/$',views.add),
+  re_path(r'^select/$',views.select),
 ]

@@ -4,7 +4,7 @@ Holds all the information relevant to the client (addresses for instance)
 """
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from django.conf import settings
 
@@ -23,7 +23,7 @@ COUNTRY_CHOICES = [
 ]
 
 class Address(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(_('Name'), max_length=255)
     address = models.CharField(_('Address'), max_length=255)
     address2 = models.CharField(_('Address2'), max_length=255, blank=True)
@@ -37,7 +37,7 @@ class Address(models.Model):
         verbose_name = _('Address')
         verbose_name_plural = _("Addresses")
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s, %s)' % (self.name, self.zip_code, self.city)
 
     def clone(self):

@@ -1,11 +1,12 @@
 #-*- coding: utf-8 -*-
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib import admin
 from django.contrib.admin.options import ModelAdmin
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 from drop.admin.mixins import LocalizeDecimalFieldsMixin
 from drop.models.ordermodel import (Order, OrderItem,
         OrderExtraInfo, ExtraOrderPriceField, OrderPayment)
@@ -50,8 +51,7 @@ class OrderItemInline(LocalizeDecimalFieldsMixin, admin.TabularInline):
         if not "purchased_pk" in obj.extra:
             return
         args = obj.extra['purchased_model'].split('.')+[obj.extra['purchased_pk']]
-        return ("<a href='/admin/%s/%s/%s/' class='fa fa-edit'></a>"%tuple(args)).lower()
-    _purchased.allow_tags = True
+        return format_html("<a href='/admin/{}/{}/{}/' class='fa fa-edit'></a>", *[str(a).lower() for a in args])
     raw_id_fields = ('product',)
 
 #TODO: add ExtraOrderItemPriceField inline, ideas?
@@ -82,12 +82,11 @@ class OrderAdmin(LocalizeDecimalFieldsMixin, ModelAdmin):
         if obj:
             link = "None"
             if obj.status in [Order.PAID, Order.SHIPPED]:
-                link = "<a href='%s'>Refund Order</a>"%reverse("admin:drop_refund_order",args=[obj.id])
-            return "%s<br/>Action: %s"%(obj.get_status_display(), link)
-    _status.allow_tags = True
+                link = format_html("<a href='{}'>Refund Order</a>", reverse("admin:drop_refund_order",args=[obj.id]))
+            return format_html("{}<br/>Action: {}", obj.get_status_display(), link)
     def get_urls(self):
         return [
-            url(r'^(\d+)/refund/$',self.admin_site.admin_view(self.refund_view),name='drop_refund_order')
+            re_path(r'^(\d+)/refund/$',self.admin_site.admin_view(self.refund_view),name='drop_refund_order')
         ] + list(super(OrderAdmin,self).get_urls())
     def refund_view(self,request,order_id):
         model = self.model
@@ -95,8 +94,7 @@ class OrderAdmin(LocalizeDecimalFieldsMixin, ModelAdmin):
         s = "admin:%s_%s_change"%(self.model._meta.app_label,self.model._meta.model_name)
         return HttpResponseRedirect(reverse(s,args=[order_id]))
     def ctypes(self,obj):
-        return "<br/>".join([unicode(i.product.polymorphic_ctype_id) for i in obj.items.all() if i.product])
-    ctypes.allow_tags = True
+        return format_html("<br/>".join([str(i.product.polymorphic_ctype_id) for i in obj.items.all() if i.product]))
 
 ORDER_MODEL = getattr(settings, 'DROP_ORDER_MODEL', None)
 if not ORDER_MODEL:

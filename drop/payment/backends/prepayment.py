@@ -3,10 +3,9 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
 from datetime import date
-from django.conf.urls import patterns, url
-from django.template import RequestContext
-from django.utils.translation import ugettext_lazy as _
-from django.shortcuts import render_to_response
+from django.urls import re_path
+from django.utils.translation import gettext_lazy as _
+from django.shortcuts import render
 from drop.models.ordermodel import Order, OrderPayment
 from drop.models.cartmodel import Cart
 from drop.util.decorators import on_method, order_required
@@ -22,9 +21,9 @@ class ForwardFundBackend(object):
         self.drop = drop
 
     def get_urls(self):
-        urlpatterns = patterns('',
-            url(r'^$', self.advance_payment_view, name='advance-payment'),
-        )
+        urlpatterns = [
+            re_path(r'^$', self.advance_payment_view, name='advance-payment'),
+        ]
         return urlpatterns
 
     @on_method(order_required)
@@ -38,9 +37,9 @@ class ForwardFundBackend(object):
         amount = self.drop.get_order_total(order)
         transaction_id = date.today().strftime('%Y') + '%06d' % order.id
         self._create_confirmed_order(order, transaction_id)
-        context = RequestContext(request, {'order': order, 'amount': amount,
-            'transaction_id': transaction_id, 'next_url': self.drop.get_finished_url()})
-        return render_to_response(self.template, context)
+        context = {'order': order, 'amount': amount,
+            'transaction_id': transaction_id, 'next_url': self.drop.get_finished_url()}
+        return render(request, self.template, context)
 
     def _create_confirmed_order(self, order, transaction_id):
         """

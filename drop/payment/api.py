@@ -14,7 +14,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import mail_admins
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.defaultfilters import escape
 
 from lablackey.mail import send_template_email
@@ -129,7 +129,7 @@ class PaymentAPI(DropAPI):
             try:
                 message = item.product.refund(item)
                 send_message(request,message)
-            except Exception,e:
+            except Exception as e:
                 m = "An unknown error has occurred and the webmaster has been notified: %s"%e
                 body = "Order Number: %s\nError: %s"%(order.id,e)
                 mail_admins("Error occurred in refund",body)

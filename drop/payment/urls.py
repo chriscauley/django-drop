@@ -6,11 +6,11 @@ http://www.example.com/drop/pay/paypal
 http://www.example.com/drop/pay/pay-on-delivery
 ...
 """
-from django.conf.urls import include
+from django.urls import include, re_path
 from drop.backends_pool import backends_pool
 
 
 urlpatterns = [
-  url('^%s/'%backend.url_namespace, include(backend.get_urls()))
+  re_path('^%s/'%backend.url_namespace, include(backend.get_urls()))
   for backend in backends_pool.get_payment_backends_list()
 ]

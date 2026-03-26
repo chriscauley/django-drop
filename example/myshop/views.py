@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.views.generic import FormView
 from drop.util.order import get_order_from_request
 from django import forms

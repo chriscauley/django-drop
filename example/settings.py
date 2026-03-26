@@ -86,17 +86,13 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
         'django.middleware.common.CommonMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         ]
-
-import django # A quick and very dirty test to see if it's 1.3 yet...
-if django.VERSION[0] < 1 or django.VERSION[1] < 3:
-    MIDDLEWARE_CLASSES.append('cbv.middleware.DeferredRenderingMiddleware')
 
 ROOT_URLCONF = 'example.urls'
 

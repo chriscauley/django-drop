@@ -2,7 +2,7 @@
 from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.test.testcases import TestCase
 from drop.models.cartmodel import Cart, CartItem
@@ -37,7 +37,7 @@ class ProductListViewTestCase(TestCase):
         Test that ProductListView.get_queryset() returns
         only active products, filtering inactive ones.
         """
-        print "ProductListViewTestCase is depracated"
+        print("ProductListViewTestCase is depracated")
 
 class ProductDetailViewTestCase(TestCase):
     def setUp(self):
@@ -53,10 +53,10 @@ class ProductDetailViewTestCase(TestCase):
         #self.view = ProductDetailView(kwargs={'pk': self.product.pk})
 
     def test_get_product_returns_correctly(self):
-        print "ProductDetailViewTestCase is depracated"
+        print("ProductDetailViewTestCase is depracated")
 
     def test_get_templates_return_expected_values(self):
-        print "ProductDetailViewTestCase is depracated"
+        print("ProductDetailViewTestCase is depracated")
 
 class CartDetailsViewTestCase(TestCase):
     def setUp(self):
@@ -245,11 +245,11 @@ class OrderListViewTestCase(TestCase):
         url = reverse('order_list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, unicode(self.order))
+        self.assertContains(response, str(self.order))
 
     def test_authenticated_user_see_order_detail(self):
         self.client.login(username='test', password='test')
         url = reverse('order_detail', kwargs={'pk': self.order.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, unicode(self.order))
+        self.assertContains(response, str(self.order))

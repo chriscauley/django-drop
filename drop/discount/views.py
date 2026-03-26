@@ -17,7 +17,7 @@ def redeem_ajax(request):
   if promocode.expired:
     return JsonResponse({'error': "This promocode expired on %s"%promocode.end_date})
   if not promocode.reuseable:
-    if request.user.is_authenticated() and promocode.promocodeusage_set.filter(order__user=request.user):
+    if request.user.is_authenticated and promocode.promocodeusage_set.filter(order__user=request.user):
       if cart.extra.get('promocode',{}).get("code",None) == promocode.code:
         cart.extra['promocode'] = None
         cart.save()

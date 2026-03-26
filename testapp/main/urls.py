@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls import include, url
+from django.urls import include, re_path
 
 from django.contrib import admin
 from django.contrib.auth import urls as auth_urls
@@ -7,19 +7,17 @@ from django.views.static import serve
 from main import views as main_views
 import drop.urls
 
-admin.autodiscover()
-
 urlpatterns = [
-  url(r'^admin/', include(admin.site.urls)),
-  url(r'^auth/',include(auth_urls)),
+  re_path(r'^admin/', admin.site.urls),
+  re_path(r'^auth/',include(auth_urls)),
 
-  url(r'^$', main_views.home,name='home'),
-  url(r'favicon.ico$', main_views.redirect,
+  re_path(r'^$', main_views.home,name='home'),
+  re_path(r'favicon.ico$', main_views.redirect,
       {'url': getattr(settings,'FAVICON','/static/favicon.png')}),
-  url(r'',include(drop.urls)),
+  re_path(r'',include(drop.urls)),
 ]
 
 if settings.DEBUG:
   urlpatterns += [
-    url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
   ]

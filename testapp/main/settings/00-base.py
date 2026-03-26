@@ -8,7 +8,7 @@ DEBUG = False
 ALLOWED_HOSTS = ["*"]
 ADMINS = [('chriscauley','chris@lablackey.com')]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
   'django.contrib.sessions.middleware.SessionMiddleware',
   'django.middleware.common.CommonMiddleware',
   'django.middleware.csrf.CsrfViewMiddleware',

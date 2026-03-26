@@ -8,7 +8,7 @@ from lablackey.decorators import auth_required
 import decimal
 
 def user_json(request):
-  if not request.user.is_authenticated():
+  if not request.user.is_authenticated:
     return JsonResponse({'amount': 0})
   credit = sum(Credit.objects.filter(user=request.user).values_list("amount",flat=True) or [0])
   debit = sum(Debit.objects.filter(user=request.user).values_list("amount",flat=True) or [0])
@@ -18,7 +18,7 @@ def redeem_ajax(request):
   data = request.POST or request.GET
   try:
     credit = Credit.objects.get_or_404(request,code=data.get('code',None))
-  except Exception,e:
+  except Exception as e:
     return JsonResponse({'error': "Unable to find gift card matching that code."})
   error = None
   if credit.remaining <= 0:
